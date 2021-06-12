@@ -1,3 +1,18 @@
 {
-  "private": true
+  "private": true,
+  "name": "mudpipe",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha -t 5000 -w -b test/**/*.js",
+    "test-selected": "mocha -t 5000 -w -b",
+    "test-selected-debug": "mocha -t 5000 -w -b --inspect-brk",
+    "test-cov": "nyc mocha -t 5000 -b test/**/*.js"
+  },
+  "devDependencies": {
+    "chai": "4.2.0",
+    "mocha": "6.1.4",
+    "nyc": "14.1.1",
+    "sinon": "7.3.2"
+  }
 }

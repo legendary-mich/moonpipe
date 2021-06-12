@@ -1,0 +1,25 @@
+{
+  "env": {
+    "es6": true,
+    "node": true
+  },
+  "extends": "eslint:recommended",
+  "globals": {
+    "describe": false,
+    "before": false,
+    "after": false,
+    "beforeEach": false,
+    "afterEach": false,
+    "it": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 8
+  },
+  "rules": {
+    "eqeqeq": 2,
+    "indent": ["error", 2],
+    "no-console": 0,
+    "no-unused-vars": 1,
+    "no-use-before-define": ["error", "nofunc"]
+  }
+}
