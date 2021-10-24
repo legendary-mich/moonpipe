@@ -68,7 +68,7 @@ describe('PromiseValves with a Timeout long enough.', () => {
     it('does NOT emit a TimeoutError', () => {
       return testInput('throttleTap', [
         'side_1',
-        'res_1'
+        'res_1',
       ])
     })
   })

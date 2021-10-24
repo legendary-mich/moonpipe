@@ -6,6 +6,7 @@ const {
   BUFFER_TYPE,
   OVERFLOW_ACTION,
   BufferOverflowError,
+  BasePresets,
 } = require('./lib/BaseValve.js')
 const {
   PromiseValve,
@@ -19,12 +20,19 @@ const {
   TimePresets,
 } = require('./lib/TimeValve.js')
 
+const {
+  FlattenValve,
+  MapValve,
+  FilterValve,
+} = require('./lib/TransformValves.js')
+
 module.exports = {
   MudPipe,
   BaseValve,
   BUFFER_TYPE,
   OVERFLOW_ACTION,
   BufferOverflowError,
+  BasePresets,
   PromiseValve,
   PROMISE_RESOLVE_TYPE,
   PromisePresets,
@@ -32,4 +40,7 @@ module.exports = {
   TimeValve,
   TIME_RESOLVE_TYPE,
   TimePresets,
+  FlattenValve,
+  MapValve,
+  FilterValve,
 }

@@ -35,9 +35,9 @@ mp.pump('d')
 ```
 ### Predefined operators
 
-There are 16 predefined operators. Their names consist of a prefix and a suffix. There are 4 different prefixes **(queue, cancel, throttle, skip)**, and 4 different suffixes **(Map, Tap, Eager, Lazy)**.
+Among the predefined operators there are 3 synchronous operators **(flatten, map, filter)**, and 16 asynchronous operators. The names of the asynchronous operators consist of a prefix and a suffix. There are 4 different prefixes **(queue, cancel, throttle, skip)**, and 4 different suffixes **(Map, Tap, Eager, Lazy)**.
 
-Operators with the **Map** and **Tap** suffixes operate on **Promises**, whereas operators with the **Eager** and **Lazy** suffixes operate on **Timeouts**.
+The operators with the **Map** and **Tap** suffixes operate on **Promises**, whereas the operators with the **Eager** and **Lazy** suffixes operate on **Timeouts**.
 
 Prefixes:
 - **queue** - queues every pumped value, and processes one after another
@@ -122,7 +122,7 @@ mp.pump('e')
 - `cancelOnPump` - if `true`, the active promise is canceled on every new value
 - `timeoutMs` - time after which the promise is canceled and a `TimeoutError` is emitted
 - `cache` - if `true`, the result of the promise will be cached
-- `hashFunction` - a function from the `value` to a `key` at witch the result will be cached. Defaults to `value => value`
+- `hashFunction` - a function from a `value` to the `key` at witch the result will be cached. Defaults to `value => value`
 - `repeatOnError` - how many times the promise should be repeated in case of a failure
 
 Predefined presets can be found in the `TimeValve.js` and `PromiseValve.js` for example presets.
@@ -176,5 +176,5 @@ mp.pump('a')
 
 // ...side effect
 // output: mapped_A
-// output: mapped_A <-- a value from cache at the key 'a'
+// output: mapped_A <-- a value from the cache at the key 'a'
 ```

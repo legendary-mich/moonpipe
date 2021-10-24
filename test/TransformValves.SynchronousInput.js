@@ -1,0 +1,82 @@
+'use strict'
+
+const { expect } = require('chai')
+const { MudPipe } = require('../index.js')
+const { delayPromise } = require('./utils.js')
+
+async function testInput(method, param, input, expected) {
+  const results = []
+  const pipe = new MudPipe()[method](param)
+    .queueTap(async (value) => {
+      results.push('res_' + value)
+    })
+    .handleError(async (err) => {
+      await delayPromise(2)
+      results.push('err_' + err.message)
+    })
+
+  for (const val of input) {
+    pipe.pump(val)
+  }
+
+  await delayPromise(5)
+  expect(results).to.eql(expected)
+}
+
+describe('TimeValves with Synchronous input.', () => {
+
+  describe('MudPipe.flatten', () => {
+    it('emits an onData event for every item in the array', async () => {
+      return testInput('flatten', null, [
+        [1, 2, 3],
+        [10, 20, 30],
+      ], [
+        'res_1',
+        'res_2',
+        'res_3',
+        'res_10',
+        'res_20',
+        'res_30',
+      ])
+    })
+
+    it('emits an error event if the value pumped is not an array', async () => {
+      return testInput('flatten', null, [
+        1,
+        [10, 20, 30],
+      ], [
+        'err_Expected an array; found: number',
+        'res_10',
+        'res_20',
+        'res_30',
+      ])
+    })
+  })
+
+  describe('MudPipe.map', () => {
+    it('emits an onData event for every item in the array', async () => {
+      return testInput('map', val => val * 2, [
+        1,
+        2,
+        3,
+      ], [
+        'res_2',
+        'res_4',
+        'res_6',
+      ])
+    })
+  })
+
+  describe('MudPipe.filter', () => {
+    it('emits an onData event for every item in the array', async () => {
+      return testInput('filter', val => val % 2, [
+        1,
+        2,
+        3,
+      ], [
+        'res_1',
+        'res_3',
+      ])
+    })
+  })
+})

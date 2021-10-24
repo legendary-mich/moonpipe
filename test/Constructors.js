@@ -9,6 +9,9 @@ const {
   BaseValve,
   TimeValve,
   PromiseValve,
+  FlattenValve,
+  MapValve,
+  FilterValve,
 } = require('../index.js')
 
 function baseValveAssertions(TargetClass) {
@@ -146,7 +149,7 @@ function timeValveAssertions(TargetClass) {
 
 function promiseValveAssertions(TargetClass) {
 
-  const properTimeValvePreset = {
+  const properPromiseValvePreset = {
     maxBufferSize: 1000,
     bufferType: BUFFER_TYPE.QUEUE,
     overflowAction: OVERFLOW_ACTION.EMIT_ERROR,
@@ -159,7 +162,7 @@ function promiseValveAssertions(TargetClass) {
   }
 
   it('throws for an unknown cancelOnPump', () => {
-    const preset = Object.assign({}, properTimeValvePreset, {
+    const preset = Object.assign({}, properPromiseValvePreset, {
       cancelOnPump: 28,
     })
     try {
@@ -172,7 +175,7 @@ function promiseValveAssertions(TargetClass) {
   })
 
   it('throws for an unknown timeoutMs', () => {
-    const preset = Object.assign({}, properTimeValvePreset, {
+    const preset = Object.assign({}, properPromiseValvePreset, {
       timeoutMs: 'one',
     })
     try {
@@ -185,7 +188,7 @@ function promiseValveAssertions(TargetClass) {
   })
 
   it('throws for an timeoutMs lower than 0', () => {
-    const preset = Object.assign({}, properTimeValvePreset, {
+    const preset = Object.assign({}, properPromiseValvePreset, {
       timeoutMs: -1,
     })
     try {
@@ -198,7 +201,7 @@ function promiseValveAssertions(TargetClass) {
   })
 
   it('throws for an unknown resolveType', () => {
-    const preset = Object.assign({}, properTimeValvePreset, {
+    const preset = Object.assign({}, properPromiseValvePreset, {
       resolveType: 'pong',
     })
     try {
@@ -211,7 +214,7 @@ function promiseValveAssertions(TargetClass) {
   })
 
   it('throws for an unknown cache', () => {
-    const preset = Object.assign({}, properTimeValvePreset, {
+    const preset = Object.assign({}, properPromiseValvePreset, {
       cache: 'what?',
     })
     try {
@@ -224,7 +227,7 @@ function promiseValveAssertions(TargetClass) {
   })
 
   it('throws for an unknown hashFunction', () => {
-    const preset = Object.assign({}, properTimeValvePreset, {
+    const preset = Object.assign({}, properPromiseValvePreset, {
       hashFunction: 'hashuhash',
     })
     try {
@@ -237,7 +240,7 @@ function promiseValveAssertions(TargetClass) {
   })
 
   it('throws for an unknown repeatOnError', () => {
-    const preset = Object.assign({}, properTimeValvePreset, {
+    const preset = Object.assign({}, properPromiseValvePreset, {
       repeatOnError: 'one',
     })
     try {
@@ -250,7 +253,7 @@ function promiseValveAssertions(TargetClass) {
   })
 
   it('throws for an repeatOnError lower than 0', () => {
-    const preset = Object.assign({}, properTimeValvePreset, {
+    const preset = Object.assign({}, properPromiseValvePreset, {
       repeatOnError: -1,
     })
     try {
@@ -263,7 +266,7 @@ function promiseValveAssertions(TargetClass) {
   })
 
   it('throws for an unknown promiseFactory', () => {
-    const preset = Object.assign({}, properTimeValvePreset)
+    const preset = Object.assign({}, properPromiseValvePreset)
     try {
       new TargetClass(preset, 33)
       throw new Error('should have thrown')
@@ -273,6 +276,25 @@ function promiseValveAssertions(TargetClass) {
     }
   })
 
+}
+
+function transformValveAssertions(TargetClass) {
+
+  const properTransformValvePreset = {
+    maxBufferSize: 1000,
+    bufferType: BUFFER_TYPE.QUEUE,
+    overflowAction: OVERFLOW_ACTION.EMIT_ERROR,
+  }
+
+  it('throws for an unknown transformFunc', () => {
+    try {
+      new TargetClass(properTransformValvePreset, 2)
+      throw new Error('should have thrown')
+    }
+    catch (err) {
+      expect(err).to.have.property('message', "Expected transformFunc to be a function; found: number")
+    }
+  })
 }
 
 describe('BaseValve constructor', () => {
@@ -287,4 +309,18 @@ describe('TimeValve constructor', () => {
 describe('PromiseValve constructor', () => {
   baseValveAssertions(PromiseValve)
   promiseValveAssertions(PromiseValve)
+})
+
+describe('FlattenValve constructor', () => {
+  baseValveAssertions(FlattenValve)
+})
+
+describe('MapValve constructor', () => {
+  baseValveAssertions(MapValve)
+  transformValveAssertions(MapValve)
+})
+
+describe('FilterValve constructor', () => {
+  baseValveAssertions(FilterValve)
+  transformValveAssertions(FilterValve)
 })

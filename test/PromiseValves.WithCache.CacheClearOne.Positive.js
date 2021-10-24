@@ -11,7 +11,7 @@ async function testInput(method, expected) {
     await delayPromise(1)
     return value + 100
   }, {
-    cache: true
+    cache: true,
   })
     .queueTap(async (value) => {
       results.push('res_' + value)
