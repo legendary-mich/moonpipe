@@ -11,7 +11,6 @@ async function testInput(method, param, input, expected) {
       results.push('res_' + value)
     })
     .handleError(async (err) => {
-      await delayPromise(2)
       results.push('err_' + err.message)
     })
 
@@ -65,6 +64,18 @@ describe('TimeValves with Synchronous input.', () => {
         'res_6',
       ])
     })
+
+    it('emits an onError event when the function throws', async () => {
+      return testInput('map', () => { throw new Error('wrong') }, [
+        1,
+        2,
+        3,
+      ], [
+        'err_wrong',
+        'err_wrong',
+        'err_wrong',
+      ])
+    })
   })
 
   describe('MudPipe.filter', () => {
@@ -76,6 +87,18 @@ describe('TimeValves with Synchronous input.', () => {
       ], [
         'res_1',
         'res_3',
+      ])
+    })
+
+    it('emits an onError event when the function throws', async () => {
+      return testInput('filter', () => { throw new Error('zonk') }, [
+        1,
+        2,
+        3,
+      ], [
+        'err_zonk',
+        'err_zonk',
+        'err_zonk',
       ])
     })
   })
