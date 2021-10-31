@@ -35,7 +35,7 @@ mp.pump('d')
 ```
 ### Predefined operators
 
-Among the predefined operators there are 3 synchronous operators **(flatten, map, filter)**, and 16 asynchronous operators. The names of the asynchronous operators consist of a prefix and a suffix. There are 4 different prefixes **(queue, cancel, throttle, skip)**, and 4 different suffixes **(Map, Tap, Eager, Lazy)**.
+Among the predefined operators there are 3 synchronous operators **(flatten, map, filter)**, and 16+2 asynchronous operators. The names of the asynchronous operators consist of a prefix and a suffix. There are 4 different prefixes **(queue, cancel, throttle, skip)**, and 4 different suffixes **(Map, Tap, Eager, Lazy)**.
 
 The operators with the **Map** and **Tap** suffixes operate on **Promises**, whereas the operators with the **Eager** and **Lazy** suffixes operate on **Timeouts**.
 
@@ -50,6 +50,21 @@ Suffixes:
 - **Tap** - waits for a promise to complete and pumps the input value
 - **Eager** - pumps the input value, and waits until the time passes before taking on the next value
 - **Lazy** - waits until the time passes and pumps the first value in line
+
+The names of the 2 special asynchronous operators that I haven't mentioned so far are **poolTap** and **poolMap**. These 2 let you run a specified number of promises concurrently. The `poolSize` parameter is the first parameter to these operators.
+```
+const mp = new MudPipe()
+  .poolMap(2, async (val) => {
+    return 'mapped_' + val
+  })
+  .queueTap(async (val) => {
+    console.log('output:', val)
+  })
+
+mp.pump('a')
+mp.pump('b')
+mp.pump('c')
+```
 
 ### Error handling
 There can be only one error handler, and it does not matter where you put it. It is perfectly fine to put it at the beginning.
@@ -121,6 +136,7 @@ mp.pump('e')
   - `TAP` - the value that is fed into the promise is emitted
 - `cancelOnPump` - if `true`, the active promise is canceled on every new value
 - `timeoutMs` - time after which the promise is canceled and a `TimeoutError` is emitted
+- `poolSize` - number of promises running concurrently
 - `cache` - if `true`, the result of the promise will be cached
 - `hashFunction` - a function from a `value` to the `key` at witch the result will be cached. Defaults to `value => value`
 - `repeatOnError` - how many times the promise should be repeated in case of a failure

@@ -156,6 +156,7 @@ function promiseValveAssertions(TargetClass) {
     resolveType: PROMISE_RESOLVE_TYPE.MAP,
     cancelOnPump: false,
     timeoutMs: 0,
+    poolSize: 1,
     cache: false,
     hashFunction: value => value,
     repeatOnError: 0,
@@ -197,6 +198,19 @@ function promiseValveAssertions(TargetClass) {
     }
     catch (err) {
       expect(err).to.have.property('message', "Expected timeoutMs to be a 'number' greater or equal to 0; found: -1")
+    }
+  })
+
+  it('throws for a poolSize lower than 1', () => {
+    const preset = Object.assign({}, properPromiseValvePreset, {
+      poolSize: 0,
+    })
+    try {
+      new TargetClass(preset)
+      throw new Error('should have thrown')
+    }
+    catch (err) {
+      expect(err).to.have.property('message', "Expected poolSize to be a 'number' greater or equal to 1; found: 0")
     }
   })
 

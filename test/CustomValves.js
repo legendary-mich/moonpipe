@@ -51,6 +51,7 @@ describe('Custom Valves,', () => {
         resolveType: PROMISE_RESOLVE_TYPE.MAP,
         cancelOnPump: false,
         timeoutMs: 0,
+        poolSize: 1,
         cache: false,
         hashFunction: value => value,
         repeatOnError: 0,
