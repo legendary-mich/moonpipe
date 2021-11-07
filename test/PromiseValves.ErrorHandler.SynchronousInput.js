@@ -58,8 +58,6 @@ describe('PromiseValves.ErrorHandler with Synchronous input.', () => {
   describe('MudPipe.cancelTap', () => {
     it('handles all errors', () => {
       return testInput('cancelTap', [
-        'side_1',
-        'side_2',
         'side_3',
         'err_103',
       ])
@@ -69,8 +67,6 @@ describe('PromiseValves.ErrorHandler with Synchronous input.', () => {
   describe('MudPipe.cancelMap', () => {
     it('handles all errors', () => {
       return testInput('cancelMap', [
-        'side_1',
-        'side_2',
         'side_3',
         'err_103',
       ])
@@ -80,8 +76,6 @@ describe('PromiseValves.ErrorHandler with Synchronous input.', () => {
   describe('MudPipe.throttleTap', () => {
     it('handles all errors', () => {
       return testInput('throttleTap', [
-        'side_1',
-        'err_101',
         'side_3',
         'err_103',
       ])
@@ -91,8 +85,6 @@ describe('PromiseValves.ErrorHandler with Synchronous input.', () => {
   describe('MudPipe.throttleMap', () => {
     it('handles all errors', () => {
       return testInput('throttleMap', [
-        'side_1',
-        'err_101',
         'side_3',
         'err_103',
       ])
@@ -104,8 +96,6 @@ describe('PromiseValves.ErrorHandler with Synchronous input.', () => {
       return testInput('skipTap', [
         'side_1',
         'err_101',
-        'side_2',
-        'err_102',
       ])
     })
   })
@@ -115,8 +105,6 @@ describe('PromiseValves.ErrorHandler with Synchronous input.', () => {
       return testInput('skipMap', [
         'side_1',
         'err_101',
-        'side_2',
-        'err_102',
       ])
     })
   })

@@ -58,8 +58,6 @@ describe('PromiseValves with Synchronous input.', () => {
   describe('MudPipe.cancelTap', () => {
     it('cancels initial promises, and resolves the last one with the ORIGINAL value', () => {
       return testInput('cancelTap', [
-        'side_1',
-        'side_2',
         'side_3',
         'res_3',
       ])
@@ -69,8 +67,6 @@ describe('PromiseValves with Synchronous input.', () => {
   describe('MudPipe.cancelMap', () => {
     it('cancels initial promises, and resolves the last one with a MODIFIED value', () => {
       return testInput('cancelMap', [
-        'side_1',
-        'side_2',
         'side_3',
         'res_103',
       ])
@@ -80,8 +76,6 @@ describe('PromiseValves with Synchronous input.', () => {
   describe('MudPipe.throttleTap', () => {
     it('removes values which are waiting in the queue, and pumps ORIGINAL ones', () => {
       return testInput('throttleTap', [
-        'side_1',
-        'res_1',
         'side_3',
         'res_3',
       ])
@@ -91,8 +85,6 @@ describe('PromiseValves with Synchronous input.', () => {
   describe('MudPipe.throttleMap', () => {
     it('removes values which are waiting in the queue, and pumps MODIFIED ones', () => {
       return testInput('throttleMap', [
-        'side_1',
-        'res_101',
         'side_3',
         'res_103',
       ])
@@ -104,8 +96,6 @@ describe('PromiseValves with Synchronous input.', () => {
       return testInput('skipTap', [
         'side_1',
         'res_1',
-        'side_2',
-        'res_2',
       ])
     })
   })
@@ -115,8 +105,6 @@ describe('PromiseValves with Synchronous input.', () => {
       return testInput('skipMap', [
         'side_1',
         'res_101',
-        'side_2',
-        'res_102',
       ])
     })
   })

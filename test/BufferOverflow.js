@@ -56,8 +56,8 @@ describe('Buffer Overflow', () => {
       return testInput(valve, [
         "err_Buffer overflow",
         "err_Buffer overflow",
+        "err_Buffer overflow",
         "res_101",
-        "res_102",
       ])
     })
   })
@@ -79,9 +79,9 @@ describe('Buffer Overflow', () => {
       const valve = new PromiseValve(preset, value => value + 100)
       return testInput(valve, [
         "err_Buffer overflow",
+        "err_Buffer overflow",
         "res_101",
         "res_102",
-        "res_103",
       ])
     })
   })

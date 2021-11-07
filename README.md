@@ -34,8 +34,17 @@ mp.pump('d')
 // error: thrown in queueTap
 ```
 ### Predefined operators
+```
+queueTap    queueMap    queueEager    queueLazy
+cancelTap   cancelMap   cancelEager   cancelLazy
+throttleTap throttleMap throttleEager throttleLazy
+skipTap     skipMap     skipEager     skipLazy
+sliceTap    sliceMap    sliceEager    sliceLazy
+poolTap     poolMap
+flatten     map         filter
+```
 
-Among the predefined operators there are 3 synchronous operators **(flatten, map, filter)**, and 16+2 asynchronous operators. The names of the asynchronous operators consist of a prefix and a suffix. There are 4 different prefixes **(queue, cancel, throttle, skip)**, and 4 different suffixes **(Map, Tap, Eager, Lazy)**.
+Among the predefined operators there are 3 synchronous operators **(flatten, map, filter)**, and 20+2 asynchronous operators. The names of the asynchronous operators consist of a prefix and a suffix. There are 5 different prefixes **(queue, cancel, throttle, skip, slice)**, and 4 different suffixes **(Map, Tap, Eager, Lazy)**.
 
 The operators with the **Map** and **Tap** suffixes operate on **Promises**, whereas the operators with the **Eager** and **Lazy** suffixes operate on **Timeouts**.
 
@@ -44,6 +53,7 @@ Prefixes:
 - **cancel** - cancels the running promise/timeout and replaces the current value with the new one
 - **throttle** - replaces the value next in line with the new one, and does not cancel the promise/timeout
 - **skip** - skips every new value until the promise/timeout finishes
+- **slice** - packs values into arrays of defined slice size
 
 Suffixes:
 - **Map** - pumps the result of a promise to the next valve
