@@ -126,10 +126,6 @@ describe('PromiseValves Repeat on Error - Eventual Success,', () => {
         'side_1',
         'side_1',
         'res_1',
-        'side_2',
-        'side_2',
-        'side_2',
-        'res_2',
       ])
     })
   })
@@ -141,10 +137,6 @@ describe('PromiseValves Repeat on Error - Eventual Success,', () => {
         'side_1',
         'side_1',
         'res_101',
-        'side_2',
-        'side_2',
-        'side_2',
-        'res_102',
       ])
     })
   })

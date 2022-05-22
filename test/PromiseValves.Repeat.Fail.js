@@ -121,10 +121,6 @@ describe('PromiseValves Repeat on Error - All Failures,', () => {
         'side_1',
         'side_1',
         'err_101',
-        'side_2',
-        'side_2',
-        'side_2',
-        'err_102',
       ])
     })
   })
@@ -136,10 +132,6 @@ describe('PromiseValves Repeat on Error - All Failures,', () => {
         'side_1',
         'side_1',
         'err_101',
-        'side_2',
-        'side_2',
-        'side_2',
-        'err_102',
       ])
     })
   })

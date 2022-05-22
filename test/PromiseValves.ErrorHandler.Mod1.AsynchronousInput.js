@@ -110,8 +110,6 @@ describe('PromiseValves.ErrorHandler Mod1 with Asynchronous input.', () => {
       return testInput('skipTap', [
         'side_1',
         'err_101',
-        'side_2',
-        'res_2',
       ])
     })
   })
@@ -121,8 +119,6 @@ describe('PromiseValves.ErrorHandler Mod1 with Asynchronous input.', () => {
       return testInput('skipMap', [
         'side_1',
         'err_101',
-        'side_2',
-        'res_102',
       ])
     })
   })

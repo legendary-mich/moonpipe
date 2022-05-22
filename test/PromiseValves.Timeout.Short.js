@@ -99,8 +99,6 @@ describe('PromiseValves with a Timeout short enough.', () => {
       return testInput('skipTap', [
         'side_1',
         'err_TimeoutError',
-        'side_2',
-        'err_TimeoutError',
       ])
     })
   })
@@ -109,8 +107,6 @@ describe('PromiseValves with a Timeout short enough.', () => {
     it('whatever', () => {
       return testInput('skipMap', [
         'side_1',
-        'err_TimeoutError',
-        'side_2',
         'err_TimeoutError',
       ])
     })

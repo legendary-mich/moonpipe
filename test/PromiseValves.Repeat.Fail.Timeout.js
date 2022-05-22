@@ -122,10 +122,6 @@ describe('PromiseValves Repeat on Error with Timeout - All Failures,', () => {
         'side_1',
         'side_1',
         'err_TimeoutError',
-        'side_2',
-        'side_2',
-        'side_2',
-        'err_TimeoutError',
       ])
     })
   })
@@ -136,10 +132,6 @@ describe('PromiseValves Repeat on Error with Timeout - All Failures,', () => {
         'side_1',
         'side_1',
         'side_1',
-        'err_TimeoutError',
-        'side_2',
-        'side_2',
-        'side_2',
         'err_TimeoutError',
       ])
     })
