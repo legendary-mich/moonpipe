@@ -16,7 +16,7 @@ async function testInput(method, chunkSize, expected) {
     .queueTap(async (value) => {
       results.push('res_' + value)
     })
-    .handleError(async (err) => {
+    .queueError(async (err) => {
       results.push('err_' + err.message)
     })
   pipe.pump(1)

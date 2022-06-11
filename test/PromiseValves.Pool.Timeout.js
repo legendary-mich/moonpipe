@@ -10,11 +10,11 @@ async function testInput(method, poolSize, expected) {
     results.push('side_' + value)
     await delayPromise(value * 10)
     return value + 100
-  }, { timeoutMs: 40 }) // <---------- timeout is HERE
+  }, { timeoutMs: 35 }) // <---------- timeout is HERE
     .queueTap(async (value) => {
       results.push('res_' + value)
     })
-    .handleError(async (err) => {
+    .queueError(async (err) => {
       await delayPromise(2)
       results.push('err_' + err.message)
     })

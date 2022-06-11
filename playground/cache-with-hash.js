@@ -9,11 +9,11 @@ const mp = new MudPipe()
     return 'mapped_' + val
   }, {
     cache: true,
+    hashFunction: (val) => val.toLowerCase(),
   })
   .queueTap(async (val) => {
     console.log('output:', val)
   })
 
-mp.pump('a')
-mp.pump('b')
+mp.pump('A')
 mp.pump('a')

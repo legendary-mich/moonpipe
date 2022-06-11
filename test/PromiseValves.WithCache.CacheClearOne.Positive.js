@@ -17,7 +17,7 @@ async function testInput(method, expected) {
       results.push('res_' + value)
     })
     .queueEager(0)
-    .handleError(async (err) => {
+    .queueError(async (err) => {
       await delayPromise(2)
       results.push('err_' + err.message)
     })

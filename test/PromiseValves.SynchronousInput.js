@@ -14,7 +14,7 @@ async function testInput(method, expected) {
     .queueTap(async (value) => {
       results.push('res_' + value)
     })
-    .handleError(async (err) => {
+    .queueError(async (err) => {
       await delayPromise(2)
       results.push('err_' + err.message)
     })

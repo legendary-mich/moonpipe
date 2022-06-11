@@ -1,14 +1,10 @@
 'use strict'
 
 const { MudPipe } = require('../index.js')
-const { delayPromise } = require('../test/utils.js')
 
 const mp = new MudPipe()
-  .queueMap(async (val) => {
-    console.log('...side effect')
+  .poolMap(2, async (val) => {
     return 'mapped_' + val
-  }, {
-    cache: true,
   })
   .queueTap(async (val) => {
     console.log('output:', val)
@@ -16,4 +12,4 @@ const mp = new MudPipe()
 
 mp.pump('a')
 mp.pump('b')
-mp.pump('a')
+mp.pump('c')

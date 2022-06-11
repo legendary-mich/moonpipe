@@ -10,7 +10,7 @@ async function testInput(method, param, input, expected) {
     .queueTap(async (value) => {
       results.push('res_' + value)
     })
-    .handleError(async (err) => {
+    .queueError(async (err) => {
       results.push('err_' + err.message)
     })
 

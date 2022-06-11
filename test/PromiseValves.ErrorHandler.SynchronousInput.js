@@ -14,7 +14,7 @@ async function testInput(method, expected) {
     .queueTap(async (value) => {
       results.push('res_' + value)
     })
-    .handleError(async (err) => {
+    .queueError(async (err) => {
       await delayPromise(2)
       results.push('err_' + err.message)
     })
@@ -92,7 +92,7 @@ describe('PromiseValves.ErrorHandler with Synchronous input.', () => {
   })
 
   describe('MudPipe.skipTap', () => {
-    it('whatever', () => {
+    it('handles all errors', () => {
       return testInput('skipTap', [
         'side_1',
         'err_101',
@@ -101,7 +101,7 @@ describe('PromiseValves.ErrorHandler with Synchronous input.', () => {
   })
 
   describe('MudPipe.skipMap', () => {
-    it('whatever', () => {
+    it('handles all errors', () => {
       return testInput('skipMap', [
         'side_1',
         'err_101',

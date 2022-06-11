@@ -21,7 +21,7 @@ const mp = new MudPipe()
     console.log('output:', val)
     throw 'thrown in queueTap'
   })
-  .handleError(async (err) => {
+  .queueError(async (err) => {
     console.log('error:', err)
   })
 
@@ -35,18 +35,18 @@ mp.pump('d')
 ```
 ### Predefined operators
 ```
-queueTap    queueMap    queueEager    queueLazy
-cancelTap   cancelMap   cancelEager   cancelLazy
-throttleTap throttleMap throttleEager throttleLazy
-skipTap     skipMap     skipEager     skipLazy
+queueTap    queueMap    queueEager    queueLazy    queueError
+cancelTap   cancelMap   cancelEager   cancelLazy   cancelError
+throttleTap throttleMap throttleEager throttleLazy throttleError
+skipTap     skipMap     skipEager     skipLazy     skipError
 sliceTap    sliceMap    sliceEager    sliceLazy
 poolTap     poolMap
 flatten     map         filter
 ```
 
-Among the predefined operators there are 3 synchronous operators **(flatten, map, filter)**, and 20+2 asynchronous operators. The names of the asynchronous operators consist of a prefix and a suffix. There are 5 different prefixes **(queue, cancel, throttle, skip, slice)**, and 4 different suffixes **(Map, Tap, Eager, Lazy)**.
+Among the predefined operators there are 3 synchronous operators **(flatten, map, filter)**, and 20+4+2 asynchronous operators. The names of the asynchronous operators consist of a prefix and a suffix. There are 5 different prefixes **(queue, cancel, throttle, skip, slice)**, and 5 different suffixes **(Map, Tap, Eager, Lazy, Error)**.
 
-The operators with the **Map** and **Tap** suffixes operate on **Promises**, whereas the operators with the **Eager** and **Lazy** suffixes operate on **Timeouts**.
+The operators with the **Map**, **Tap**, and **Error** suffixes operate on **Promises**, whereas the operators with the **Eager** and **Lazy** suffixes operate on **Timeouts**.
 
 Prefixes:
 - **queue** - queues every pumped value, and processes one after another
@@ -58,6 +58,7 @@ Prefixes:
 Suffixes:
 - **Map** - pumps the result of a promise to the next valve
 - **Tap** - waits for a promise to complete and pumps the input value
+- **Error** - it's like the Map suffix, but it is used only when the pipe operates in an Error mode. It is used to catch errors.
 - **Eager** - pumps the input value, and waits until the time passes before taking on the next value
 - **Lazy** - waits until the time passes and pumps the first value in line
 
@@ -77,22 +78,30 @@ mp.pump('c')
 ```
 
 ### Error handling
-There can be only one error handler, and it does not matter where you put it. It is perfectly fine to put it at the beginning.
+When an error is thrown by one of the normal operators, the pipe switches its active channel to the `CHANNEL_TYPE.ERROR`. Now it operates in an `error mode` which means that no new promises will be created until the active channel switches back to the `CHANNEL_TYPE.DATA`. Existing promises will be able to finish though, which can result in either a valid response or a new error. Valid responses will be put off for later, and errors will be pumped to the `ErrorValves`. The active channel will be switched back to the `CHANNEL_TYPE.DATA` when there are no more errors to handle.
 
+There are 4 predefined operators that can be used to handle errors. They all behave like their brothers from the `Map` family with that difference that they operate only in the `error mode`. The most common one is the `queueError` operator, which handles errors one after another. Another one that may be useful is the `skipError` operator. It handles the first error, and let all the subsequent ones slide. Other operators that can be used for error handling are `cancelError` and `throttleError`.
+
+If there are no error handlers, errors will be silently ignored.
 ```javascript
 const mp = new MudPipe()
-  .handleError(async (err) => {
-    console.log('error:', err)
-  })
   .queueTap(async (val) => {
-    console.log('output:', val)
+    console.log('out 1:', val)
     throw 'thrown in queueTap'
+  })
+  .queueError(async (err) => {
+    console.log('error:', err)
+    return 'b'
+  })
+  .queueTap(val => {
+    console.log('out 2:', val)
   })
 
 mp.pump('a')
 
-// output: a
-// error: thrown in queueTap
+out 1: a
+error: thrown in queueTap
+out 2: b
 ```
 
 ### Custom operators
@@ -123,6 +132,10 @@ mp.pump('e')
 // output: d
 // output: e
 ```
+The `pipe` method accepts a `CHANNEL_TYPE` as the second argument. By default it is set to `CHANNEL_TYPE.DATA`, so you don't have to worry about it. If you however want to use a valve as an error handler, set the `CHANNEL_TYPE` to the `ERROR` value.
+```
+mp.pipe(valve, CHANNEL_TYPE.ERROR)
+```
 
 ### Presets explained
 ##### Base Preset Params:
@@ -133,6 +146,7 @@ mp.pump('e')
   - `EMIT_ERROR` - a `BufferOverflowError` error is emitted
   - `SHIFT` - the first value from the buffer is removed
   - `SKIP` - new values are skipped (not added to the buffer and so never processed)
+  - `SLICE` - In the SLICE mode values are packed into an array which is later processed as a whole. When the array is full, a new array is created.
 
 ##### TimeValve Preset Params:
 - `resolveType` - determines when the value is emitted
@@ -154,14 +168,14 @@ mp.pump('e')
 Predefined presets can be found in the `TimeValve.js` and `PromiseValve.js` for example presets.
 
 ### Cache in PromiseValves
-You can cache the result of a promise. In order to do that you just add a `cache: true` param to the options and you are done.
+You can cache the result of a promise. In order to do that you just add a `cache: true` param to the options and you are done. Results are cached in a hash map, where the value provided is used as the key. You can customize the hash function if you don't like how the keys are derived (see down below).
 ```javascript
 const mp = new MudPipe()
   .queueMap(async (val) => {
     console.log('...side effect')
     return 'mapped_' + val
   }, {
-    cache: true
+    cache: true,
   })
   .queueTap(async (val) => {
     console.log('output:', val)

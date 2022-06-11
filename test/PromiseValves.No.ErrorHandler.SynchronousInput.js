@@ -14,106 +14,87 @@ async function testInput(method, expected) {
     .queueTap(async (value) => {
       results.push('res_' + value)
     })
-    .queueError(async (err) => {
-      await delayPromise(2)
-      results.push('err_' + err.message)
-    })
+    // When there's no error handler all errors should be silently ignored
+    // .queueError(async (err) => {
+    //   await delayPromise(2)
+    //   results.push('err_' + err.message)
+    // })
 
   pipe.pump(1)
-  await Promise.resolve()
   pipe.pump(2)
-  await Promise.resolve()
   pipe.pump(3)
+
   await delayPromise(16)
   expect(results).to.eql(expected)
 }
 
-describe('PromiseValves.ErrorHandler with Asynchronous input.', () => {
+// When there's no error handler all errors should be silently ignored
+describe('PromiseValves.No.ErrorHandler with Synchronous input.', () => {
 
   describe('MudPipe.queueTap', () => {
-    it('handles all errors', () => {
+    it('ignores all errors', () => {
       return testInput('queueTap', [
         'side_1',
-        'err_101',
         'side_2',
-        'err_102',
         'side_3',
-        'err_103',
       ])
     })
   })
 
   describe('MudPipe.queueMap', () => {
-    it('handles all errors', () => {
+    it('ignores all errors', () => {
       return testInput('queueMap', [
         'side_1',
-        'err_101',
         'side_2',
-        'err_102',
         'side_3',
-        'err_103',
       ])
     })
   })
 
   describe('MudPipe.cancelTap', () => {
-    it('handles all errors', () => {
+    it('ignores all errors', () => {
       return testInput('cancelTap', [
-        'side_1',
-        'side_2',
         'side_3',
-        'err_103',
       ])
     })
   })
 
   describe('MudPipe.cancelMap', () => {
-    it('handles all errors', () => {
+    it('ignores all errors', () => {
       return testInput('cancelMap', [
-        'side_1',
-        'side_2',
         'side_3',
-        'err_103',
       ])
     })
   })
 
   describe('MudPipe.throttleTap', () => {
-    it('handles all errors', () => {
+    it('ignores all errors', () => {
       return testInput('throttleTap', [
-        'side_1',
-        'err_101',
         'side_3',
-        'err_103',
       ])
     })
   })
 
   describe('MudPipe.throttleMap', () => {
-    it('handles all errors', () => {
+    it('ignores all errors', () => {
       return testInput('throttleMap', [
-        'side_1',
-        'err_101',
         'side_3',
-        'err_103',
       ])
     })
   })
 
   describe('MudPipe.skipTap', () => {
-    it('whatever', () => {
+    it('ignores all errors', () => {
       return testInput('skipTap', [
         'side_1',
-        'err_101',
       ])
     })
   })
 
   describe('MudPipe.skipMap', () => {
-    it('whatever', () => {
+    it('ignores all errors', () => {
       return testInput('skipMap', [
         'side_1',
-        'err_101',
       ])
     })
   })

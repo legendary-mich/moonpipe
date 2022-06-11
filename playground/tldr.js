@@ -8,9 +8,9 @@ const mp = new MudPipe()
   .queueMap(async (val) => 'initial_' + val)
   .queueTap(async (val) => {
     console.log('output:', val)
-    throw 'thrown somewhere else'
+    throw 'thrown in queueTap'
   })
-  .handleError(async (err) => {
+  .queueError(async (err) => {
     console.log('error:', err)
   })
 
