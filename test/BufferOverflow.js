@@ -51,6 +51,7 @@ describe('Buffer Overflow', () => {
         cache: false,
         hashFunction: value => value,
         repeatOnError: 0,
+        repeatPredicate: async () => true,
       }
       const valve = new PromiseValve(preset, value => value + 100)
       return testInput(valve, [
@@ -75,6 +76,7 @@ describe('Buffer Overflow', () => {
         cache: false,
         hashFunction: value => value,
         repeatOnError: 0,
+        repeatPredicate: async () => true,
       }
       const valve = new PromiseValve(preset, value => value + 100)
       return testInput(valve, [

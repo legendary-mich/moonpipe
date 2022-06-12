@@ -160,6 +160,7 @@ function promiseValveAssertions(TargetClass) {
     cache: false,
     hashFunction: value => value,
     repeatOnError: 0,
+    repeatPredicate: async () => true,
   }
 
   it('throws for an unknown cancelOnPump', () => {
@@ -276,6 +277,19 @@ function promiseValveAssertions(TargetClass) {
     }
     catch (err) {
       expect(err).to.have.property('message', "Expected repeatOnError to be a 'number' greater or equal to 0; found: -1")
+    }
+  })
+
+  it('throws for an unkonwn repeatPredicate', () => {
+    const preset = Object.assign({}, properPromiseValvePreset, {
+      repeatPredicate: 'zozo',
+    })
+    try {
+      new TargetClass(preset)
+      throw new Error('should have thrown')
+    }
+    catch (err) {
+      expect(err).to.have.property('message', "Unexpected 'repeatPredicate': zozo")
     }
   })
 

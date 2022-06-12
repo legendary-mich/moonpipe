@@ -10,6 +10,7 @@ Compose promises in a structured way.
   - [TimeValve Preset Params](#timevalve-preset-params)
   - [PromiseValve Preset Params](#promisevalve-preset-params)
 - [Cache in PromiseValves](#cache-in-promisevalves)
+- [Repeating on Error](#repeating-on-an-error)
 
 ### TL;DR
 
@@ -164,6 +165,7 @@ mp.pipe(valve, CHANNEL_TYPE.ERROR)
 - `cache` - if `true`, the result of the promise will be cached
 - `hashFunction` - a function from a `value` to the `key` at witch the result will be cached. Defaults to `value => value`
 - `repeatOnError` - how many times the promise should be repeated in case of a failure
+- `repeatPredicate` - an `async` function taking an `error` as the first argument and returning `true` or `false`.
 
 Predefined presets can be found in the `TimeValve.js` and `PromiseValve.js` for example presets.
 
@@ -217,4 +219,38 @@ mp.pump('a')
 // ...side effect
 // output: mapped_A
 // output: mapped_A <-- a value from the cache at the key 'a'
+```
+
+### Repeating on an error
+There are 2 fields that you can use to control promise retries. The first one is a `repeatOnError` (`0` by default), which tells how many times the promise should be retried in case of an error. The second one is a `repeatPredicate` (`async (error) => true` by default) which takes an error as the first argument and returns true if the promise should be retried. In order for a promise to be retired the `repeatOnError` must be greater than `0` and the `repeatPredicate` must return `true`.
+
+If `repeatPredicate` throws an error, the promise is automatically rejected and will not be retried anymore. 
+
+The `repeatPredicate` is `async` to make it future proof, but keep in mind that the `timeoutMs` is not applied to it; if it hangs, there's nothing that could cancel it. Make sure that you understand the risk, before making a call to an external service from the `repeatPredicate`.
+```javascript
+const mp = new MudPipe()
+  .queueTap(async (val) => {
+    console.log('output:', val)
+    throw 'err_' + val
+  }, {
+    repeatOnError: 3,
+    repeatPredicate: async (err) => err === 'err_b',
+  })
+  .queueError(async (err) => {
+    console.log('error:', err)
+  })
+
+mp.pump('a')
+mp.pump('b')
+mp.pump('c')
+
+// output: a
+// error: err_a
+// output: b
+// output: b
+// output: b
+// output: b
+// error: err_b
+// output: c
+// error: err_c
 ```
