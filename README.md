@@ -4,6 +4,7 @@ Compose promises in a structured way.
 - [TL;DR](#tldr)
 - [Predefined operators](#predefined-operators)
 - [Error handling](#error-handling)
+- [Clearing out buffers](#clearing-out-buffers)
 - [Custom operators](#custom-operators)
 - [Presets explained](#presets-explained)
   - [Base Preset Params](#base-preset-params)
@@ -104,6 +105,24 @@ out 1: a
 error: thrown in queueTap
 out 2: b
 ```
+
+### Clearing out buffers
+There are two methods that you can use to clear out `buffers`. These are `buffersClearAll()`, and `buffersClearOne(valveIndex)`. The `valveIndex` is a `0-based` index of a valve plugged into the pipe. In the following code the cancelLazy valve has index = 0.
+```
+const mp = new MudPipe()
+  .cancelLazy(1000)             // valveIndex = 0
+  .queueMap(async (val) => val) // valveIndex = 1
+  .queueTap(async (val) => {    // valveIndex = 2
+    throw 'thrown in queueTap'
+  })
+  .queueError(async (err) => {  // valveIndex = 3
+    console.log('error:', err)
+  })
+
+mp.buffersClearOne(1) // this will clear out the buffer in the queueMap valve
+mp.buffersClearAll() // this will clear out buffers in all the valves
+```
+In addition to clearing out buffers, the mentioned methods cancel `active promises` in `PromiseValves`, and `active timeouts` in `TimeValves`.
 
 ### Custom operators
 You can create your own flavors of `TimeValve` and `PromiseValve`, and use the `.pipe` operator to add them to an instance of the `MudPipe`. Look at [Presets explained](#presets-explained) for additional info about presets.
@@ -224,7 +243,7 @@ mp.pump('a')
 ### Repeating on an error
 There are 2 fields that you can use to control promise retries. The first one is a `repeatOnError` (`0` by default), which tells how many times the promise should be retried in case of an error. The second one is a `repeatPredicate` (`async (error) => true` by default) which takes an error as the first argument and returns true if the promise should be retried. In order for a promise to be retired the `repeatOnError` must be greater than `0` and the `repeatPredicate` must return `true`.
 
-If `repeatPredicate` throws an error, the promise is automatically rejected and will not be retried anymore. 
+If `repeatPredicate` throws an error, the promise is automatically rejected and will not be retried anymore.
 
 The `repeatPredicate` is `async` to make it future proof, but keep in mind that the `timeoutMs` is not applied to it; if it hangs, there's nothing that could cancel it. Make sure that you understand the risk, before making a call to an external service from the `repeatPredicate`.
 ```javascript
