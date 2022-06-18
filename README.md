@@ -214,9 +214,10 @@ mp.pump('a')
 ```
 You can clear the cache later with one of these:
 ```javascript
-mp.cacheClear() // clears the entire cache
-mp.cacheClearOne('a') // clears only the entry at the key 'a'
-// Note that the cache is cleared in all the valves attatched to mp.
+mp.cacheClearAll() // clears the entire cache in all valves.
+mp.cacheClearOne(0) // clears the entire cache in the valve at the index 0.
+mp.cacheClearOne(1, 'a') // clears only the entry at the key derived from the value 'a' in the valve at the index 1.
+mp.cacheClearOne(2, 'a', 'b') // clears entries at keys derived from values 'a' and 'b' in the valve at the index 2.
 ```
 You can also use a custom hash function to generate custom keys at which the values will be stored in cache.
 ```javascript

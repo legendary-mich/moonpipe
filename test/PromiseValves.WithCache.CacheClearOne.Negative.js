@@ -26,7 +26,7 @@ async function testInput(method, expected) {
   await delayPromise(10)
   pipe.pump(2)
   await delayPromise(10)
-  pipe.cacheClearOne(800)
+  pipe.cacheClearOne(0, 800)
   pipe.pump(1)
   await delayPromise(10)
   expect(results).to.eql(expected)
