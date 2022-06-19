@@ -17,7 +17,9 @@ async function testInput(method, expected) {
       return value + 100
     }
   }, {
-    repeatOnError: 2,
+    repeatPredicate: (attemptsMade, err) => {
+      return err && attemptsMade <= 2
+    },
   })
     .queueTap(async (value) => {
       counter = 0

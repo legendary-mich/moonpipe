@@ -183,8 +183,7 @@ mp.pipe(valve, CHANNEL_TYPE.ERROR)
 - `poolSize` - number of promises running concurrently
 - `cache` - if `true`, the result of the promise will be cached
 - `hashFunction` - a function from a `value` to the `key` at witch the result will be cached. Defaults to `value => value`
-- `repeatOnError` - how many times the promise should be repeated in case of a failure
-- `repeatPredicate` - an `async` function taking an `error` as the first argument and returning `true` or `false`.
+- `repeatPredicate` - an `async` function which takes an `attemptsMade` counter as the first argument and an `error` as the second one. It returns `true` or `false`.
 
 Predefined presets can be found in the `TimeValve.js` and `PromiseValve.js` for example presets.
 
@@ -242,22 +241,23 @@ mp.pump('a')
 ```
 
 ### Repeating on an error
-There are 2 fields that you can use to control promise retries. The first one is a `repeatOnError` (`0` by default), which tells how many times the promise should be retried in case of an error. The second one is a `repeatPredicate` (`async (error) => true` by default) which takes an error as the first argument and returns true if the promise should be retried. In order for a promise to be retired the `repeatOnError` must be greater than `0` and the `repeatPredicate` must return `true`.
+You can use a `repeatPredicate` (`async (attemptsMade, error) => false` by default) which takes the attempts counter as the first argument and an error as the second one  and returns true if the promise should be retried. In order for a promise to be retired the `repeatPredicate` must return `true`.
 
 If `repeatPredicate` throws an error, the promise is automatically rejected and will not be retried anymore.
 
-The `repeatPredicate` is `async` to make it future proof, but keep in mind that the `timeoutMs` is not applied to it; if it hangs, there's nothing that could cancel it. Make sure that you understand the risk, before making a call to an external service from the `repeatPredicate`.
+The `repeatPredicate` is `async` to make it future proof, but keep in mind that the `timeoutMs` is not applied to it which means that if it hangs, there's nothing that could cancel it. Make sure that you understand the risk, before making a call to an external service from the `repeatPredicate`.
 ```javascript
 const mp = new MudPipe()
   .queueTap(async (val) => {
-    console.log('output:', val)
+    console.log('// output:', val)
     throw 'err_' + val
   }, {
-    repeatOnError: 3,
-    repeatPredicate: async (err) => err === 'err_b',
+    repeatPredicate: async (attemptsMade, err) => {
+      return attemptsMade <= 3 && err === 'err_b'
+    },
   })
   .queueError(async (err) => {
-    console.log('error:', err)
+    console.log('// error:', err)
   })
 
 mp.pump('a')

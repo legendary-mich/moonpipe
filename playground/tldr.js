@@ -18,15 +18,3 @@ mp.pump('a')
 mp.pump('b')
 mp.pump('c')
 mp.pump('d')
-
-// async function run() {
-//   mp.pump('a')
-//   await delayPromise(900)
-//   mp.pump('b')
-//   await delayPromise(900)
-//   mp.pump('c')
-//   await delayPromise(900)
-//   mp.pump('d')
-// }
-
-// run()

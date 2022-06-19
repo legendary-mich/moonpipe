@@ -11,7 +11,9 @@ async function testInput(method, expected) {
     await delayPromise(100)
     return value + 100
   }, {
-    repeatOnError: 2,
+    repeatPredicate: (attemptsMade, err) => {
+      return err && attemptsMade <= 2
+    },
     timeoutMs: 90,
   })
     .queueTap(async (value) => {

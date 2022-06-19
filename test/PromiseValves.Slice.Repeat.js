@@ -9,7 +9,11 @@ async function testInput(method, chunkSize, expected) {
   const pipe = new MudPipe()[method](chunkSize, async (value) => {
     results.push('side_' + value)
     throw new Error(value + 100)
-  }, {repeatOnError:1})
+  }, {
+    repeatPredicate: (attemptsMade, err) => {
+      return err && attemptsMade <= 1
+    },
+  })
     .queueTap(async (value) => {
       results.push('res_' + value)
     })

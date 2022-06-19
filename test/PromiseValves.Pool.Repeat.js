@@ -10,7 +10,11 @@ async function testInput(method, poolSize, expected) {
     results.push('side_' + value)
     await delayPromise(value * 10)
     throw new Error(value + 100)
-  }, {repeatOnError:1}) // <------------ repeat is HERE
+  }, {
+    repeatPredicate: (attemptsMade, err) => {
+      return err && attemptsMade <= 1
+    },
+  })
     .queueTap(async (value) => {
       results.push('err_' + value)
     })
