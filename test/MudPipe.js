@@ -113,4 +113,119 @@ describe('MudPipe', () => {
       }
     })
   })
+
+  describe('options in', () => {
+    describe('promise operators', () => {
+      function testCase(method) {
+        it(`${ method } passes options on`, () => {
+          const mp = new MudPipe()[method](() => Promise.resolve(), {
+            maxBufferSize: 3,
+          })
+          expect(mp.getChannelValveAt(0).valve.maxBufferSize).eql(3)
+        })
+      }
+
+      testCase('queueTap')
+      testCase('queueMap')
+      testCase('queueError')
+      testCase('cancelTap')
+      testCase('cancelMap')
+      testCase('cancelError')
+      testCase('throttleTap')
+      testCase('throttleMap')
+      testCase('throttleError')
+      testCase('skipTap')
+      testCase('skipMap')
+      testCase('skipError')
+    })
+
+    describe('time operators', () => {
+      function testCase(method) {
+        it(`${ method } passes options on`, () => {
+          const mp = new MudPipe()[method](1, {
+            maxBufferSize: 3,
+          })
+          expect(mp.getChannelValveAt(0).valve.maxBufferSize).eql(3)
+        })
+      }
+
+      testCase('queueEager')
+      testCase('queueLazy')
+      testCase('cancelEager')
+      testCase('cancelLazy')
+      testCase('throttleEager')
+      testCase('throttleLazy')
+      testCase('skipEager')
+      testCase('skipLazy')
+    })
+
+    describe('slice promise operators', () => {
+      function testCase(method) {
+        it(`${ method } passes options on`, () => {
+          const mp = new MudPipe()[method](1, () => Promise.resolve(), {
+            maxBufferSize: 3,
+          })
+          expect(mp.getChannelValveAt(0).valve.maxBufferSize).eql(3)
+        })
+      }
+
+      testCase('sliceTap')
+      testCase('sliceMap')
+    })
+
+    describe('slice time operators', () => {
+      function testCase(method) {
+        it(`${ method } passes options on`, () => {
+          const mp = new MudPipe()[method](1, 1, {
+            maxBufferSize: 3,
+          })
+          expect(mp.getChannelValveAt(0).valve.maxBufferSize).eql(3)
+        })
+      }
+
+      testCase('sliceEager')
+      testCase('sliceLazy')
+    })
+
+    describe('flatten operator', () => {
+      function testCase(method) {
+        it(`${ method } passes options on`, () => {
+          const mp = new MudPipe()[method]({
+            maxBufferSize: 3,
+          })
+          expect(mp.getChannelValveAt(0).valve.maxBufferSize).eql(3)
+        })
+      }
+
+      testCase('flatten')
+    })
+
+    describe('pool promise operators', () => {
+      function testCase(method) {
+        it(`${ method } passes options on`, () => {
+          const mp = new MudPipe()[method](1, () => Promise.resolve(), {
+            maxBufferSize: 3,
+          })
+          expect(mp.getChannelValveAt(0).valve.maxBufferSize).eql(3)
+        })
+      }
+
+      testCase('poolTap')
+      testCase('poolMap')
+    })
+
+    describe('transform operators', () => {
+      function testCase(method) {
+        it(`${ method } passes options on`, () => {
+          const mp = new MudPipe()[method](() => true, {
+            maxBufferSize: 3,
+          })
+          expect(mp.getChannelValveAt(0).valve.maxBufferSize).eql(3)
+        })
+      }
+
+      testCase('map')
+      testCase('filter')
+    })
+  })
 })
