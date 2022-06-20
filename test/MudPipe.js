@@ -112,6 +112,26 @@ describe('MudPipe', () => {
         expect(err).to.have.property('message', "Expected valveIndex to be a 'number' greater than 0 and smaller than 2; found: 2")
       }
     })
+
+    it('does not throw if called on a timeValve', () => {
+      const mudPipe = new MudPipe().queueEager(1)
+      mudPipe.cacheClearOne(0)
+    })
+
+    it('does not throw if called on a timeValve at a key', () => {
+      const mudPipe = new MudPipe().queueEager(1)
+      mudPipe.cacheClearOne(0, 100)
+    })
+
+    it('does not throw if called on a transformValve', () => {
+      const mudPipe = new MudPipe().map(() => 'zz')
+      mudPipe.cacheClearOne(0)
+    })
+
+    it('does not throw if called on a transformValve at a key', () => {
+      const mudPipe = new MudPipe().map(() => 'zz')
+      mudPipe.cacheClearOne(0, 100)
+    })
   })
 
   describe('options in', () => {
