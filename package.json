@@ -2,6 +2,9 @@
   "private": true,
   "name": "mudpipe",
   "version": "1.0.0",
+  "description": "Compose promises in a structured way",
+  "license": "MIT",
+  "author": "Michał Wojciechowski",
   "main": "index.js",
   "scripts": {
     "test": "mocha -t 5000 -w -b test/**/*.js",
@@ -9,10 +12,22 @@
     "test-selected-debug": "mocha -t 5000 -w -b --inspect-brk",
     "test-cov": "nyc mocha -t 5000 -b test/**/*.js"
   },
+  "dependencies": {},
   "devDependencies": {
-    "chai": "4.2.0",
-    "mocha": "6.1.4",
-    "nyc": "14.1.1",
-    "sinon": "7.3.2"
-  }
+    "chai": "^4.3.6",
+    "mocha": "^10.0.0",
+    "nyc": "^15.1.0",
+    "sinon": "^14.0.0"
+  },
+  "keywords": [
+    "cache",
+    "cancel",
+    "debounce",
+    "pipe",
+    "pool",
+    "pump",
+    "promise",
+    "stream",
+    "throttle"
+  ]
 }

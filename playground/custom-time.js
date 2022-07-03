@@ -5,9 +5,8 @@ const {
   TimeValve,
   TIME_RESOLVE_TYPE,
   BUFFER_TYPE,
-  OVERFLOW_ACTION
+  OVERFLOW_ACTION,
 } = require('../index.js')
-const { delayPromise } = require('../test/utils.js')
 
 const preset = {
   maxBufferSize: 3,
@@ -16,9 +15,11 @@ const preset = {
   resolveType: TIME_RESOLVE_TYPE.LAZY,
   cancelOnPump: false,
 }
+
 const customTimeValve = new TimeValve(preset, 1000)
+
 const mp = new MudPipe()
-  .pipe(customTimeValve)
+  .pipe(customTimeValve) // <-- your custom valve is plugged in HERE
   .queueTap(async (val) => {
     console.log('output:', val)
   })
@@ -28,3 +29,7 @@ mp.pump('b')
 mp.pump('c')
 mp.pump('d')
 mp.pump('e')
+
+// output: c
+// output: d
+// output: e

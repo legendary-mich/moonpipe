@@ -3,19 +3,26 @@ Compose promises in a structured way.
 
 - [TL;DR](#tldr)
 - [Predefined operators](#predefined-operators)
+- [Overriding predefined operators](#overriding-predefined-operators)
 - [Error handling](#error-handling)
 - [Clearing out buffers](#clearing-out-buffers)
+- [Cache in PromiseValves](#cache-in-promisevalves)
+- [Timeout in PromiseValves](#timeout-in-promisevalves)
+- [Repeating on Error in PromiseValves](#repeating-on-error-in-promisevalves)
+- [Pooling in PromiseValves](#pooling-in-promisevalves)
 - [Custom operators](#custom-operators)
 - [Presets explained](#presets-explained)
   - [Base Preset Params](#base-preset-params)
   - [TimeValve Preset Params](#timevalve-preset-params)
   - [PromiseValve Preset Params](#promisevalve-preset-params)
-- [Cache in PromiseValves](#cache-in-promisevalves)
-- [Repeating on Error](#repeating-on-an-error)
 
 ### TL;DR
 
+```bash
+npm install mudpipe
+```
 ```javascript
+const { MudPipe } = require('mudpipe')
 const mp = new MudPipe()
   .cancelLazy(1000) // in other libs known as debounce
   .queueMap(async (val) => 'initial_' + val)
@@ -55,17 +62,74 @@ Prefixes:
 - **cancel** - cancels the running promise/timeout and replaces the current value with the new one
 - **throttle** - replaces the value next in line with the new one, and does not cancel the promise/timeout
 - **skip** - skips every new value until the promise/timeout finishes
-- **slice** - packs values into arrays of defined slice size
+- **slice** - packs values into an array of the defined slice size
 
 Suffixes:
 - **Map** - pumps the result of a promise to the next valve
 - **Tap** - waits for a promise to complete and pumps the input value
-- **Error** - it's like the Map suffix, but it is used only when the pipe operates in an Error mode. It is used to catch errors.
+- **Error** - it's like the Map suffix, but it is used only when the pipe operates in the Error mode. It is used to catch errors.
 - **Eager** - pumps the input value, and waits until the time passes before taking on the next value
 - **Lazy** - waits until the time passes and pumps the first value in line
 
-The names of the 2 special asynchronous operators that I haven't mentioned so far are **poolTap** and **poolMap**. These 2 let you run a specified number of promises concurrently. The `poolSize` parameter is the first parameter to these operators.
+Here is a combined example showing one of each of the basic operator types.
+```javascript
+const { MudPipe } = require('mudpipe')
+const mp = new MudPipe()
+  // time-based operators take a number of milliseconds as the first argument
+  .queueLazy(300)
+  // promise-based operators take a function which returns a promise
+  .queueMap(async (val) => val + 1000)
+  // errors thrown from any of the promise-based operators are
+  // propagated through the error channel to the first error handler.
+  .queueTap(async (val) => { if (val === 'what?1000') throw new Error('ha!') })
+  // the filter operator takes a function which returns a `boolean` value
+  .filter((val) => val % 2 === 0)
+  // the map operator takes a function which returns an arbitrary value
+  .map((val) => [val, val])
+  // the flatten operator does not take any arguments
+  .flatten()
+  // error operators take a function which returns a promise
+  .queueError(async (err) => 'error handled: ' + err.message)
+  .queueTap(async (val) => {
+    console.log('output:', val)
+  })
+
+mp.pump(1)
+mp.pump(2)
+mp.pump('what?')
+mp.pump(3)
+mp.pump(4)
+
+// output: 1002
+// output: 1002
+// output: error handled: ha!
+// output: 1004
+// output: 1004
 ```
+
+This example presents one of the **slice** operators:
+```javascript
+const { MudPipe } = require('mudpipe')
+const mp = new MudPipe()
+  // slice operators take the sliceSize as the first argument and a
+  // promise as the second one.
+  .sliceMap(3, async (val) => val)
+  .queueTap(async (val) => {
+    console.log('output:', val)
+  })
+
+mp.pump(1)
+mp.pump(2)
+mp.pump(3)
+mp.pump(4)
+
+// output: [ 1, 2, 3 ]
+// output: [ 4 ]
+```
+
+The names of the 2 special asynchronous operators that I haven't mentioned so far are **poolTap** and **poolMap**. These 2 let you run a specified number of promises concurrently. The `poolSize` parameter is the first parameter to these operators.
+```javascript
+const { MudPipe } = require('mudpipe')
 const mp = new MudPipe()
   .poolMap(2, async (val) => {
     return 'mapped_' + val
@@ -79,6 +143,22 @@ mp.pump('b')
 mp.pump('c')
 ```
 
+### Overriding predefined operators
+
+Every of the predefined operators can be overridden with a set of options. The **promise-based** operators accept options specific to the `PromiseValves`. The **time-based** operators accept options specific to the `TimeValves`. The `options` parameter is always passed in as **the last argument**. I'm going to show you a simple example here. For the full list of options see the [Presets explained](#presets-explained) section.
+
+```javascript
+const { MudPipe } = require('mudpipe')
+
+const mp = new MudPipe()
+  .throttleMap(async (val) => 'initial_' + val, {
+    maxBufferSize: 2, // <---- overridden HERE
+  })
+  .queueTap(async (val) => {
+    console.log('output:', val)
+  })
+```
+
 ### Error handling
 When an error is thrown by one of the normal operators, the pipe switches its active channel to the `CHANNEL_TYPE.ERROR`. Now it operates in an `error mode` which means that no new promises will be created until the active channel switches back to the `CHANNEL_TYPE.DATA`. Existing promises will be able to finish though, which can result in either a valid response or a new error. Valid responses will be put off for later, and errors will be pumped to the `ErrorValves`. The active channel will be switched back to the `CHANNEL_TYPE.DATA` when there are no more errors to handle.
 
@@ -86,6 +166,7 @@ There are 4 predefined operators that can be used to handle errors. They all beh
 
 If there are no error handlers, errors will be silently ignored.
 ```javascript
+const { MudPipe } = require('mudpipe')
 const mp = new MudPipe()
   .queueTap(async (val) => {
     console.log('out 1:', val)
@@ -101,14 +182,15 @@ const mp = new MudPipe()
 
 mp.pump('a')
 
-out 1: a
-error: thrown in queueTap
-out 2: b
+// out 1: a
+// error: thrown in queueTap
+// out 2: b
 ```
 
 ### Clearing out buffers
 There are two methods that you can use to clear out `buffers`. These are `buffersClearAll()`, and `buffersClearOne(valveIndex)`. The `valveIndex` is a `0-based` index of a valve plugged into the pipe. In the following code the cancelLazy valve has index = 0.
-```
+```javascript
+const { MudPipe } = require('mudpipe')
 const mp = new MudPipe()
   .cancelLazy(1000)             // valveIndex = 0
   .queueMap(async (val) => val) // valveIndex = 1
@@ -124,78 +206,16 @@ mp.buffersClearAll() // this will clear out buffers in all the valves
 ```
 In addition to clearing out buffers, the mentioned methods cancel `active promises` in `PromiseValves`, and `active timeouts` in `TimeValves`.
 
-### Custom operators
-You can create your own flavors of `TimeValve` and `PromiseValve`, and use the `.pipe` operator to add them to an instance of the `MudPipe`. Look at [Presets explained](#presets-explained) for additional info about presets.
-
-```javascript
-const preset = {
-  maxBufferSize: 3,
-  bufferType: BUFFER_TYPE.QUEUE,
-  overflowAction: OVERFLOW_ACTION.SHIFT,
-  resolveType: TIME_RESOLVE_TYPE.LAZY,
-  cancelOnPump: false,
-}
-const customTimeValve = new TimeValve(preset, 1000)
-const mp = new MudPipe()
-  .pipe(customTimeValve)
-  .queueTap(async (val) => {
-    console.log('output:', val)
-  })
-
-mp.pump('a')
-mp.pump('b')
-mp.pump('c')
-mp.pump('d')
-mp.pump('e')
-
-// output: c
-// output: d
-// output: e
-```
-The `pipe` method accepts a `CHANNEL_TYPE` as the second argument. By default it is set to `CHANNEL_TYPE.DATA`, so you don't have to worry about it. If you however want to use a valve as an error handler, set the `CHANNEL_TYPE` to the `ERROR` value.
-```
-mp.pipe(valve, CHANNEL_TYPE.ERROR)
-```
-
-### Presets explained
-##### Base Preset Params:
-- `maxBufferSize` - the size of the internal buffer
-- `bufferType`- describes the sequence in which values are processed
-  - `QUEUE` - values are processed one after another
-- `overflowAction` - an action taken when the buffer is full
-  - `EMIT_ERROR` - a `BufferOverflowError` error is emitted
-  - `SHIFT` - the first value from the buffer is removed
-  - `SKIP` - new values are skipped (not added to the buffer and so never processed)
-  - `SLICE` - In the SLICE mode values are packed into an array which is later processed as a whole. When the array is full, a new array is created.
-
-##### TimeValve Preset Params:
-- `resolveType` - determines when the value is emitted
-  - `LAZY` - first the timeout is set. The value is emitted only after the timeout ends.
-  - `EAGER` - if there's no active timeout, the value is emitted immediately. Otherwise the value is emitted after the previous timeout ends.
-- `cancelOnPump` - if `true`, the active timeout is reset on every new value
-
-##### PromiseValve Preset Params:
-- `resolveType` - determines what value is emitted
-  - `MAP` - the result of the promise is emitted
-  - `TAP` - the value that is fed into the promise is emitted
-- `cancelOnPump` - if `true`, the active promise is canceled on every new value
-- `timeoutMs` - time after which the promise is canceled and a `TimeoutError` is emitted
-- `poolSize` - number of promises running concurrently
-- `cache` - if `true`, the result of the promise will be cached
-- `hashFunction` - a function from a `value` to the `key` at witch the result will be cached. Defaults to `value => value`
-- `repeatPredicate` - an `async` function which takes an `attemptsMade` counter as the first argument and an `error` as the second one. It returns `true` or `false`.
-
-Predefined presets can be found in the `TimeValve.js` and `PromiseValve.js` for example presets.
-
 ### Cache in PromiseValves
 You can cache the result of a promise. In order to do that you just add a `cache: true` param to the options and you are done. Results are cached in a hash map, where the value provided is used as the key. You can customize the hash function if you don't like how the keys are derived (see down below).
 ```javascript
+const { MudPipe } = require('mudpipe')
 const mp = new MudPipe()
   .queueMap(async (val) => {
     console.log('...side effect')
     return 'mapped_' + val
   }, {
-    cache: true,
+    cache: true, // <------ cache is enabled HERE
   })
   .queueTap(async (val) => {
     console.log('output:', val)
@@ -220,6 +240,7 @@ mp.cacheClearOne(2, 'a', 'b') // clears entries at keys derived from values 'a' 
 ```
 You can also use a custom hash function to generate custom keys at which the values will be stored in cache.
 ```javascript
+const { MudPipe } = require('mudpipe')
 const mp = new MudPipe()
   .queueMap(async (val) => {
     console.log('...side effect')
@@ -240,13 +261,39 @@ mp.pump('a')
 // output: mapped_A <-- a value from the cache at the key 'a'
 ```
 
-### Repeating on an error
-You can use a `repeatPredicate` (`async (attemptsMade, error) => false` by default) which takes the attempts counter as the first argument and an error as the second one  and returns true if the promise should be retried. In order for a promise to be retired the `repeatPredicate` must return `true`.
-
-If `repeatPredicate` throws an error, the promise is automatically rejected and will not be retried anymore.
-
-The `repeatPredicate` is `async` to make it future proof, but keep in mind that the `timeoutMs` is not applied to it which means that if it hangs, there's nothing that could cancel it. Make sure that you understand the risk, before making a call to an external service from the `repeatPredicate`.
+### Timeout in PromiseValves
+You can provide a `timeoutMs` param to every promise-based operator. If the promise is not settled within the provided number of milliseconds, it will be rejected with a `TimeoutError`.
 ```javascript
+const { MudPipe } = require('mudpipe')
+const { delayPromise } = require('../test/utils.js')
+
+const mp = new MudPipe()
+  .queueTap(async () => {
+    await delayPromise(3)
+  }, {
+    timeoutMs: 1, // <---------- timeout is enabled HERE
+  })
+  .queueTap(async (val) => {
+    console.log('output:', val)
+  })
+  .queueError(async (err) => {
+    console.log('error:', err.message)
+  })
+
+mp.pump('a')
+
+// error: TimeoutError
+```
+
+### Repeating on error in PromiseValves
+You can use a `repeatPredicate` which takes an `attemptsMade` counter as the first argument, an `error` as the second one, and returns a `boolean` value which signifies whether the promise should be retried or not.
+
+If a `repeatPredicate` throws an error, the promise is automatically rejected and will not be retried anymore.
+
+The `repeatPredicate` is `async` to make it future proof. Keep in mind however that the `timeoutMs` is not applied to it which means that if it hangs, it will keep hanging until you cancel it. Make sure that you understand the risk, before making a call to an external service from the `repeatPredicate`. For super safety it is strongly advised to do only synchronous operation from within the predicate.
+
+```javascript
+const { MudPipe } = require('mudpipe')
 const mp = new MudPipe()
   .queueTap(async (val) => {
     console.log('// output:', val)
@@ -274,3 +321,98 @@ mp.pump('c')
 // output: c
 // error: err_c
 ```
+
+### Pooling in PromiseValves
+Promises can be run concurrently. In order to do that you can either use the `poolMap`, `poolTap` operators (see the [Predefined operators](#predefined-operators) section for an example), or override the `poolSize` param in any of the promise-based operators.
+
+```javascript
+const { MudPipe } = require('mudpipe')
+
+const mp = new MudPipe()
+  .queueMap(async (val) => {
+    return 'mapped_' + val
+  }, {
+    poolSize: 2, // <----- poolSize is increased HERE
+  })
+  .queueTap(async (val) => {
+    console.log('output:', val)
+  })
+
+mp.pump('a')
+mp.pump('b')
+mp.pump('c')
+```
+
+### Custom operators
+You can create your own flavors of `TimeValve` and `PromiseValve`, and use the `.pipe` operator to add them to an instance of the `MudPipe`. Look at [Presets explained](#presets-explained) for additional info about the presets. Here I will show you have an example of a time-based valve which is similar the the `throttleLazy` operator, but has a bigger `maxBufferSize`.
+
+```javascript
+const {
+  MudPipe,
+  TimeValve,
+  TIME_RESOLVE_TYPE,
+  BUFFER_TYPE,
+  OVERFLOW_ACTION,
+} = require('mudpipe')
+
+const preset = {
+  maxBufferSize: 3,
+  bufferType: BUFFER_TYPE.QUEUE,
+  overflowAction: OVERFLOW_ACTION.SHIFT,
+  resolveType: TIME_RESOLVE_TYPE.LAZY,
+  cancelOnPump: false,
+}
+
+const customTimeValve = new TimeValve(preset, 1000)
+
+const mp = new MudPipe()
+  .pipe(customTimeValve) // <-- your custom valve is plugged in HERE
+  .queueTap(async (val) => {
+    console.log('output:', val)
+  })
+
+mp.pump('a')
+mp.pump('b')
+mp.pump('c')
+mp.pump('d')
+mp.pump('e')
+
+// output: c
+// output: d
+// output: e
+```
+
+The `pipe` method accepts a `CHANNEL_TYPE` as the second argument. By default it is set to `CHANNEL_TYPE.DATA`, so you don't have to worry about it. If you however want to use a valve as an error handler, set the `CHANNEL_TYPE` to the `ERROR` value.
+```javascript
+mp.pipe(valve, CHANNEL_TYPE.ERROR)
+```
+
+### Presets explained
+##### Base Preset Params (These are the params common to both the TimeValves and PromiseValves):
+- `maxBufferSize` - the size of the internal buffer
+- `bufferType`- describes the order in which values are processed
+  - `QUEUE` - values are processed one after another
+- `overflowAction` - an action taken when the buffer is full
+  - `EMIT_ERROR` - a `BufferOverflowError` error is emitted
+  - `SHIFT` - the first value from the buffer is removed
+  - `SKIP` - new values are skipped (not added to the buffer and so never processed)
+  - `SLICE` - In the SLICE mode values are packed into an array which is later processed as a whole. When the array is full, a new array is created.
+
+##### TimeValve Preset Params:
+- `resolveType` - determines when the value is emitted
+  - `LAZY` - first the timeout is set. The value is emitted only after the timeout ends.
+  - `EAGER` - if there's no active timeout, the value is emitted immediately and the timeout is set. Otherwise the value is emitted after the previous timeout ends.
+- `cancelOnPump` - if `true`, the active timeout is reset on every new value
+
+##### PromiseValve Preset Params:
+- `resolveType` - determines what value is emitted
+  - `MAP` - the result of the promise is emitted
+  - `TAP` - the value that is fed into the promise is emitted
+- `cancelOnPump` - if `true`, the active promise is canceled on every new value
+- `timeoutMs` - time after which the promise is canceled and a `TimeoutError` is emitted
+- `poolSize` - number of promises running concurrently
+- `cache` - if `true`, the result of the promise will be cached
+- `hashFunction` - a function from a `value` to the `key` at witch the result will be cached. Defaults to `value => value`
+- `repeatPredicate` - an `async` function which takes an `attemptsMade` counter as the first argument and an `error` as the second one. It returns `true` or `false`.
+
+Predefined presets can be found in the `TimeValve.js` and `PromiseValve.js` files.

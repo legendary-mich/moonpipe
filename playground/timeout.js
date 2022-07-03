@@ -4,16 +4,16 @@ const { MudPipe } = require('../index.js')
 const { delayPromise } = require('../test/utils.js')
 
 const mp = new MudPipe()
-  .queueMap(async (val) => {
-    console.log('...side effect')
-    return 'mapped_' + val
+  .queueTap(async () => {
+    await delayPromise(3)
   }, {
-    cache: true, // <------ cache is enabled HERE
+    timeoutMs: 1, // <---------- timeout is enabled HERE
   })
   .queueTap(async (val) => {
     console.log('output:', val)
   })
+  .queueError(async (err) => {
+    console.log('error:', err.message)
+  })
 
-mp.pump('a')
-mp.pump('b')
 mp.pump('a')
