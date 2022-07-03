@@ -1,9 +1,9 @@
 'use strict'
 
-const { MudPipe } = require('../index.js')
+const { MoonPipe } = require('../index.js')
 const { delayPromise } = require('../test/utils.js')
 
-const mp = new MudPipe()
+const mp = new MoonPipe()
   .queueTap(async (val) => {
     console.log('// output:', val)
     throw 'err_' + val

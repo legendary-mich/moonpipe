@@ -1,12 +1,12 @@
 'use strict'
 
 const { expect } = require('chai')
-const { MudPipe } = require('../index.js')
+const { MoonPipe } = require('../index.js')
 const { delayPromise } = require('./utils.js')
 
 async function testInput(method, expected, settingsOverride) {
   const results = []
-  const pipe = new MudPipe()[method](async (value) => {
+  const pipe = new MoonPipe()[method](async (value) => {
     results.push('side_' + value)
     await delayPromise(1)
     return value + 100
@@ -34,7 +34,7 @@ async function testInput(method, expected, settingsOverride) {
 
 describe('PromiseValves with Synchronous input.', () => {
 
-  describe('MudPipe.queueTap', () => {
+  describe('MoonPipe.queueTap', () => {
     it('pumps ORIGINAL values', () => {
       return testInput('queueTap', [
         'side_1',
@@ -51,7 +51,7 @@ describe('PromiseValves with Synchronous input.', () => {
     })
   })
 
-  describe('MudPipe.queueMap', () => {
+  describe('MoonPipe.queueMap', () => {
     it('pumps MODIFIED values', () => {
       return testInput('queueMap', [
         'side_1',
@@ -68,7 +68,7 @@ describe('PromiseValves with Synchronous input.', () => {
     })
   })
 
-  describe('MudPipe.cancelTap', () => {
+  describe('MoonPipe.cancelTap', () => {
     it('cancels initial promises, and resolves the last one with the ORIGINAL value', () => {
       return testInput('cancelTap', [
         'side_1',
@@ -83,7 +83,7 @@ describe('PromiseValves with Synchronous input.', () => {
     })
   })
 
-  describe('MudPipe.cancelMap', () => {
+  describe('MoonPipe.cancelMap', () => {
     it('cancels initial promises, and resolves the last one with a MODIFIED value', () => {
       return testInput('cancelMap', [
         'side_1',
@@ -98,7 +98,7 @@ describe('PromiseValves with Synchronous input.', () => {
     })
   })
 
-  describe('MudPipe.throttleTap', () => {
+  describe('MoonPipe.throttleTap', () => {
     it('removes values which are waiting in the queue, and pumps ORIGINAL ones', () => {
       return testInput('throttleTap', [
         'side_2',
@@ -111,7 +111,7 @@ describe('PromiseValves with Synchronous input.', () => {
     })
   })
 
-  describe('MudPipe.throttleMap', () => {
+  describe('MoonPipe.throttleMap', () => {
     it('removes values which are waiting in the queue, and pumps MODIFIED ones', () => {
       return testInput('throttleMap', [
         'side_2',
@@ -124,7 +124,7 @@ describe('PromiseValves with Synchronous input.', () => {
     })
   })
 
-  describe('MudPipe.skipTap', () => {
+  describe('MoonPipe.skipTap', () => {
     it('whatever', () => {
       return testInput('skipTap', [
         'side_1',
@@ -137,7 +137,7 @@ describe('PromiseValves with Synchronous input.', () => {
     })
   })
 
-  describe('MudPipe.skipMap', () => {
+  describe('MoonPipe.skipMap', () => {
     it('whatever', () => {
       return testInput('skipMap', [
         'side_1',

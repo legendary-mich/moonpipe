@@ -1,14 +1,14 @@
 'use strict'
 
 const { expect } = require('chai')
-const { MudPipe } = require('../index.js')
+const { MoonPipe } = require('../index.js')
 const { delayPromise } = require('./utils.js')
 
-describe('MudPipe.Buffers', () => {
+describe('MoonPipe.Buffers', () => {
 
   async function testInput(method, expected) {
     const result = []
-    const mp = new MudPipe()
+    const mp = new MoonPipe()
       .queueTap(async () => {
         await delayPromise(10)
       })

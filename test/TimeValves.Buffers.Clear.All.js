@@ -1,12 +1,12 @@
 'use strict'
 
 const { expect } = require('chai')
-const { MudPipe } = require('../index.js')
+const { MoonPipe } = require('../index.js')
 const { delayPromise } = require('./utils.js')
 
 async function testInput(method, expected) {
   const results = []
-  const pipe = new MudPipe()[method](10)
+  const pipe = new MoonPipe()[method](10)
     .queueTap(async (value) => {
       results.push('res_' + value)
     })
@@ -33,7 +33,7 @@ async function testInput(method, expected) {
 
 describe('TimeValves.Buffers.Clear.All.js', () => {
 
-  describe('MudPipe.queueEager', () => {
+  describe('MoonPipe.queueEager', () => {
     it('pumps values on a regular interval', () => {
       return testInput('queueEager', [
         ['res_1'],
@@ -44,7 +44,7 @@ describe('TimeValves.Buffers.Clear.All.js', () => {
     })
   })
 
-  describe('MudPipe.queueLazy', () => {
+  describe('MoonPipe.queueLazy', () => {
     it('pumps values on a regular interval', () => {
       return testInput('queueLazy', [
         [],
@@ -55,7 +55,7 @@ describe('TimeValves.Buffers.Clear.All.js', () => {
     })
   })
 
-  describe('MudPipe.cancelEager', () => {
+  describe('MoonPipe.cancelEager', () => {
     it('pushes all the values through immediately', () => {
       return testInput('cancelEager', [
         ['res_1', 'res_2'],
@@ -66,7 +66,7 @@ describe('TimeValves.Buffers.Clear.All.js', () => {
     })
   })
 
-  describe('MudPipe.cancelLazy', () => {
+  describe('MoonPipe.cancelLazy', () => {
     it('ignores initial values, and pumps the last one', () => {
       return testInput('cancelLazy', [
         [],
@@ -77,7 +77,7 @@ describe('TimeValves.Buffers.Clear.All.js', () => {
     })
   })
 
-  describe('MudPipe.throttleEager', () => {
+  describe('MoonPipe.throttleEager', () => {
     it('ignores the 2nd value as it is replaced by the 3rd one', () => {
       return testInput('throttleEager', [
         ['res_1'],
@@ -88,7 +88,7 @@ describe('TimeValves.Buffers.Clear.All.js', () => {
     })
   })
 
-  describe('MudPipe.throttleLazy', () => {
+  describe('MoonPipe.throttleLazy', () => {
     it('ignores initial values, and pumps the last one', () => {
       return testInput('throttleLazy', [
         [],
@@ -99,7 +99,7 @@ describe('TimeValves.Buffers.Clear.All.js', () => {
     })
   })
 
-  describe('MudPipe.skipEager', () => {
+  describe('MoonPipe.skipEager', () => {
     it('whatever', () => {
       return testInput('skipEager', [
         ['res_1'],
@@ -110,7 +110,7 @@ describe('TimeValves.Buffers.Clear.All.js', () => {
     })
   })
 
-  describe('MudPipe.skipLazy', () => {
+  describe('MoonPipe.skipLazy', () => {
     it('whatever', () => {
       return testInput('skipLazy', [
         [],

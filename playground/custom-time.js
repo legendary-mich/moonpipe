@@ -1,7 +1,7 @@
 'use strict'
 
 const {
-  MudPipe,
+  MoonPipe,
   TimeValve,
   TIME_RESOLVE_TYPE,
   BUFFER_TYPE,
@@ -18,7 +18,7 @@ const preset = {
 
 const customTimeValve = new TimeValve(preset, 1000)
 
-const mp = new MudPipe()
+const mp = new MoonPipe()
   .pipe(customTimeValve) // <-- your custom valve is plugged in HERE
   .queueTap(async (val) => {
     console.log('output:', val)

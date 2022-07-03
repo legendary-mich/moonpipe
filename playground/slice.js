@@ -1,7 +1,7 @@
 'use strict'
 
-const { MudPipe } = require('../index.js')
-const mp = new MudPipe()
+const { MoonPipe } = require('../index.js')
+const mp = new MoonPipe()
   // slice operators take the sliceSize as the first argument and a
   // promise as the second one.
   .sliceMap(3, async (val) => val)

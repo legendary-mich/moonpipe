@@ -2,18 +2,18 @@
 
 const { expect } = require('chai')
 const {
-  MudPipe,
+  MoonPipe,
   BaseValve,
   BasePresets,
 } = require('../index.js')
 
-describe('MudPipe', () => {
+describe('MoonPipe', () => {
 
   describe('pipe', () => {
     it('throws for a missing valve', () => {
-      const mudPipe = new MudPipe()
+      const moonPipe = new MoonPipe()
       try {
-        mudPipe.pipe()
+        moonPipe.pipe()
         throw new Error('should have thrown')
       }
       catch (err) {
@@ -22,9 +22,9 @@ describe('MudPipe', () => {
     })
 
     it('throws for a valve which is not an instance of BaseValve', () => {
-      const mudPipe = new MudPipe()
+      const moonPipe = new MoonPipe()
       try {
-        mudPipe.pipe(2)
+        moonPipe.pipe(2)
         throw new Error('should have thrown')
       }
       catch (err) {
@@ -33,9 +33,9 @@ describe('MudPipe', () => {
     })
 
     it('throws for a channel which is outside of the enum range', () => {
-      const mudPipe = new MudPipe()
+      const moonPipe = new MoonPipe()
       try {
-        mudPipe.pipe(new BaseValve(BasePresets.queue), 'haha')
+        moonPipe.pipe(new BaseValve(BasePresets.queue), 'haha')
         throw new Error('should have thrown')
       }
       catch (err) {
@@ -46,9 +46,9 @@ describe('MudPipe', () => {
 
   describe('buffersClearOne', () => {
     it('throws for a missing valveIndex', () => {
-      const mudPipe = new MudPipe()
+      const moonPipe = new MoonPipe()
       try {
-        mudPipe.buffersClearOne()
+        moonPipe.buffersClearOne()
         throw new Error('should have thrown')
       }
       catch (err) {
@@ -57,9 +57,9 @@ describe('MudPipe', () => {
     })
 
     it('throws for valveIndex lower than 0', () => {
-      const mudPipe = new MudPipe().queueLazy(1)
+      const moonPipe = new MoonPipe().queueLazy(1)
       try {
-        mudPipe.buffersClearOne(-1)
+        moonPipe.buffersClearOne(-1)
         throw new Error('should have thrown')
       }
       catch (err) {
@@ -68,9 +68,9 @@ describe('MudPipe', () => {
     })
 
     it('throws for valveIndex greater than the max index', () => {
-      const mudPipe = new MudPipe().queueLazy(1).queueLazy(1)
+      const moonPipe = new MoonPipe().queueLazy(1).queueLazy(1)
       try {
-        mudPipe.buffersClearOne(2)
+        moonPipe.buffersClearOne(2)
         throw new Error('should have thrown')
       }
       catch (err) {
@@ -81,9 +81,9 @@ describe('MudPipe', () => {
 
   describe('cacheClearOne', () => {
     it('throws for a missing valveIndex', () => {
-      const mudPipe = new MudPipe()
+      const moonPipe = new MoonPipe()
       try {
-        mudPipe.cacheClearOne()
+        moonPipe.cacheClearOne()
         throw new Error('should have thrown')
       }
       catch (err) {
@@ -92,9 +92,9 @@ describe('MudPipe', () => {
     })
 
     it('throws for valveIndex lower than 0', () => {
-      const mudPipe = new MudPipe().queueLazy(1)
+      const moonPipe = new MoonPipe().queueLazy(1)
       try {
-        mudPipe.cacheClearOne(-1)
+        moonPipe.cacheClearOne(-1)
         throw new Error('should have thrown')
       }
       catch (err) {
@@ -103,9 +103,9 @@ describe('MudPipe', () => {
     })
 
     it('throws for valveIndex greater than the max index', () => {
-      const mudPipe = new MudPipe().queueLazy(1).queueLazy(1)
+      const moonPipe = new MoonPipe().queueLazy(1).queueLazy(1)
       try {
-        mudPipe.cacheClearOne(2)
+        moonPipe.cacheClearOne(2)
         throw new Error('should have thrown')
       }
       catch (err) {
@@ -114,23 +114,23 @@ describe('MudPipe', () => {
     })
 
     it('does not throw if called on a timeValve', () => {
-      const mudPipe = new MudPipe().queueEager(1)
-      mudPipe.cacheClearOne(0)
+      const moonPipe = new MoonPipe().queueEager(1)
+      moonPipe.cacheClearOne(0)
     })
 
     it('does not throw if called on a timeValve at a key', () => {
-      const mudPipe = new MudPipe().queueEager(1)
-      mudPipe.cacheClearOne(0, 100)
+      const moonPipe = new MoonPipe().queueEager(1)
+      moonPipe.cacheClearOne(0, 100)
     })
 
     it('does not throw if called on a synchronousValve', () => {
-      const mudPipe = new MudPipe().map(() => 'zz')
-      mudPipe.cacheClearOne(0)
+      const moonPipe = new MoonPipe().map(() => 'zz')
+      moonPipe.cacheClearOne(0)
     })
 
     it('does not throw if called on a synchronousValve at a key', () => {
-      const mudPipe = new MudPipe().map(() => 'zz')
-      mudPipe.cacheClearOne(0, 100)
+      const moonPipe = new MoonPipe().map(() => 'zz')
+      moonPipe.cacheClearOne(0, 100)
     })
   })
 
@@ -138,7 +138,7 @@ describe('MudPipe', () => {
     describe('promise operators', () => {
       function testCase(method) {
         it(`${ method } passes options on`, () => {
-          const mp = new MudPipe()[method](() => Promise.resolve(), {
+          const mp = new MoonPipe()[method](() => Promise.resolve(), {
             maxBufferSize: 3,
           })
           expect(mp.getChannelValveAt(0).valve.maxBufferSize).eql(3)
@@ -162,7 +162,7 @@ describe('MudPipe', () => {
     describe('time operators', () => {
       function testCase(method) {
         it(`${ method } passes options on`, () => {
-          const mp = new MudPipe()[method](1, {
+          const mp = new MoonPipe()[method](1, {
             maxBufferSize: 3,
           })
           expect(mp.getChannelValveAt(0).valve.maxBufferSize).eql(3)
@@ -182,7 +182,7 @@ describe('MudPipe', () => {
     describe('slice promise operators', () => {
       function testCase(method) {
         it(`${ method } passes options on`, () => {
-          const mp = new MudPipe()[method](1, () => Promise.resolve(), {
+          const mp = new MoonPipe()[method](1, () => Promise.resolve(), {
             maxBufferSize: 3,
           })
           expect(mp.getChannelValveAt(0).valve.maxBufferSize).eql(3)
@@ -196,7 +196,7 @@ describe('MudPipe', () => {
     describe('slice time operators', () => {
       function testCase(method) {
         it(`${ method } passes options on`, () => {
-          const mp = new MudPipe()[method](1, 1, {
+          const mp = new MoonPipe()[method](1, 1, {
             maxBufferSize: 3,
           })
           expect(mp.getChannelValveAt(0).valve.maxBufferSize).eql(3)
@@ -210,7 +210,7 @@ describe('MudPipe', () => {
     describe('flatten operator', () => {
       function testCase(method) {
         it(`${ method } passes options on`, () => {
-          const mp = new MudPipe()[method]({
+          const mp = new MoonPipe()[method]({
             maxBufferSize: 3,
           })
           expect(mp.getChannelValveAt(0).valve.maxBufferSize).eql(3)
@@ -223,7 +223,7 @@ describe('MudPipe', () => {
     describe('pool promise operators', () => {
       function testCase(method) {
         it(`${ method } passes options on`, () => {
-          const mp = new MudPipe()[method](1, () => Promise.resolve(), {
+          const mp = new MoonPipe()[method](1, () => Promise.resolve(), {
             maxBufferSize: 3,
           })
           expect(mp.getChannelValveAt(0).valve.maxBufferSize).eql(3)
@@ -237,7 +237,7 @@ describe('MudPipe', () => {
     describe('synchronous operators', () => {
       function testCase(method) {
         it(`${ method } passes options on`, () => {
-          const mp = new MudPipe()[method](() => true, {
+          const mp = new MoonPipe()[method](() => true, {
             maxBufferSize: 3,
           })
           expect(mp.getChannelValveAt(0).valve.maxBufferSize).eql(3)

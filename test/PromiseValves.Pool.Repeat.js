@@ -1,12 +1,12 @@
 'use strict'
 
 const { expect } = require('chai')
-const { MudPipe } = require('../index.js')
+const { MoonPipe } = require('../index.js')
 const { delayPromise } = require('./utils.js')
 
 async function testInput(method, poolSize, expected) {
   const results = []
-  const pipe = new MudPipe()[method](poolSize, async (value) => {
+  const pipe = new MoonPipe()[method](poolSize, async (value) => {
     results.push('side_' + value)
     await delayPromise(value * 10)
     throw new Error(value + 100)
@@ -31,7 +31,7 @@ async function testInput(method, poolSize, expected) {
 
 describe('PromiseValves with a Pool and Repeat.', () => {
 
-  describe('MudPipe.poolTap', () => {
+  describe('MoonPipe.poolTap', () => {
     it('runs 3 promisses concurrently when the poolSize is at 3', () => {
       return testInput('poolTap', 3, [
         'side_6',
@@ -61,7 +61,7 @@ describe('PromiseValves with a Pool and Repeat.', () => {
     })
   })
 
-  describe('MudPipe.poolMap', () => {
+  describe('MoonPipe.poolMap', () => {
     it('runs 3 promisses concurrently when the poolSize is at 3', () => {
       return testInput('poolMap', 3, [
         'side_6',

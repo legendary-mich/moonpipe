@@ -1,12 +1,12 @@
 'use strict'
 
 const { expect } = require('chai')
-const { MudPipe } = require('../index.js')
+const { MoonPipe } = require('../index.js')
 const { delayPromise } = require('./utils.js')
 
 async function testInput(method, param, input, expected) {
   const results = []
-  const pipe = new MudPipe()[method](param)
+  const pipe = new MoonPipe()[method](param)
     .queueTap(async (value) => {
       results.push('res_' + value)
     })
@@ -24,7 +24,7 @@ async function testInput(method, param, input, expected) {
 
 describe('TimeValves with Synchronous input.', () => {
 
-  describe('MudPipe.flatten', () => {
+  describe('MoonPipe.flatten', () => {
     it('emits an onData event for every item in the array', async () => {
       return testInput('flatten', null, [
         [1, 2, 3],
@@ -52,7 +52,7 @@ describe('TimeValves with Synchronous input.', () => {
     })
   })
 
-  describe('MudPipe.map', () => {
+  describe('MoonPipe.map', () => {
     it('emits an onData event for every item in the array', async () => {
       return testInput('map', val => val * 2, [
         1,
@@ -78,7 +78,7 @@ describe('TimeValves with Synchronous input.', () => {
     })
   })
 
-  describe('MudPipe.filter', () => {
+  describe('MoonPipe.filter', () => {
     it('emits an onData event for every item in the array', async () => {
       return testInput('filter', val => val % 2, [
         1,

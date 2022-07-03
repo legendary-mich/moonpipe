@@ -1,8 +1,8 @@
 'use strict'
 
-const { MudPipe } = require('../index.js')
+const { MoonPipe } = require('../index.js')
 
-const mp = new MudPipe()
+const mp = new MoonPipe()
   .cancelLazy(1000)             // valveIndex = 0
   .queueMap(async (val) => val) // valveIndex = 1
   .queueTap(async (val) => {    // valveIndex = 2

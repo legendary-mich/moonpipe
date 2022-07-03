@@ -1,13 +1,13 @@
 'use strict'
 
 const { expect } = require('chai')
-const { MudPipe } = require('../index.js')
+const { MoonPipe } = require('../index.js')
 const { delayPromise } = require('./utils.js')
 
 async function testInput(method, expected) {
   const results = []
   const counters = [1, 1, 1]
-  const pipe = new MudPipe()
+  const pipe = new MoonPipe()
     .queueTap(async (value) => {
       const shouldThrow = counters[0] % 3 === 0
       await delayPromise(shouldThrow ? 3 : 1)
@@ -50,7 +50,7 @@ async function testInput(method, expected) {
 
 describe('PromiseValves.ErrorHandler.InBetween.AllErrorTypes.js', () => {
 
-  describe('MudPipe.queueError', () => {
+  describe('MoonPipe.queueError', () => {
     it('handles all errors', () => {
       return testInput('queueError', [
         'err_303',
@@ -68,7 +68,7 @@ describe('PromiseValves.ErrorHandler.InBetween.AllErrorTypes.js', () => {
     })
   })
 
-  describe('MudPipe.cancelError', () => {
+  describe('MoonPipe.cancelError', () => {
     it('handles all errors', () => {
       return testInput('cancelError', [
         'err_303',
@@ -79,7 +79,7 @@ describe('PromiseValves.ErrorHandler.InBetween.AllErrorTypes.js', () => {
     })
   })
 
-  describe('MudPipe.throttleError', () => {
+  describe('MoonPipe.throttleError', () => {
     it('handles all errors', () => {
       return testInput('throttleError', [
         'err_303',
@@ -90,7 +90,7 @@ describe('PromiseValves.ErrorHandler.InBetween.AllErrorTypes.js', () => {
     })
   })
 
-  describe('MudPipe.skipError', () => {
+  describe('MoonPipe.skipError', () => {
     it('handles all errors', () => {
       return testInput('skipError', [
         'err_303',

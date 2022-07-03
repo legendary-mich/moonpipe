@@ -1,8 +1,8 @@
 'use strict'
 
-const { MudPipe } = require('../index.js')
+const { MoonPipe } = require('../index.js')
 
-const mp = new MudPipe()
+const mp = new MoonPipe()
   .throttleMap(async (val) => 'initial_' + val, {
     maxBufferSize: 2, // <---- overridden HERE
   })

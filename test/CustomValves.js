@@ -2,7 +2,7 @@
 
 const { expect } = require('chai')
 const {
-  MudPipe,
+  MoonPipe,
   BUFFER_TYPE,
   OVERFLOW_ACTION,
   TimeValve,
@@ -25,7 +25,7 @@ describe('Custom Valves,', () => {
       }
       const customTimeValve = new TimeValve(preset, 10)
       const results = []
-      const pipe = new MudPipe()
+      const pipe = new MoonPipe()
         .pipe(customTimeValve)
         .queueTap(async (val) => {
           results.push(val)
@@ -58,7 +58,7 @@ describe('Custom Valves,', () => {
       }
       const customPromiseValve = new PromiseValve(preset, async (value) => value + 100)
       const results = []
-      const pipe = new MudPipe()
+      const pipe = new MoonPipe()
         .pipe(customPromiseValve)
         .queueTap(async (val) => {
           results.push(val)

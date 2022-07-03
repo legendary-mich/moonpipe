@@ -1,7 +1,7 @@
 'use strict'
 
-const { MudPipe } = require('../index.js')
-const mp = new MudPipe()
+const { MoonPipe } = require('../index.js')
+const mp = new MoonPipe()
   // time-based operators take a number of milliseconds as the first argument
   .queueLazy(300)
   // promise-based operators take a function which returns a promise

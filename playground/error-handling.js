@@ -1,8 +1,8 @@
 'use strict'
 
-const { MudPipe } = require('../index.js')
+const { MoonPipe } = require('../index.js')
 
-const mp = new MudPipe()
+const mp = new MoonPipe()
   .queueTap(async (val) => {
     console.log('out 1:', val)
     throw 'thrown in queueTap'

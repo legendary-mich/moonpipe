@@ -1,16 +1,16 @@
 'use strict'
 
 const { expect } = require('chai')
-const { MudPipe } = require('../index.js')
+const { MoonPipe } = require('../index.js')
 const { delayPromise } = require('./utils.js')
 
-describe('MudPipe.Cache', () => {
+describe('MoonPipe.Cache', () => {
 
   async function testInput(method, expected) {
     let side_1 = []
     let side_2 = []
     let result = []
-    const mp = new MudPipe()
+    const mp = new MoonPipe()
       .queueTap(async (value) => {
         side_1.push(value)
       }, { cache: true})
@@ -151,7 +151,7 @@ describe('MudPipe.Cache', () => {
       let side_1 = []
       let side_2 = []
       let result = []
-      const mp = new MudPipe()
+      const mp = new MoonPipe()
         .queueTap(async (value) => {
           side_1.push(value)
         }, {

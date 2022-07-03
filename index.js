@@ -1,6 +1,6 @@
 'use strict'
 
-const { MudPipe } = require('./lib/MudPipe.js')
+const { MoonPipe } = require('./lib/MoonPipe.js')
 const {
   BaseValve,
   BUFFER_TYPE,
@@ -27,7 +27,7 @@ const {
 } = require('./lib/SynchronousValves.js')
 
 module.exports = {
-  MudPipe,
+  MoonPipe,
   BaseValve,
   BUFFER_TYPE,
   OVERFLOW_ACTION,

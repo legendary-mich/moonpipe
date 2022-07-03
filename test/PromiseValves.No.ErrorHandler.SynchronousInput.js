@@ -1,12 +1,12 @@
 'use strict'
 
 const { expect } = require('chai')
-const { MudPipe } = require('../index.js')
+const { MoonPipe } = require('../index.js')
 const { delayPromise } = require('./utils.js')
 
 async function testInput(method, expected) {
   const results = []
-  const pipe = new MudPipe()[method](async (value) => {
+  const pipe = new MoonPipe()[method](async (value) => {
     results.push('side_' + value)
     await delayPromise(1)
     throw new Error(value + 100)
@@ -31,7 +31,7 @@ async function testInput(method, expected) {
 // When there's no error handler all errors should be silently ignored
 describe('PromiseValves.No.ErrorHandler with Synchronous input.', () => {
 
-  describe('MudPipe.queueTap', () => {
+  describe('MoonPipe.queueTap', () => {
     it('ignores all errors', () => {
       return testInput('queueTap', [
         'side_1',
@@ -41,7 +41,7 @@ describe('PromiseValves.No.ErrorHandler with Synchronous input.', () => {
     })
   })
 
-  describe('MudPipe.queueMap', () => {
+  describe('MoonPipe.queueMap', () => {
     it('ignores all errors', () => {
       return testInput('queueMap', [
         'side_1',
@@ -51,7 +51,7 @@ describe('PromiseValves.No.ErrorHandler with Synchronous input.', () => {
     })
   })
 
-  describe('MudPipe.cancelTap', () => {
+  describe('MoonPipe.cancelTap', () => {
     it('ignores all errors', () => {
       return testInput('cancelTap', [
         'side_3',
@@ -59,7 +59,7 @@ describe('PromiseValves.No.ErrorHandler with Synchronous input.', () => {
     })
   })
 
-  describe('MudPipe.cancelMap', () => {
+  describe('MoonPipe.cancelMap', () => {
     it('ignores all errors', () => {
       return testInput('cancelMap', [
         'side_3',
@@ -67,7 +67,7 @@ describe('PromiseValves.No.ErrorHandler with Synchronous input.', () => {
     })
   })
 
-  describe('MudPipe.throttleTap', () => {
+  describe('MoonPipe.throttleTap', () => {
     it('ignores all errors', () => {
       return testInput('throttleTap', [
         'side_3',
@@ -75,7 +75,7 @@ describe('PromiseValves.No.ErrorHandler with Synchronous input.', () => {
     })
   })
 
-  describe('MudPipe.throttleMap', () => {
+  describe('MoonPipe.throttleMap', () => {
     it('ignores all errors', () => {
       return testInput('throttleMap', [
         'side_3',
@@ -83,7 +83,7 @@ describe('PromiseValves.No.ErrorHandler with Synchronous input.', () => {
     })
   })
 
-  describe('MudPipe.skipTap', () => {
+  describe('MoonPipe.skipTap', () => {
     it('ignores all errors', () => {
       return testInput('skipTap', [
         'side_1',
@@ -91,7 +91,7 @@ describe('PromiseValves.No.ErrorHandler with Synchronous input.', () => {
     })
   })
 
-  describe('MudPipe.skipMap', () => {
+  describe('MoonPipe.skipMap', () => {
     it('ignores all errors', () => {
       return testInput('skipMap', [
         'side_1',

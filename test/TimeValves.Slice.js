@@ -1,12 +1,12 @@
 'use strict'
 
 const { expect } = require('chai')
-const { MudPipe } = require('../index.js')
+const { MoonPipe } = require('../index.js')
 const { delayPromise } = require('./utils.js')
 
 async function testInput(method, chunkSize, expected) {
   const results = []
-  const pipe = new MudPipe()[method](chunkSize, 10)
+  const pipe = new MoonPipe()[method](chunkSize, 10)
     .queueTap(async (value) => {
       results.push('res_' + value)
     })
@@ -33,7 +33,7 @@ async function testInput(method, chunkSize, expected) {
 
 describe('TimeValves Slice.', () => {
 
-  describe('MudPipe.sliceEager', () => {
+  describe('MoonPipe.sliceEager', () => {
     it('lets the first value slide, and than runs chunks of 5 when the chunk size is 5', () => {
       return testInput('sliceEager', 5, [
         ['res_1'],
@@ -62,7 +62,7 @@ describe('TimeValves Slice.', () => {
     })
   })
 
-  describe('MudPipe.sliceLazy', () => {
+  describe('MoonPipe.sliceLazy', () => {
     it('runs chunks of 5 when the chunk size is 5', () => {
       return testInput('sliceLazy', 5, [
         [],

@@ -1,13 +1,13 @@
 'use strict'
 
 const { expect } = require('chai')
-const { MudPipe } = require('../index.js')
+const { MoonPipe } = require('../index.js')
 const { delayPromise } = require('./utils.js')
 
 async function testInput(method, expected) {
   const results = []
   let counter = 0
-  const pipe = new MudPipe()[method](async (value) => {
+  const pipe = new MoonPipe()[method](async (value) => {
     results.push('side_' + value)
     await delayPromise(3)
     if (counter++ < 2) {
@@ -39,7 +39,7 @@ async function testInput(method, expected) {
 
 describe('PromiseValves Repeat on Error - Eventual Success,', () => {
 
-  describe('MudPipe.queueTap', () => {
+  describe('MoonPipe.queueTap', () => {
     it('eventually succeeds', () => {
       return testInput('queueTap', [
         'side_1',
@@ -54,7 +54,7 @@ describe('PromiseValves Repeat on Error - Eventual Success,', () => {
     })
   })
 
-  describe('MudPipe.queueMap', () => {
+  describe('MoonPipe.queueMap', () => {
     it('eventually succeeds', () => {
       return testInput('queueMap', [
         'side_1',
@@ -69,7 +69,7 @@ describe('PromiseValves Repeat on Error - Eventual Success,', () => {
     })
   })
 
-  describe('MudPipe.cancelTap', () => {
+  describe('MoonPipe.cancelTap', () => {
     it('eventually succeeds', () => {
       return testInput('cancelTap', [
         'side_1',
@@ -80,7 +80,7 @@ describe('PromiseValves Repeat on Error - Eventual Success,', () => {
     })
   })
 
-  describe('MudPipe.cancelMap', () => {
+  describe('MoonPipe.cancelMap', () => {
     it('eventually succeeds', () => {
       return testInput('cancelMap', [
         'side_1',
@@ -91,7 +91,7 @@ describe('PromiseValves Repeat on Error - Eventual Success,', () => {
     })
   })
 
-  describe('MudPipe.throttleTap', () => {
+  describe('MoonPipe.throttleTap', () => {
     it('eventually succeeds', () => {
       return testInput('throttleTap', [
         'side_1',
@@ -106,7 +106,7 @@ describe('PromiseValves Repeat on Error - Eventual Success,', () => {
     })
   })
 
-  describe('MudPipe.throttleMap', () => {
+  describe('MoonPipe.throttleMap', () => {
     it('eventually succeeds', () => {
       return testInput('throttleMap', [
         'side_1',
@@ -121,7 +121,7 @@ describe('PromiseValves Repeat on Error - Eventual Success,', () => {
     })
   })
 
-  describe('MudPipe.skipTap', () => {
+  describe('MoonPipe.skipTap', () => {
     it('whatever', () => {
       return testInput('skipTap', [
         'side_1',
@@ -132,7 +132,7 @@ describe('PromiseValves Repeat on Error - Eventual Success,', () => {
     })
   })
 
-  describe('MudPipe.skipMap', () => {
+  describe('MoonPipe.skipMap', () => {
     it('whatever', () => {
       return testInput('skipMap', [
         'side_1',

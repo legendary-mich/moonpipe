@@ -1,16 +1,16 @@
 'use strict'
 
 const { expect } = require('chai')
-const { MudPipe } = require('../index.js')
+const { MoonPipe } = require('../index.js')
 const { delayPromise } = require('./utils.js')
 
 describe('PromiseValves.Buffers.Clear.One.js', () => {
 
-  describe('MudPipe.queue', () => {
+  describe('MoonPipe.queue', () => {
 
     async function testInput(method, expected) {
       const results = []
-      const pipe = new MudPipe()[method](async (value) => {
+      const pipe = new MoonPipe()[method](async (value) => {
         results.push('a_' + value)
         await delayPromise(2)
         return value + '_mapped'
@@ -59,11 +59,11 @@ describe('PromiseValves.Buffers.Clear.One.js', () => {
   })
 
 
-  describe('MudPipe.cancel', () => {
+  describe('MoonPipe.cancel', () => {
 
     async function testInput(method, expected) {
       const results = []
-      const pipe = new MudPipe()[method](async (value) => {
+      const pipe = new MoonPipe()[method](async (value) => {
         results.push('a_' + value)
         await delayPromise(2)
         return value + '_mapped'
@@ -105,11 +105,11 @@ describe('PromiseValves.Buffers.Clear.One.js', () => {
     })
   })
 
-  describe('MudPipe.throttle', () => {
+  describe('MoonPipe.throttle', () => {
 
     async function testInput(method, expected) {
       const results = []
-      const pipe = new MudPipe()[method](async (value) => {
+      const pipe = new MoonPipe()[method](async (value) => {
         results.push('a_' + value)
         await delayPromise(2)
         return value + '_mapped'
@@ -151,11 +151,11 @@ describe('PromiseValves.Buffers.Clear.One.js', () => {
     })
   })
 
-  describe('MudPipe.skip', () => {
+  describe('MoonPipe.skip', () => {
 
     async function testInput(method, expected) {
       const results = []
-      const pipe = new MudPipe()[method](async (value) => {
+      const pipe = new MoonPipe()[method](async (value) => {
         results.push('a_' + value)
         await delayPromise(2)
         return value + '_mapped'

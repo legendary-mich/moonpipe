@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "mudpipe",
+  "name": "moonpipe",
   "version": "1.0.0",
   "description": "Compose promises in a structured way",
   "license": "MIT",

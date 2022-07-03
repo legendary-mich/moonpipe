@@ -1,4 +1,4 @@
-# Mud Pipe
+# Moon Pipe
 Compose promises in a structured way.
 
 - [TL;DR](#tldr)
@@ -12,18 +12,18 @@ Compose promises in a structured way.
 - [Pooling in PromiseValves](#pooling-in-promisevalves)
 - [Custom operators](#custom-operators)
 - [Presets explained](#presets-explained)
-  - [Base Preset Params](#base-preset-params)
+  - [Base Preset Params](#base-preset-params-these-params-are-common-to-both-the-timevalves-and-promisevalves)
   - [TimeValve Preset Params](#timevalve-preset-params)
   - [PromiseValve Preset Params](#promisevalve-preset-params)
 
 ### TL;DR
 
 ```bash
-npm install mudpipe
+npm install moonpipe
 ```
 ```javascript
-const { MudPipe } = require('mudpipe')
-const mp = new MudPipe()
+const { MoonPipe } = require('moonpipe')
+const mp = new MoonPipe()
   .cancelLazy(1000) // in other libs known as debounce
   .queueMap(async (val) => 'initial_' + val)
   .queueTap(async (val) => {
@@ -73,8 +73,8 @@ Suffixes:
 
 Here is a combined example showing one of each of the basic operator types.
 ```javascript
-const { MudPipe } = require('mudpipe')
-const mp = new MudPipe()
+const { MoonPipe } = require('moonpipe')
+const mp = new MoonPipe()
   // time-based operators take a number of milliseconds as the first argument
   .queueLazy(300)
   // promise-based operators take a function which returns a promise
@@ -109,8 +109,8 @@ mp.pump(4)
 
 This example presents one of the **slice** operators:
 ```javascript
-const { MudPipe } = require('mudpipe')
-const mp = new MudPipe()
+const { MoonPipe } = require('moonpipe')
+const mp = new MoonPipe()
   // slice operators take the sliceSize as the first argument and a
   // promise as the second one.
   .sliceMap(3, async (val) => val)
@@ -129,8 +129,8 @@ mp.pump(4)
 
 The names of the 2 special asynchronous operators that I haven't mentioned so far are **poolTap** and **poolMap**. These 2 let you run a specified number of promises concurrently. The `poolSize` parameter is the first parameter to these operators.
 ```javascript
-const { MudPipe } = require('mudpipe')
-const mp = new MudPipe()
+const { MoonPipe } = require('moonpipe')
+const mp = new MoonPipe()
   .poolMap(2, async (val) => {
     return 'mapped_' + val
   })
@@ -148,9 +148,9 @@ mp.pump('c')
 Every of the predefined operators can be overridden with a set of options. The **promise-based** operators accept options specific to the `PromiseValves`. The **time-based** operators accept options specific to the `TimeValves`. The `options` parameter is always passed in as **the last argument**. I'm going to show you a simple example here. For the full list of options see the [Presets explained](#presets-explained) section.
 
 ```javascript
-const { MudPipe } = require('mudpipe')
+const { MoonPipe } = require('moonpipe')
 
-const mp = new MudPipe()
+const mp = new MoonPipe()
   .throttleMap(async (val) => 'initial_' + val, {
     maxBufferSize: 2, // <---- overridden HERE
   })
@@ -166,8 +166,8 @@ There are 4 predefined operators that can be used to handle errors. They all beh
 
 If there are no error handlers, errors will be silently ignored.
 ```javascript
-const { MudPipe } = require('mudpipe')
-const mp = new MudPipe()
+const { MoonPipe } = require('moonpipe')
+const mp = new MoonPipe()
   .queueTap(async (val) => {
     console.log('out 1:', val)
     throw 'thrown in queueTap'
@@ -190,8 +190,8 @@ mp.pump('a')
 ### Clearing out buffers
 There are two methods that you can use to clear out `buffers`. These are `buffersClearAll()`, and `buffersClearOne(valveIndex)`. The `valveIndex` is a `0-based` index of a valve plugged into the pipe. In the following code the cancelLazy valve has index = 0.
 ```javascript
-const { MudPipe } = require('mudpipe')
-const mp = new MudPipe()
+const { MoonPipe } = require('moonpipe')
+const mp = new MoonPipe()
   .cancelLazy(1000)             // valveIndex = 0
   .queueMap(async (val) => val) // valveIndex = 1
   .queueTap(async (val) => {    // valveIndex = 2
@@ -209,8 +209,8 @@ In addition to clearing out buffers, the mentioned methods cancel `active promis
 ### Cache in PromiseValves
 You can cache the result of a promise. In order to do that you just add a `cache: true` param to the options and you are done. Results are cached in a hash map, where the value provided is used as the key. You can customize the hash function if you don't like how the keys are derived (see down below).
 ```javascript
-const { MudPipe } = require('mudpipe')
-const mp = new MudPipe()
+const { MoonPipe } = require('moonpipe')
+const mp = new MoonPipe()
   .queueMap(async (val) => {
     console.log('...side effect')
     return 'mapped_' + val
@@ -240,8 +240,8 @@ mp.cacheClearOne(2, 'a', 'b') // clears entries at keys derived from values 'a' 
 ```
 You can also use a custom hash function to generate custom keys at which the values will be stored in cache.
 ```javascript
-const { MudPipe } = require('mudpipe')
-const mp = new MudPipe()
+const { MoonPipe } = require('moonpipe')
+const mp = new MoonPipe()
   .queueMap(async (val) => {
     console.log('...side effect')
     return 'mapped_' + val
@@ -264,10 +264,10 @@ mp.pump('a')
 ### Timeout in PromiseValves
 You can provide a `timeoutMs` param to every promise-based operator. If the promise is not settled within the provided number of milliseconds, it will be rejected with a `TimeoutError`.
 ```javascript
-const { MudPipe } = require('mudpipe')
+const { MoonPipe } = require('moonpipe')
 const { delayPromise } = require('../test/utils.js')
 
-const mp = new MudPipe()
+const mp = new MoonPipe()
   .queueTap(async () => {
     await delayPromise(3)
   }, {
@@ -293,8 +293,8 @@ If a `repeatPredicate` throws an error, the promise is automatically rejected an
 The `repeatPredicate` is `async` to make it future proof. Keep in mind however that the `timeoutMs` is not applied to it which means that if it hangs, it will keep hanging until you cancel it. Make sure that you understand the risk, before making a call to an external service from the `repeatPredicate`. For super safety it is strongly advised to do only synchronous operation from within the predicate.
 
 ```javascript
-const { MudPipe } = require('mudpipe')
-const mp = new MudPipe()
+const { MoonPipe } = require('moonpipe')
+const mp = new MoonPipe()
   .queueTap(async (val) => {
     console.log('// output:', val)
     throw 'err_' + val
@@ -326,9 +326,9 @@ mp.pump('c')
 Promises can be run concurrently. In order to do that you can either use the `poolMap`, `poolTap` operators (see the [Predefined operators](#predefined-operators) section for an example), or override the `poolSize` param in any of the promise-based operators.
 
 ```javascript
-const { MudPipe } = require('mudpipe')
+const { MoonPipe } = require('moonpipe')
 
-const mp = new MudPipe()
+const mp = new MoonPipe()
   .queueMap(async (val) => {
     return 'mapped_' + val
   }, {
@@ -344,16 +344,16 @@ mp.pump('c')
 ```
 
 ### Custom operators
-You can create your own flavors of `TimeValve` and `PromiseValve`, and use the `.pipe` operator to add them to an instance of the `MudPipe`. Look at [Presets explained](#presets-explained) for additional info about the presets. Here I will show you have an example of a time-based valve which is similar the the `throttleLazy` operator, but has a bigger `maxBufferSize`.
+You can create your own flavors of `TimeValve` and `PromiseValve`, and use the `.pipe` operator to add them to an instance of the MoonPipe`. Look at [Presets explained](#presets-explained) for additional info about the presets. Here I will show you have an example of a time-based valve which is similar the the `throttleLazy` operator, but has a bigger `maxBufferSize`.
 
 ```javascript
 const {
-  MudPipe,
+  MoonPipe,
   TimeValve,
   TIME_RESOLVE_TYPE,
   BUFFER_TYPE,
   OVERFLOW_ACTION,
-} = require('mudpipe')
+} = require('moonpipe')
 
 const preset = {
   maxBufferSize: 3,
@@ -365,7 +365,7 @@ const preset = {
 
 const customTimeValve = new TimeValve(preset, 1000)
 
-const mp = new MudPipe()
+const mp = new MoonPipe()
   .pipe(customTimeValve) // <-- your custom valve is plugged in HERE
   .queueTap(async (val) => {
     console.log('output:', val)
@@ -388,7 +388,7 @@ mp.pipe(valve, CHANNEL_TYPE.ERROR)
 ```
 
 ### Presets explained
-##### Base Preset Params (These are the params common to both the TimeValves and PromiseValves):
+##### Base Preset Params (These params are common to both the TimeValves and PromiseValves):
 - `maxBufferSize` - the size of the internal buffer
 - `bufferType`- describes the order in which values are processed
   - `QUEUE` - values are processed one after another

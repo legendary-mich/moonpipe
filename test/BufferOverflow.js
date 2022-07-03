@@ -2,7 +2,7 @@
 
 const { expect } = require('chai')
 const {
-  MudPipe,
+  MoonPipe,
   BUFFER_TYPE,
   OVERFLOW_ACTION,
   PROMISE_RESOLVE_TYPE,
@@ -18,7 +18,7 @@ const { delayPromise } = require('./utils.js')
 
 async function testInput(valve, expected) {
   const results = []
-  const pipe = new MudPipe().pipe(valve)
+  const pipe = new MoonPipe().pipe(valve)
     .queueTap(async (value) => {
       results.push('res_' + value)
     })
@@ -133,7 +133,7 @@ describe('Buffer Overflow', () => {
       }
       const valve = new FlattenValve(preset)
       const results = []
-      const pipe = new MudPipe().pipe(valve)
+      const pipe = new MoonPipe().pipe(valve)
         .queueTap(async (value) => {
           results.push('res_' + value)
         })

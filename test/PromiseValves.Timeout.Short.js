@@ -1,12 +1,12 @@
 'use strict'
 
 const { expect } = require('chai')
-const { MudPipe } = require('../index.js')
+const { MoonPipe } = require('../index.js')
 const { delayPromise } = require('./utils.js')
 
 async function testInput(method, expected) {
   const results = []
-  const pipe = new MudPipe()[method](async (value) => {
+  const pipe = new MoonPipe()[method](async (value) => {
     results.push('side_' + value)
     await delayPromise(100)
     return value + 100
@@ -30,7 +30,7 @@ async function testInput(method, expected) {
 
 describe('PromiseValves with a Timeout short enough.', () => {
 
-  describe('MudPipe.queueTap', () => {
+  describe('MoonPipe.queueTap', () => {
     it('emits a TimeoutError', () => {
       return testInput('queueTap', [
         'side_1',
@@ -41,7 +41,7 @@ describe('PromiseValves with a Timeout short enough.', () => {
     })
   })
 
-  describe('MudPipe.queueMap', () => {
+  describe('MoonPipe.queueMap', () => {
     it('emits a TimeoutError', () => {
       return testInput('queueMap', [
         'side_1',
@@ -52,7 +52,7 @@ describe('PromiseValves with a Timeout short enough.', () => {
     })
   })
 
-  describe('MudPipe.cancelTap', () => {
+  describe('MoonPipe.cancelTap', () => {
     it('emits a TimeoutError', () => {
       return testInput('cancelTap', [
         'side_1',
@@ -62,7 +62,7 @@ describe('PromiseValves with a Timeout short enough.', () => {
     })
   })
 
-  describe('MudPipe.cancelMap', () => {
+  describe('MoonPipe.cancelMap', () => {
     it('emits a TimeoutError', () => {
       return testInput('cancelMap', [
         'side_1',
@@ -72,7 +72,7 @@ describe('PromiseValves with a Timeout short enough.', () => {
     })
   })
 
-  describe('MudPipe.throttleTap', () => {
+  describe('MoonPipe.throttleTap', () => {
     it('emits a TimeoutError', () => {
       return testInput('throttleTap', [
         'side_1',
@@ -83,7 +83,7 @@ describe('PromiseValves with a Timeout short enough.', () => {
     })
   })
 
-  describe('MudPipe.throttleMap', () => {
+  describe('MoonPipe.throttleMap', () => {
     it('emits a TimeoutError', () => {
       return testInput('throttleMap', [
         'side_1',
@@ -94,7 +94,7 @@ describe('PromiseValves with a Timeout short enough.', () => {
     })
   })
 
-  describe('MudPipe.skipTap', () => {
+  describe('MoonPipe.skipTap', () => {
     it('whatever', () => {
       return testInput('skipTap', [
         'side_1',
@@ -103,7 +103,7 @@ describe('PromiseValves with a Timeout short enough.', () => {
     })
   })
 
-  describe('MudPipe.skipMap', () => {
+  describe('MoonPipe.skipMap', () => {
     it('whatever', () => {
       return testInput('skipMap', [
         'side_1',
