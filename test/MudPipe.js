@@ -123,12 +123,12 @@ describe('MudPipe', () => {
       mudPipe.cacheClearOne(0, 100)
     })
 
-    it('does not throw if called on a transformValve', () => {
+    it('does not throw if called on a synchronousValve', () => {
       const mudPipe = new MudPipe().map(() => 'zz')
       mudPipe.cacheClearOne(0)
     })
 
-    it('does not throw if called on a transformValve at a key', () => {
+    it('does not throw if called on a synchronousValve at a key', () => {
       const mudPipe = new MudPipe().map(() => 'zz')
       mudPipe.cacheClearOne(0, 100)
     })
@@ -234,7 +234,7 @@ describe('MudPipe', () => {
       testCase('poolMap')
     })
 
-    describe('transform operators', () => {
+    describe('synchronous operators', () => {
       function testCase(method) {
         it(`${ method } passes options on`, () => {
           const mp = new MudPipe()[method](() => true, {

@@ -292,21 +292,21 @@ function promiseValveAssertions(TargetClass) {
 
 }
 
-function transformValveAssertions(TargetClass) {
+function synchronousValveAssertions(TargetClass, functionType) {
 
-  const properTransformValvePreset = {
+  const properSynchronousValvePreset = {
     maxBufferSize: 1000,
     bufferType: BUFFER_TYPE.QUEUE,
     overflowAction: OVERFLOW_ACTION.EMIT_ERROR,
   }
 
-  it('throws for an unknown transformFunc', () => {
+  it(`throws for an unknown ${ functionType }`, () => {
     try {
-      new TargetClass(properTransformValvePreset, 2)
+      new TargetClass(properSynchronousValvePreset, 2)
       throw new Error('should have thrown')
     }
     catch (err) {
-      expect(err).to.have.property('message', "Expected transformFunc to be a function; found: number")
+      expect(err).to.have.property('message', `Expected ${ functionType } to be a function; found: number`)
     }
   })
 }
@@ -331,10 +331,10 @@ describe('FlattenValve constructor', () => {
 
 describe('MapValve constructor', () => {
   baseValveAssertions(MapValve)
-  transformValveAssertions(MapValve)
+  synchronousValveAssertions(MapValve, 'transformFunc')
 })
 
 describe('FilterValve constructor', () => {
   baseValveAssertions(FilterValve)
-  transformValveAssertions(FilterValve)
+  synchronousValveAssertions(FilterValve, 'predicateFunc')
 })

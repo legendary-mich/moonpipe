@@ -24,7 +24,7 @@ const {
   FlattenValve,
   MapValve,
   FilterValve,
-} = require('./lib/TransformValves.js')
+} = require('./lib/SynchronousValves.js')
 
 module.exports = {
   MudPipe,
