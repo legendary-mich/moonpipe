@@ -15,6 +15,7 @@ Compose promises in a structured way.
   - [Base Preset Params](#base-preset-params-these-params-are-common-to-both-the-timevalves-and-promisevalves)
   - [TimeValve Preset Params](#timevalve-preset-params)
   - [PromiseValve Preset Params](#promisevalve-preset-params)
+- [Contributing](#contributing)
 
 ### TL;DR
 
@@ -416,3 +417,6 @@ mp.pipe(valve, CHANNEL_TYPE.ERROR)
 - `repeatPredicate` - an `async` function which takes an `attemptsMade` counter as the first argument and an `error` as the second one. It returns `true` or `false`.
 
 Predefined presets can be found in the `TimeValve.js` and `PromiseValve.js` files.
+
+## Contributing
+By contributing your code to this project, you agree to license your contribution under the MIT license.
