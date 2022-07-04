@@ -290,7 +290,7 @@ You can use a `repeatPredicate` which takes an `attemptsMade` counter as the fir
 
 If a `repeatPredicate` throws an error, the promise is automatically rejected and will not be retried anymore.
 
-The `repeatPredicate` is `async` to make it future proof. Keep in mind however that the `timeoutMs` is not applied to it which means that if it hangs, it will keep hanging until you cancel it. Make sure that you understand the risk, before making a call to an external service from the `repeatPredicate`. For super safety it is strongly advised to do only synchronous operation from within the predicate.
+The `repeatPredicate` is `async` to make it future proof. Keep in mind however that the `timeoutMs` is not applied to it which means that if it hangs, it will keep the main promise hanging. Make sure that you understand the risk, before making a call to an external service from the `repeatPredicate`. For super safety it is strongly advised to do only synchronous operation within the predicate.
 
 ```javascript
 const { MoonPipe } = require('moonpipe')
