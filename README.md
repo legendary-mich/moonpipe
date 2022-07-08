@@ -2,15 +2,15 @@
 Compose promises in a structured way.
 
 - [TL;DR](#tldr)
-- [Predefined operators](#predefined-operators)
-- [Overriding predefined operators](#overriding-predefined-operators)
+- [Predefined valves](#predefined-valves)
+- [Overriding predefined valves](#overriding-predefined-valves)
 - [Error handling](#error-handling)
 - [Clearing out buffers](#clearing-out-buffers)
 - [Cache in PromiseValves](#cache-in-promisevalves)
 - [Timeout in PromiseValves](#timeout-in-promisevalves)
 - [Repeating on Error in PromiseValves](#repeating-on-error-in-promisevalves)
 - [Pooling in PromiseValves](#pooling-in-promisevalves)
-- [Custom operators](#custom-operators)
+- [Custom valves](#custom-valves)
 - [Presets explained](#presets-explained)
   - [Base Preset Params](#base-preset-params-these-params-are-common-to-both-the-timevalves-and-promisevalves)
   - [TimeValve Preset Params](#timevalve-preset-params)
@@ -43,7 +43,7 @@ mp.pump('d')
 // output: initial_d
 // error: thrown in queueTap
 ```
-### Predefined operators
+### Predefined valves
 ```
 queueTap    queueMap    queueEager    queueLazy    queueError
 cancelTap   cancelMap   cancelEager   cancelLazy   cancelError
@@ -54,9 +54,9 @@ poolTap     poolMap
 flatten     map         filter
 ```
 
-Among the predefined operators there are 3 synchronous operators **(flatten, map, filter)**, and 20+4+2 asynchronous operators. The names of the asynchronous operators consist of a prefix and a suffix. There are 5 different prefixes **(queue, cancel, throttle, skip, slice)**, and 5 different suffixes **(Map, Tap, Eager, Lazy, Error)**.
+Among the predefined valves there are 3 synchronous valves **(flatten, map, filter)**, and 20+4+2 asynchronous valves. The names of the asynchronous valves consist of a prefix and a suffix. There are 5 different prefixes **(queue, cancel, throttle, skip, slice)**, and 5 different suffixes **(Map, Tap, Eager, Lazy, Error)**.
 
-The operators with the **Map**, **Tap**, and **Error** suffixes operate on **Promises**, whereas the operators with the **Eager** and **Lazy** suffixes operate on **Timeouts**.
+The valves with the **Map**, **Tap**, and **Error** suffixes operate on **Promises**, whereas the valves with the **Eager** and **Lazy** suffixes operate on **Timeouts**.
 
 Prefixes:
 - **queue** - queues every pumped value, and processes one after another
@@ -72,24 +72,24 @@ Suffixes:
 - **Eager** - pumps the input value, and waits until the time passes before taking on the next value
 - **Lazy** - waits until the time passes and pumps the first value in line
 
-Here is a combined example showing one of each of the basic operator types.
+Here is a combined example showing one of each of the basic valve types.
 ```javascript
 const { MoonPipe } = require('moonpipe')
 const mp = new MoonPipe()
-  // time-based operators take a number of milliseconds as the first argument
+  // time-based valves take a number of milliseconds as the first argument
   .queueLazy(300)
-  // promise-based operators take a function which returns a promise
+  // promise-based valves take a function which returns a promise
   .queueMap(async (val) => val + 1000)
-  // errors thrown from any of the promise-based operators are
+  // errors thrown from any of the promise-based valves are
   // propagated through the error channel to the first error handler.
   .queueTap(async (val) => { if (val === 'what?1000') throw new Error('ha!') })
-  // the filter operator takes a function which returns a `boolean` value
+  // the filter valve takes a function which returns a `boolean` value
   .filter((val) => val % 2 === 0)
-  // the map operator takes a function which returns an arbitrary value
+  // the map valve takes a function which returns an arbitrary value
   .map((val) => [val, val])
-  // the flatten operator does not take any arguments
+  // the flatten valve does not take any arguments
   .flatten()
-  // error operators take a function which returns a promise
+  // error valves take a function which returns a promise
   .queueError(async (err) => 'error handled: ' + err.message)
   .queueTap(async (val) => {
     console.log('output:', val)
@@ -108,11 +108,11 @@ mp.pump(4)
 // output: 1004
 ```
 
-This example presents one of the **slice** operators:
+This example presents one of the **slice** valves:
 ```javascript
 const { MoonPipe } = require('moonpipe')
 const mp = new MoonPipe()
-  // slice operators take the sliceSize as the first argument and a
+  // slice valves take the sliceSize as the first argument and a
   // promise as the second one.
   .sliceMap(3, async (val) => val)
   .queueTap(async (val) => {
@@ -128,7 +128,7 @@ mp.pump(4)
 // output: [ 4 ]
 ```
 
-The names of the 2 special asynchronous operators that I haven't mentioned so far are **poolTap** and **poolMap**. These 2 let you run a specified number of promises concurrently. The `poolSize` parameter is the first parameter to these operators.
+The names of the 2 special asynchronous valves that I haven't mentioned so far are **poolTap** and **poolMap**. These 2 let you run a specified number of promises concurrently. The `poolSize` parameter is the first parameter to these valves.
 ```javascript
 const { MoonPipe } = require('moonpipe')
 const mp = new MoonPipe()
@@ -144,9 +144,9 @@ mp.pump('b')
 mp.pump('c')
 ```
 
-### Overriding predefined operators
+### Overriding predefined valves
 
-Every of the predefined operators can be overridden with a set of options. The **promise-based** operators accept options specific to the `PromiseValves`. The **time-based** operators accept options specific to the `TimeValves`. The `options` parameter is always passed in as **the last argument**. I'm going to show you a simple example here. For the full list of options see the [Presets explained](#presets-explained) section.
+Every of the predefined valves can be overridden with a set of options. The **promise-based** valves accept options specific to the `PromiseValve`. The **time-based** valves accept options specific to the `TimeValves`. The `options` parameter is always passed in as **the last argument**. I'm going to show you a simple example here. For the full list of options see the [Presets explained](#presets-explained) section.
 
 ```javascript
 const { MoonPipe } = require('moonpipe')
@@ -161,9 +161,9 @@ const mp = new MoonPipe()
 ```
 
 ### Error handling
-When an error is thrown by one of the normal operators, the pipe switches its active channel to the `CHANNEL_TYPE.ERROR`. Now it operates in an `error mode` which means that no new promises will be created until the active channel switches back to the `CHANNEL_TYPE.DATA`. Existing promises will be able to finish though, which can result in either a valid response or a new error. Valid responses will be put off for later, and errors will be pumped to the `ErrorValves`. The active channel will be switched back to the `CHANNEL_TYPE.DATA` when there are no more errors to handle.
+When an error is thrown by one of the normal valves, the pipe switches its active channel to the `CHANNEL_TYPE.ERROR`. Now it operates in an `error mode` which means that no new promises will be created until the active channel switches back to the `CHANNEL_TYPE.DATA`. Existing promises will be able to finish though, which can result in either a valid response or a new error. Valid responses will be put off for later, and errors will be pumped to the `ErrorValves`. The active channel will be switched back to the `CHANNEL_TYPE.DATA` when there are no more errors to handle.
 
-There are 4 predefined operators that can be used to handle errors. They all behave like their brothers from the `Map` family with that difference that they operate only in the `error mode`. The most common one is the `queueError` operator, which handles errors one after another. Another one that may be useful is the `skipError` operator. It handles the first error, and let all the subsequent ones slide. Other operators that can be used for error handling are `cancelError` and `throttleError`.
+There are 4 predefined valves that can be used to handle errors. They all behave like their brothers from the `Map` family with that difference that they operate only in the `error mode`. The most common one is the `queueError` valve, which handles errors one after another. Another one that may be useful is the `skipError` valve. It handles the first error, and let all the subsequent ones slide. Other valves that can be used for error handling are `cancelError` and `throttleError`.
 
 If there are no error handlers, errors will be silently ignored.
 ```javascript
@@ -263,7 +263,7 @@ mp.pump('a')
 ```
 
 ### Timeout in PromiseValves
-You can provide a `timeoutMs` param to every promise-based operator. If the promise is not settled within the provided number of milliseconds, it will be rejected with a `TimeoutError`.
+You can provide a `timeoutMs` param to every promise-based valve. If the promise is not settled within the provided number of milliseconds, it will be rejected with a `TimeoutError`.
 ```javascript
 const { MoonPipe } = require('moonpipe')
 const { delayPromise } = require('../test/utils.js')
@@ -324,7 +324,7 @@ mp.pump('c')
 ```
 
 ### Pooling in PromiseValves
-Promises can be run concurrently. In order to do that you can either use the `poolMap`, `poolTap` operators (see the [Predefined operators](#predefined-operators) section for an example), or override the `poolSize` param in any of the promise-based operators.
+Promises can be run concurrently. In order to do that you can either use the `poolMap`, `poolTap` valves (see the [Predefined valves](#predefined-valves) section for an example), or override the `poolSize` param in any of the promise-based valves.
 
 ```javascript
 const { MoonPipe } = require('moonpipe')
@@ -344,8 +344,8 @@ mp.pump('b')
 mp.pump('c')
 ```
 
-### Custom operators
-You can create your own flavors of `TimeValve` and `PromiseValve`, and use the `.pipe` operator to add them to an instance of the MoonPipe`. Look at [Presets explained](#presets-explained) for additional info about the presets. Here I will show you have an example of a time-based valve which is similar the the `throttleLazy` operator, but has a bigger `maxBufferSize`.
+### Custom valves
+You can create your own flavors of the `TimeValve` and `PromiseValve`, and use the `.pipe` method to add them to an instance of the MoonPipe`. Look at [Presets explained](#presets-explained) for additional info about the presets. Here I will show you an example of a time-based valve which is similar the the `throttleLazy` valve, but has a bigger `maxBufferSize`.
 
 ```javascript
 const {

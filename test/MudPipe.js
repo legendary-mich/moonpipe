@@ -135,7 +135,7 @@ describe('MoonPipe', () => {
   })
 
   describe('options in', () => {
-    describe('promise operators', () => {
+    describe('promise valves', () => {
       function testCase(method) {
         it(`${ method } passes options on`, () => {
           const mp = new MoonPipe()[method](() => Promise.resolve(), {
@@ -159,7 +159,7 @@ describe('MoonPipe', () => {
       testCase('skipError')
     })
 
-    describe('time operators', () => {
+    describe('time valves', () => {
       function testCase(method) {
         it(`${ method } passes options on`, () => {
           const mp = new MoonPipe()[method](1, {
@@ -179,7 +179,7 @@ describe('MoonPipe', () => {
       testCase('skipLazy')
     })
 
-    describe('slice promise operators', () => {
+    describe('slice promise valves', () => {
       function testCase(method) {
         it(`${ method } passes options on`, () => {
           const mp = new MoonPipe()[method](1, () => Promise.resolve(), {
@@ -193,7 +193,7 @@ describe('MoonPipe', () => {
       testCase('sliceMap')
     })
 
-    describe('slice time operators', () => {
+    describe('slice time valves', () => {
       function testCase(method) {
         it(`${ method } passes options on`, () => {
           const mp = new MoonPipe()[method](1, 1, {
@@ -207,7 +207,7 @@ describe('MoonPipe', () => {
       testCase('sliceLazy')
     })
 
-    describe('flatten operator', () => {
+    describe('flatten valve', () => {
       function testCase(method) {
         it(`${ method } passes options on`, () => {
           const mp = new MoonPipe()[method]({
@@ -220,7 +220,7 @@ describe('MoonPipe', () => {
       testCase('flatten')
     })
 
-    describe('pool promise operators', () => {
+    describe('pool promise valves', () => {
       function testCase(method) {
         it(`${ method } passes options on`, () => {
           const mp = new MoonPipe()[method](1, () => Promise.resolve(), {
@@ -234,7 +234,7 @@ describe('MoonPipe', () => {
       testCase('poolMap')
     })
 
-    describe('synchronous operators', () => {
+    describe('synchronous valves', () => {
       function testCase(method) {
         it(`${ method } passes options on`, () => {
           const mp = new MoonPipe()[method](() => true, {
