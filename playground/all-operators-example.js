@@ -2,20 +2,20 @@
 
 const { MoonPipe } = require('../index.js')
 const mp = new MoonPipe()
-  // time-based operators take a number of milliseconds as the first argument
+  // time-based valves take a number of milliseconds as the first argument
   .queueLazy(300)
-  // promise-based operators take a function which returns a promise
+  // promise-based valves take a function which returns a promise
   .queueMap(async (val) => val + 1000)
-  // errors thrown from any of the promise-based operators are
+  // errors thrown from any of the promise-based valves are
   // propagated through the error channel to the first error handler.
   .queueTap(async (val) => { if (val === 'what?1000') throw new Error('ha!') })
-  // the filter operator takes a function which returns a `boolean` value
+  // the filter valve takes a function which returns a `boolean` value
   .filter((val) => val % 2 === 0)
-  // the map operator takes a function which returns an arbitrary value
+  // the map valve takes a function which returns an arbitrary value
   .map((val) => [val, val])
-  // the flatten operator does not take any arguments
+  // the flatten valve does not take any arguments
   .flatten()
-  // error operators take a function which returns a promise
+  // error valves take a function which returns a promise
   .queueError(async (err) => 'error handled: ' + err.message)
   .queueTap(async (val) => {
     console.log('output:', val)

@@ -1,0 +1,8 @@
+/.git/
+/node_modules/
+/.nyc_output/
+/playground/
+/test/
+/.editorconfig
+/.eslintrc.json
+/.projectile
