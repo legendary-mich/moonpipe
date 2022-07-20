@@ -9,6 +9,7 @@ Compose promises in a structured way.
 - [Cache in PromiseValves](#cache-in-promisevalves)
 - [Timeout in PromiseValves](#timeout-in-promisevalves)
 - [Repeating on Error in PromiseValves](#repeating-on-error-in-promisevalves)
+- [onCancel callback](#oncancel-callback)
 - [Pooling in PromiseValves](#pooling-in-promisevalves)
 - [Custom valves](#custom-valves)
 - [Presets explained](#presets-explained)
@@ -321,6 +322,43 @@ mp.pump('c')
 // error: err_b
 // output: c
 // error: err_c
+```
+
+### onCancel callback
+Sometimes you may want to do some cleanup when the promise is being canceled. In order to do that you can utilize the `onCancel` callback which can be attached to the `promiseContext` that is passed as the second argument to the promise factory function. What follows is an example of how to clear a timeout from within one of the `cancel` promise valves.
+
+```javascript
+const { MoonPipe } = require('../index.js')
+
+const mp = new MoonPipe()
+  .queueLazy(0)
+  .cancelTap(async (val, promiseContext) => {
+    return new Promise((resolve) => {
+      const timeout = setTimeout(() => {
+        console.log('// greetings from the timeout:', val)
+        resolve()
+      }, 1000)
+
+      promiseContext.onCancel = () => { // <---------- HERE
+        console.log('// clearing:', val)
+        clearTimeout(timeout)
+      }
+    })
+  })
+  .queueTap(async (val) => {
+    console.log('// output:', val)
+  })
+
+mp.pump('a')
+mp.pump('b')
+mp.pump('c')
+mp.pump('d')
+
+// clearing: a
+// clearing: b
+// clearing: c
+// greetings from the timeout: d
+// output: d
 ```
 
 ### Pooling in PromiseValves

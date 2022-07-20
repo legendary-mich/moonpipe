@@ -6,14 +6,15 @@
   "author": "Michał Wojciechowski",
   "main": "index.js",
   "scripts": {
+    "lint": "eslint lib test",
     "test": "mocha -t 5000 -w -b test/**/*.js",
     "test-selected": "mocha -t 5000 -w -b",
     "test-selected-debug": "mocha -t 5000 -w -b --inspect-brk",
-    "test-cov": "nyc mocha -t 5000 -b test/**/*.js"
+    "test-cov": "npm run lint && nyc mocha -t 5000 -b test/**/*.js"
   },
-  "dependencies": {},
   "devDependencies": {
     "chai": "^4.3.6",
+    "eslint": "^8.20.0",
     "mocha": "^10.0.0",
     "nyc": "^15.1.0",
     "sinon": "^14.0.0"

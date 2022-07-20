@@ -24,7 +24,11 @@ async function testInput(valve, expected) {
     })
     .queueError(async (err) => {
       await delayPromise(2)
+      expect(err).to.be.instanceOf(BufferOverflowError)
       results.push('err_' + err.message)
+    })
+    .queueError(async (err) => {
+      results.push('err_2_' + err.message)
     })
 
   pipe.pump(1)
