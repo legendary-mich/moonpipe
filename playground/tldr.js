@@ -1,7 +1,6 @@
 'use strict'
 
 const { MoonPipe } = require('../index.js')
-const { delayPromise } = require('../test/utils.js')
 
 const mp = new MoonPipe()
   .cancelLazy(1000) // in other libs known as debounce
