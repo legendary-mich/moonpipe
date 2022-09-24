@@ -14,7 +14,7 @@
     "it": true
   },
   "parserOptions": {
-    "ecmaVersion": 8
+    "ecmaVersion": 2020
   },
   "rules": {
     "comma-dangle": ["error", {

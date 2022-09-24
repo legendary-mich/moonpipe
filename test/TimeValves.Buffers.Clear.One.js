@@ -56,12 +56,12 @@ describe('TimeValves.Buffers.Clear.One.js', () => {
   })
 
   describe('MoonPipe.cancelEager', () => {
-    it('pushes all the values through immediately', () => {
+    it('pushes the first value through immediately', () => {
       return testInput('cancelEager', [
-        ['res_1', 'res_2'],
-        ['res_1', 'res_2'],
-        ['res_1', 'res_2', 'res_3'],
-        ['res_1', 'res_2', 'res_3'],
+        ['res_1'],
+        ['res_1'],
+        ['res_1', 'res_3'],
+        ['res_1', 'res_3'],
       ])
     })
   })
