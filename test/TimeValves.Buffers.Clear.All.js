@@ -104,8 +104,8 @@ describe('TimeValves.Buffers.Clear.All.js', () => {
       return testInput('skipEager', [
         ['res_1'],
         ['res_1'],
-        ['res_1', 'res_3'],
-        ['res_1', 'res_3'],
+        ['res_1'],
+        ['res_1'],
       ])
     })
   })

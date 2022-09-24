@@ -123,7 +123,7 @@ describe('Buffer Overflow', () => {
         "res_1",
         "err_Buffer overflow",
         "err_Buffer overflow",
-        "res_2",
+        "err_Buffer overflow",
       ])
     })
   })

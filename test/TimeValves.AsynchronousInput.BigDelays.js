@@ -104,9 +104,9 @@ describe('TimeValves with Asynchronous input and big delays.', () => {
     it('whatever', () => {
       return testInput('skipEager', [
         ['res_1'],
-        ['res_1', 'res_2'],
-        ['res_1', 'res_2', 'res_3'],
-        ['res_1', 'res_2', 'res_3'],
+        ['res_1'],
+        ['res_1', 'res_3'],
+        ['res_1', 'res_3'],
       ])
     })
   })
