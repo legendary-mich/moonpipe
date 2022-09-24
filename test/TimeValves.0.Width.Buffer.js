@@ -55,10 +55,10 @@ describe('TimeValves.0.Width.Buffer.js', () => {
   describe('MoonPipe.cancelEager', () => {
     it('pushes the first value through immediately', () => {
       return testInput('cancelEager', [
-        ['res_1'],
-        ['res_1', 'res_3'],
-        ['res_1', 'res_3'],
-        ['res_1', 'res_3'],
+        [],
+        [],
+        [],
+        [],
       ])
     })
   })
@@ -67,9 +67,9 @@ describe('TimeValves.0.Width.Buffer.js', () => {
     it('ignores initial values, and pumps the last one', () => {
       return testInput('cancelLazy', [
         [],
-        ['res_3'],
-        ['res_3'],
-        ['res_3'],
+        [],
+        [],
+        [],
       ])
     })
   })
@@ -77,10 +77,10 @@ describe('TimeValves.0.Width.Buffer.js', () => {
   describe('MoonPipe.throttleEager', () => {
     it('ignores the 2nd value as it is replaced by the 3rd one', () => {
       return testInput('throttleEager', [
-        ['res_1'],
-        ['res_1', 'res_3'],
-        ['res_1', 'res_3'],
-        ['res_1', 'res_3'],
+        [],
+        [],
+        [],
+        [],
       ])
     })
   })
@@ -89,9 +89,9 @@ describe('TimeValves.0.Width.Buffer.js', () => {
     it('ignores initial values, and pumps the last one', () => {
       return testInput('throttleLazy', [
         [],
-        ['res_3'],
-        ['res_3'],
-        ['res_3'],
+        [],
+        [],
+        [],
       ])
     })
   })
