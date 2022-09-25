@@ -1,10 +1,9 @@
 'use strict'
 
 const { MoonPipe } = require('../index.js')
-
 const mp = new MoonPipe()
   .queueTap(async (val) => {
-    console.log('// output:', val)
+    console.log('// side:', val)
     throw 'err_' + val
   }, {
     repeatPredicate: async (attemptsMade, err) => {

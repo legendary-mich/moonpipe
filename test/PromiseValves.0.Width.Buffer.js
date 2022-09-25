@@ -54,8 +54,6 @@ describe('PromiseValves with maxBufferSize set to 0', () => {
   describe('MoonPipe.cancelTap', () => {
     it('cancels initial promises, and resolves the last one with the ORIGINAL value', () => {
       return testInput('cancelTap', [
-        'side_3',
-        'res_3',
       ])
     })
   })
@@ -63,8 +61,6 @@ describe('PromiseValves with maxBufferSize set to 0', () => {
   describe('MoonPipe.cancelMap', () => {
     it('cancels initial promises, and resolves the last one with a MODIFIED value', () => {
       return testInput('cancelMap', [
-        'side_3',
-        'res_103',
       ])
     })
   })
@@ -72,8 +68,6 @@ describe('PromiseValves with maxBufferSize set to 0', () => {
   describe('MoonPipe.throttleTap', () => {
     it('removes values which are waiting in the queue, and pumps ORIGINAL ones', () => {
       return testInput('throttleTap', [
-        'side_3',
-        'res_3',
       ])
     })
   })
@@ -81,8 +75,6 @@ describe('PromiseValves with maxBufferSize set to 0', () => {
   describe('MoonPipe.throttleMap', () => {
     it('removes values which are waiting in the queue, and pumps MODIFIED ones', () => {
       return testInput('throttleMap', [
-        'side_3',
-        'res_103',
       ])
     })
   })
