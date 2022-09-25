@@ -298,7 +298,7 @@ The `repeatPredicate` is `async` to make it future proof. Keep in mind however t
 const { MoonPipe } = require('moonpipe')
 const mp = new MoonPipe()
   .queueTap(async (val) => {
-    console.log('// output:', val)
+    console.log('// side:', val)
     throw 'err_' + val
   }, {
     repeatPredicate: async (attemptsMade, err) => {
@@ -313,14 +313,14 @@ mp.pump('a')
 mp.pump('b')
 mp.pump('c')
 
-// output: a
+// side: a
 // error: err_a
-// output: b
-// output: b
-// output: b
-// output: b
+// side: b
+// side: b
+// side: b
+// side: b
 // error: err_b
-// output: c
+// side: c
 // error: err_c
 ```
 
