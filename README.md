@@ -383,7 +383,7 @@ mp.pump('c')
 ```
 
 ### Custom valves
-You can create your own flavors of the `TimeValve` and `PromiseValve`, and use the `.pipe` method to add them to an instance of the MoonPipe`. Look at [Presets explained](#presets-explained) for additional info about the presets. Here I will show you an example of a time-based valve which is similar the the `throttleLazy` valve, but has a bigger `maxBufferSize`.
+You can create your own flavors of the `TimeValve` and `PromiseValve`, and use the `.pipe` method to add them to an instance of the MoonPipe. Look at [Presets explained](#presets-explained) for additional info about the presets. Here I will show you an example of a time-based valve which is similar the the `throttleLazy` valve, but has a bigger `maxBufferSize`.
 
 ```javascript
 const {
