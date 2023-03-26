@@ -1,5 +1,11 @@
 # Changelog
 
+### 1.2.0
+- add an `onBusyTap` hook
+- add an `onIdle` hook
+- bugfix for `numberOfReservedSlots--` for `cancelEager`
+- bugfix for `numberOfReservedSlots=0` for `TimeValve.bufferClear`
+
 ### 1.1.1
 - cancelEager will push only the first value through
 
