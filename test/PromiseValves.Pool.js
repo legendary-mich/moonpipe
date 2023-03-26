@@ -18,6 +18,12 @@ async function testInput(method, poolSize, expected) {
       await delayPromise(2)
       results.push('err_' + err.message)
     })
+    .onBusyTap(async (value) => {
+      results.push('on_busy_' + value)
+    })
+    .onIdle(async (value) => {
+      results.push('on_idle_' + value)
+    })
   pipe.pump(9)
   pipe.pump(8)
   pipe.pump(7)
@@ -32,6 +38,7 @@ describe('PromiseValves with a Pool.', () => {
   describe('MoonPipe.poolTap', () => {
     it('runs 5 promisses concurrently when the poolSize is at 5', () => {
       return testInput('poolTap', 5, [
+        'on_busy_9',
         'side_9',
         'side_8',
         'side_7',
@@ -42,11 +49,13 @@ describe('PromiseValves with a Pool.', () => {
         'res_7',
         'res_8',
         'res_9',
+        'on_idle_undefined',
       ])
     })
 
     it('runs 3 promisses concurrently when the poolSize is at 3', () => {
       return testInput('poolTap', 3, [
+        'on_busy_9',
         'side_9',
         'side_8',
         'side_7',
@@ -57,6 +66,7 @@ describe('PromiseValves with a Pool.', () => {
         'res_9',
         'res_4',
         'res_6',
+        'on_idle_undefined',
       ])
     })
   })
@@ -64,6 +74,7 @@ describe('PromiseValves with a Pool.', () => {
   describe('MoonPipe.poolMap', () => {
     it('runs 5 promisses concurrently when the poolSize is at 5', () => {
       return testInput('poolMap', 5, [
+        'on_busy_9',
         'side_9',
         'side_8',
         'side_7',
@@ -74,11 +85,13 @@ describe('PromiseValves with a Pool.', () => {
         'res_107',
         'res_108',
         'res_109',
+        'on_idle_undefined',
       ])
     })
 
     it('runs 3 promisses concurrently when the poolSize is at 3', () => {
       return testInput('poolMap', 3, [
+        'on_busy_9',
         'side_9',
         'side_8',
         'side_7',
@@ -89,6 +102,7 @@ describe('PromiseValves with a Pool.', () => {
         'res_109',
         'res_104',
         'res_106',
+        'on_idle_undefined',
       ])
     })
   })

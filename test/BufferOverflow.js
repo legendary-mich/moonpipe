@@ -30,6 +30,12 @@ async function testInput(valve, expected) {
     .queueError(async (err) => {
       results.push('err_2_' + err.message)
     })
+    .onBusyTap(async (value) => {
+      results.push('on_busy_' + value)
+    })
+    .onIdle(async (value) => {
+      results.push('on_idle_' + value)
+    })
 
   pipe.pump(1)
   pipe.pump(2)
@@ -58,10 +64,12 @@ describe('Buffer Overflow', () => {
       }
       const valve = new PromiseValve(preset, value => value + 100)
       return testInput(valve, [
+        "on_busy_1",
         "err_Buffer overflow",
         "err_Buffer overflow",
         "err_Buffer overflow",
         "res_101",
+        "on_idle_undefined",
       ])
     })
   })
@@ -82,10 +90,12 @@ describe('Buffer Overflow', () => {
       }
       const valve = new PromiseValve(preset, value => value + 100)
       return testInput(valve, [
+        "on_busy_1",
         "err_Buffer overflow",
         "err_Buffer overflow",
         "res_101",
         "res_102",
+        "on_idle_undefined",
       ])
     })
   })
@@ -101,10 +111,12 @@ describe('Buffer Overflow', () => {
       }
       const valve = new TimeValve(preset, 1)
       return testInput(valve, [
+        "on_busy_1",
         "err_Buffer overflow",
         "err_Buffer overflow",
         "err_Buffer overflow",
         "res_1",
+        "on_idle_undefined",
       ])
     })
   })
@@ -120,10 +132,12 @@ describe('Buffer Overflow', () => {
       }
       const valve = new TimeValve(preset, 1)
       return testInput(valve, [
+        "on_busy_1",
         "res_1",
         "err_Buffer overflow",
         "err_Buffer overflow",
         "err_Buffer overflow",
+        "on_idle_undefined",
       ])
     })
   })
@@ -145,6 +159,12 @@ describe('Buffer Overflow', () => {
           await delayPromise(2)
           results.push('err_' + err.message)
         })
+        .onBusyTap(async (value) => {
+          results.push('on_busy_' + value)
+        })
+        .onIdle(async (value) => {
+          results.push('on_idle_' + value)
+        })
       pipe.pump([1, 2])
       pipe.pump([10, 20])
 
@@ -153,10 +173,12 @@ describe('Buffer Overflow', () => {
       // values synchronously, so they have no time to accumulate.
       // TODO: Add a test for the pipe in an error state.
       expect(results).to.eql([
+        "on_busy_1,2",
         "res_1",
         "res_2",
         "res_10",
         "res_20",
+        "on_idle_undefined",
       ])
     })
   })
@@ -173,10 +195,12 @@ describe('Buffer Overflow', () => {
       // values synchronously, so they have no time to accumulate.
       // TODO: Add a test for the pipe in an error state.
       return testInput(valve, [
+        "on_busy_1",
         "res_1",
         "res_2",
         "res_3",
         "res_4",
+        "on_idle_undefined",
       ])
     })
   })
@@ -193,10 +217,12 @@ describe('Buffer Overflow', () => {
       // values synchronously, so they have no time to accumulate.
       // TODO: Add a test for the pipe in an error state.
       return testInput(valve, [
+        "on_busy_1",
         "res_1",
         "res_2",
         "res_3",
         "res_4",
+        "on_idle_undefined",
       ])
     })
   })

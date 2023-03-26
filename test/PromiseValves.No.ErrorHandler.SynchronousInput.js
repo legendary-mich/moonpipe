@@ -19,6 +19,12 @@ async function testInput(method, expected) {
     //   await delayPromise(2)
     //   results.push('err_' + err.message)
     // })
+    .onBusyTap(async (value) => {
+      results.push('on_busy_' + value)
+    })
+    .onIdle(async (value) => {
+      results.push('on_idle_' + value)
+    })
 
   pipe.pump(1)
   pipe.pump(2)
@@ -34,9 +40,11 @@ describe('PromiseValves.No.ErrorHandler with Synchronous input.', () => {
   describe('MoonPipe.queueTap', () => {
     it('ignores all errors', () => {
       return testInput('queueTap', [
+        'on_busy_1',
         'side_1',
         'side_2',
         'side_3',
+        'on_idle_undefined',
       ])
     })
   })
@@ -44,9 +52,11 @@ describe('PromiseValves.No.ErrorHandler with Synchronous input.', () => {
   describe('MoonPipe.queueMap', () => {
     it('ignores all errors', () => {
       return testInput('queueMap', [
+        'on_busy_1',
         'side_1',
         'side_2',
         'side_3',
+        'on_idle_undefined',
       ])
     })
   })
@@ -54,7 +64,9 @@ describe('PromiseValves.No.ErrorHandler with Synchronous input.', () => {
   describe('MoonPipe.cancelTap', () => {
     it('ignores all errors', () => {
       return testInput('cancelTap', [
+        'on_busy_1',
         'side_3',
+        'on_idle_undefined',
       ])
     })
   })
@@ -62,7 +74,9 @@ describe('PromiseValves.No.ErrorHandler with Synchronous input.', () => {
   describe('MoonPipe.cancelMap', () => {
     it('ignores all errors', () => {
       return testInput('cancelMap', [
+        'on_busy_1',
         'side_3',
+        'on_idle_undefined',
       ])
     })
   })
@@ -70,7 +84,9 @@ describe('PromiseValves.No.ErrorHandler with Synchronous input.', () => {
   describe('MoonPipe.throttleTap', () => {
     it('ignores all errors', () => {
       return testInput('throttleTap', [
+        'on_busy_1',
         'side_3',
+        'on_idle_undefined',
       ])
     })
   })
@@ -78,7 +94,9 @@ describe('PromiseValves.No.ErrorHandler with Synchronous input.', () => {
   describe('MoonPipe.throttleMap', () => {
     it('ignores all errors', () => {
       return testInput('throttleMap', [
+        'on_busy_1',
         'side_3',
+        'on_idle_undefined',
       ])
     })
   })
@@ -86,7 +104,9 @@ describe('PromiseValves.No.ErrorHandler with Synchronous input.', () => {
   describe('MoonPipe.skipTap', () => {
     it('ignores all errors', () => {
       return testInput('skipTap', [
+        'on_busy_1',
         'side_1',
+        'on_idle_undefined',
       ])
     })
   })
@@ -94,7 +114,9 @@ describe('PromiseValves.No.ErrorHandler with Synchronous input.', () => {
   describe('MoonPipe.skipMap', () => {
     it('ignores all errors', () => {
       return testInput('skipMap', [
+        'on_busy_1',
         'side_1',
+        'on_idle_undefined',
       ])
     })
   })

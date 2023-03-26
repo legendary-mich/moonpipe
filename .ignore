@@ -1,0 +1,5 @@
+# The .ignore file is for ripgrep.
+# ripgrep looks at both .gitignore and .ignore
+
+/.git/
+/package-lock.json
