@@ -14,6 +14,12 @@ async function testInput(method, chunkSize, expected) {
       await delayPromise(2)
       results.push('err_' + err.message)
     })
+    .onBusyTap(async (value) => {
+      results.push('on_busy_' + value)
+    })
+    .onIdle(async () => {
+      results.push('on_idle')
+    })
 
   pipe.pump(1)
   pipe.pump(2)
@@ -36,28 +42,28 @@ describe('TimeValves Slice.', () => {
   describe('MoonPipe.sliceEager', () => {
     it('lets the first value slide, and than runs chunks of 5 when the chunk size is 5', () => {
       return testInput('sliceEager', 5, [
-        ['res_1'],
-        ['res_1', 'res_2,3,4,5'],
-        ['res_1', 'res_2,3,4,5'],
-        ['res_1', 'res_2,3,4,5'],
+        ['on_busy_1', 'res_1'],
+        ['on_busy_1', 'res_1', 'res_2,3,4,5'],
+        ['on_busy_1', 'res_1', 'res_2,3,4,5', 'on_idle'],
+        ['on_busy_1', 'res_1', 'res_2,3,4,5', 'on_idle'],
       ])
     })
 
     it('lets the first value slide, and than runs chunks of 3 when the chunk size is 3', () => {
       return testInput('sliceEager', 3, [
-        ['res_1'],
-        ['res_1', 'res_2,3,4'],
-        ['res_1', 'res_2,3,4', 'res_5'],
-        ['res_1', 'res_2,3,4', 'res_5'],
+        ['on_busy_1', 'res_1'],
+        ['on_busy_1', 'res_1', 'res_2,3,4'],
+        ['on_busy_1', 'res_1', 'res_2,3,4', 'res_5'],
+        ['on_busy_1', 'res_1', 'res_2,3,4', 'res_5', 'on_idle'],
       ])
     })
 
     it('lets the first value slide, and than runs chunks of 2 when the chunk size is 2', () => {
       return testInput('sliceEager', 2, [
-        ['res_1'],
-        ['res_1', 'res_2,3'],
-        ['res_1', 'res_2,3', 'res_4,5'],
-        ['res_1', 'res_2,3', 'res_4,5'],
+        ['on_busy_1', 'res_1'],
+        ['on_busy_1', 'res_1', 'res_2,3'],
+        ['on_busy_1', 'res_1', 'res_2,3', 'res_4,5'],
+        ['on_busy_1', 'res_1', 'res_2,3', 'res_4,5', 'on_idle'],
       ])
     })
   })
@@ -65,28 +71,28 @@ describe('TimeValves Slice.', () => {
   describe('MoonPipe.sliceLazy', () => {
     it('runs chunks of 5 when the chunk size is 5', () => {
       return testInput('sliceLazy', 5, [
-        [],
-        ['res_1,2,3,4,5'],
-        ['res_1,2,3,4,5'],
-        ['res_1,2,3,4,5'],
+        ['on_busy_1'],
+        ['on_busy_1', 'res_1,2,3,4,5', 'on_idle'],
+        ['on_busy_1', 'res_1,2,3,4,5', 'on_idle'],
+        ['on_busy_1', 'res_1,2,3,4,5', 'on_idle'],
       ])
     })
 
     it('runs chunks of 3 when the chunk size is 3', () => {
       return testInput('sliceLazy', 3, [
-        [],
-        ['res_1,2,3'],
-        ['res_1,2,3', 'res_4,5'],
-        ['res_1,2,3', 'res_4,5'],
+        ['on_busy_1'],
+        ['on_busy_1', 'res_1,2,3'],
+        ['on_busy_1', 'res_1,2,3', 'res_4,5', 'on_idle'],
+        ['on_busy_1', 'res_1,2,3', 'res_4,5', 'on_idle'],
       ])
     })
 
     it('runs chunks of 2 when the chunk size is 2', () => {
       return testInput('sliceLazy', 2, [
-        [],
-        ['res_1,2'],
-        ['res_1,2', 'res_3,4'],
-        ['res_1,2', 'res_3,4', 'res_5'],
+        ['on_busy_1' ],
+        ['on_busy_1', 'res_1,2'],
+        ['on_busy_1', 'res_1,2', 'res_3,4'],
+        ['on_busy_1', 'res_1,2', 'res_3,4', 'res_5', 'on_idle'],
       ])
     })
   })

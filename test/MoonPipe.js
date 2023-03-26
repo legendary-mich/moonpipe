@@ -248,4 +248,76 @@ describe('MoonPipe', () => {
       testCase('filter')
     })
   })
+
+  describe('onBusyTap', () => {
+    it('throws for a missing callback', () => {
+      const moonPipe = new MoonPipe()
+      try {
+        moonPipe.onBusyTap()
+        throw new Error('should have thrown')
+      }
+      catch (err) {
+        expect(err).to.have.property('message', "Unexpected 'callback': undefined")
+      }
+    })
+
+    it('throws for a wrong type callback', () => {
+      const moonPipe = new MoonPipe()
+      try {
+        moonPipe.onBusyTap(2)
+        throw new Error('should have thrown')
+      }
+      catch (err) {
+        expect(err).to.have.property('message', "Unexpected 'callback': 2")
+      }
+    })
+
+    it('throws when a callback is added twice', () => {
+      const moonPipe = new MoonPipe()
+      try {
+        moonPipe.onBusyTap(() => {})
+        moonPipe.onBusyTap(() => {})
+        throw new Error('should have thrown')
+      }
+      catch (err) {
+        expect(err).to.have.property('message', "Only one callback allowed")
+      }
+    })
+  })
+
+  describe('onIdle', () => {
+    it('throws for a missing callback', () => {
+      const moonPipe = new MoonPipe()
+      try {
+        moonPipe.onIdle()
+        throw new Error('should have thrown')
+      }
+      catch (err) {
+        expect(err).to.have.property('message', "Unexpected 'callback': undefined")
+      }
+    })
+
+    it('throws for a wrong type callback', () => {
+      const moonPipe = new MoonPipe()
+      try {
+        moonPipe.onIdle('ss')
+        throw new Error('should have thrown')
+      }
+      catch (err) {
+        expect(err).to.have.property('message', "Unexpected 'callback': ss")
+      }
+    })
+
+    it('throws when a callback is added twice', () => {
+      const moonPipe = new MoonPipe()
+      try {
+        moonPipe.onIdle(() => {})
+        moonPipe.onIdle(() => {})
+        throw new Error('should have thrown')
+      }
+      catch (err) {
+        expect(err).to.have.property('message', "Only one callback allowed")
+      }
+    })
+  })
 })

@@ -18,6 +18,12 @@ async function testInput(method, expected) {
       await delayPromise(2)
       results.push('err_' + err.message)
     })
+    .onIdle(async (value) => {
+      results.push('on_idle_' + value)
+    })
+    .onBusyTap(async (value) => {
+      results.push('on_busy_' + value)
+    })
 
   pipe.pump(1)
   await Promise.resolve()
@@ -33,12 +39,14 @@ describe('PromiseValves with Asynchronous input.', () => {
   describe('MoonPipe.queueTap', () => {
     it('pumps ORIGINAL values', () => {
       return testInput('queueTap', [
+        'on_busy_1',
         'side_1',
         'res_1',
         'side_2',
         'res_2',
         'side_3',
         'res_3',
+        'on_idle_undefined',
       ])
     })
   })
@@ -46,12 +54,14 @@ describe('PromiseValves with Asynchronous input.', () => {
   describe('MoonPipe.queueMap', () => {
     it('pumps MODIFIED values', () => {
       return testInput('queueMap', [
+        'on_busy_1',
         'side_1',
         'res_101',
         'side_2',
         'res_102',
         'side_3',
         'res_103',
+        'on_idle_undefined',
       ])
     })
   })
@@ -59,10 +69,12 @@ describe('PromiseValves with Asynchronous input.', () => {
   describe('MoonPipe.cancelTap', () => {
     it('cancels initial promises, and resolves the last one with the ORIGINAL value', () => {
       return testInput('cancelTap', [
+        'on_busy_1',
         'side_1',
         'side_2',
         'side_3',
         'res_3',
+        'on_idle_undefined',
       ])
     })
   })
@@ -70,10 +82,12 @@ describe('PromiseValves with Asynchronous input.', () => {
   describe('MoonPipe.cancelMap', () => {
     it('cancels initial promises, and resolves the last one with a MODIFIED value', () => {
       return testInput('cancelMap', [
+        'on_busy_1',
         'side_1',
         'side_2',
         'side_3',
         'res_103',
+        'on_idle_undefined',
       ])
     })
   })
@@ -81,10 +95,12 @@ describe('PromiseValves with Asynchronous input.', () => {
   describe('MoonPipe.throttleTap', () => {
     it('removes values which are waiting in the queue, and pumps ORIGINAL ones', () => {
       return testInput('throttleTap', [
+        'on_busy_1',
         'side_1',
         'res_1',
         'side_3',
         'res_3',
+        'on_idle_undefined',
       ])
     })
   })
@@ -92,10 +108,12 @@ describe('PromiseValves with Asynchronous input.', () => {
   describe('MoonPipe.throttleMap', () => {
     it('removes values which are waiting in the queue, and pumps MODIFIED ones', () => {
       return testInput('throttleMap', [
+        'on_busy_1',
         'side_1',
         'res_101',
         'side_3',
         'res_103',
+        'on_idle_undefined',
       ])
     })
   })
@@ -103,8 +121,10 @@ describe('PromiseValves with Asynchronous input.', () => {
   describe('MoonPipe.skipTap', () => {
     it('whatever', () => {
       return testInput('skipTap', [
+        'on_busy_1',
         'side_1',
         'res_1',
+        'on_idle_undefined',
       ])
     })
   })
@@ -112,8 +132,10 @@ describe('PromiseValves with Asynchronous input.', () => {
   describe('MoonPipe.skipMap', () => {
     it('whatever', () => {
       return testInput('skipMap', [
+        'on_busy_1',
         'side_1',
         'res_101',
+        'on_idle_undefined',
       ])
     })
   })

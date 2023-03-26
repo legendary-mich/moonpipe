@@ -14,6 +14,12 @@ async function testInput(method, expected) {
       await delayPromise(2)
       results.push('err_' + err.message)
     })
+    .onBusyTap(async (value) => {
+      results.push('on_busy_' + value)
+    })
+    .onIdle(async (value) => {
+      results.push('on_idle_' + value)
+    })
 
   pipe.pump(1)
   pipe.pump(2)
@@ -28,9 +34,11 @@ describe('TimeSliceValves with the chunkSize set to 0', () => {
   describe('MoonPipe.sliceEager', () => {
     it('pumps ORIGINAL values', () => {
       return testInput('sliceEager', [
+        'on_busy_1',
         'res_[]',
         'res_[]',
         'res_[]',
+        'on_idle_undefined',
       ])
     })
   })
@@ -38,9 +46,11 @@ describe('TimeSliceValves with the chunkSize set to 0', () => {
   describe('MoonPipe.sliceLazy', () => {
     it('pumps MODIFIED values', () => {
       return testInput('sliceLazy', [
+        'on_busy_1',
         'res_[]',
         'res_[]',
         'res_[]',
+        'on_idle_undefined',
       ])
     })
   })

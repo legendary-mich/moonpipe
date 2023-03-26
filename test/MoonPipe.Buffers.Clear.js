@@ -18,6 +18,12 @@ describe('MoonPipe.Buffers', () => {
       .queueTap(async (value) => {
         result.push(value)
       })
+      .onBusyTap(async (value) => {
+        result.push('on_busy_' + value)
+      })
+      .onIdle(async () => {
+        result.push('on_idle')
+      })
 
     mp.pump(1)
     mp.pump(2)
@@ -37,7 +43,7 @@ describe('MoonPipe.Buffers', () => {
       return testInput(mp => mp.buffersClearOne(0), [
         [],
         [2],
-        [1, 2],
+        ['on_busy_1', 1, 2, 'on_idle'],
       ])
     })
   })
@@ -47,7 +53,7 @@ describe('MoonPipe.Buffers', () => {
       return testInput(mp => mp.buffersClearOne(1), [
         [4],
         [],
-        [3, 4],
+        ['on_busy_1', 3, 4, 'on_idle'],
       ])
     })
   })
@@ -57,7 +63,7 @@ describe('MoonPipe.Buffers', () => {
       return testInput(mp => mp.buffersClearAll(), [
         [],
         [],
-        [],
+        ['on_busy_1', 'on_idle'],
       ])
     })
   })

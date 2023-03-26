@@ -5,6 +5,9 @@ Compose promises in a structured way.
 - [Predefined valves](#predefined-valves)
 - [Overriding predefined valves](#overriding-predefined-valves)
 - [Error handling](#error-handling)
+- [Hooks](#hooks)
+  - [onBusyTap](#onbusytap)
+  - [onIdle](#onidle)
 - [Clearing out buffers](#clearing-out-buffers)
 - [Cache in PromiseValves](#cache-in-promisevalves)
 - [Timeout in PromiseValves](#timeout-in-promisevalves)
@@ -187,6 +190,50 @@ mp.pump('a')
 // out 1: a
 // error: thrown in queueTap
 // out 2: b
+```
+
+### Hooks
+
+##### onBusyTap
+The `onBusyTap` hook is called every time the pipe goes from an `idle` state to a `busy` state. The callback provided by you is supposed to be `synchronous`. It takes the pumped value as the first argument. **If it throws** an error, the error will be pumped to the **nearest error valve**. There can be **only one** onBusyTap hook.
+```javascript
+const mp = new MoonPipe()
+  .onBusyTap((value) => {
+    console.log('is loading', value)
+  })
+```
+
+##### onIdle
+The `onIdle` hook is called every time the pipe goes from a `busy` state to an `idle` state. The callback provided by you is supposed to be `synchronous`. It does NOT take any value as the first argument. **If it throws** an error, the error will be **silently ignored**. There can be **only one** onIdle hook.
+
+```javascript
+const mp = new MoonPipe()
+  .onIdle(() => {
+    console.log('is NOT loading anymore')
+  })
+```
+
+One use case for the `onBusyTap/onIdle` hooks that I know is to show a spinner in the `onBusyTap` hook, and hide it in the `onIdle` hook.
+
+```javascript
+const mp = new MoonPipe()
+  .onBusyTap((value) => {
+    console.log('is loading', value)
+  })
+  .onIdle(() => {
+    console.log('is NOT loading anymore')
+  })
+  .queueTap(async (val) => {
+    console.log('output:', val)
+  })
+
+mp.pump(1)
+mp.pump(2)
+
+// is loading 1
+// output: 1
+// output: 2
+// is NOT loading anymore
 ```
 
 ### Clearing out buffers
