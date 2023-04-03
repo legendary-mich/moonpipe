@@ -1,5 +1,9 @@
 # Changelog
 
+### 1.3.0
+- add a `splitBy`/`join` combo
+- add a `delayPromise` utility function
+
 ### 1.2.0
 - add an `onBusyTap` hook
 - add an `onIdle` hook
