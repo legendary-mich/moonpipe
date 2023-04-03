@@ -6,6 +6,7 @@ const {
   BaseValve,
   BasePresets,
 } = require('../index.js')
+const { delayPromise } = require('./utils.js')
 
 describe('MoonPipe', () => {
 
@@ -17,7 +18,7 @@ describe('MoonPipe', () => {
         throw new Error('should have thrown')
       }
       catch (err) {
-        expect(err).to.have.property('message', "Expected 'valve' to derive from (or be an instance of) a 'BaseValve'")
+        expect(err).to.have.property('message', "Expected 'valve' to derive from (or be an instance of) a 'BaseValve' or 'Splitter'")
       }
     })
 
@@ -28,7 +29,7 @@ describe('MoonPipe', () => {
         throw new Error('should have thrown')
       }
       catch (err) {
-        expect(err).to.have.property('message', "Expected 'valve' to derive from (or be an instance of) a 'BaseValve'")
+        expect(err).to.have.property('message', "Expected 'valve' to derive from (or be an instance of) a 'BaseValve' or 'Splitter'")
       }
     })
 
@@ -77,6 +78,25 @@ describe('MoonPipe', () => {
         expect(err).to.have.property('message', "Expected valveIndex to be a 'number' greater than 0 and smaller than 2; found: 2")
       }
     })
+
+    it('throws for valveIndex greater than the max index when a Splitter is involved', () => {
+      const moonPipe = new MoonPipe()
+        .splitBy(2, () => {})
+        .queueLazy(1)
+        .splitBy(2, () => {})
+        .queueLazy(1)
+        .join()
+        .queueLazy(1)
+        .join()
+        .queueLazy(1)
+      try {
+        moonPipe.buffersClearOne(6)
+        throw new Error('should have thrown')
+      }
+      catch (err) {
+        expect(err).to.have.property('message', "Expected valveIndex to be a 'number' greater than 0 and smaller than 6; found: 6")
+      }
+    })
   })
 
   describe('cacheClearOne', () => {
@@ -110,6 +130,25 @@ describe('MoonPipe', () => {
       }
       catch (err) {
         expect(err).to.have.property('message', "Expected valveIndex to be a 'number' greater than 0 and smaller than 2; found: 2")
+      }
+    })
+
+    it('throws for valveIndex greater than the max index when a Splitter is involved', () => {
+      const moonPipe = new MoonPipe()
+        .splitBy(2, () => {})
+        .queueLazy(1)
+        .splitBy(2, () => {})
+        .queueLazy(1)
+        .join()
+        .queueLazy(1)
+        .join()
+        .queueLazy(1)
+      try {
+        moonPipe.cacheClearOne(6)
+        throw new Error('should have thrown')
+      }
+      catch (err) {
+        expect(err).to.have.property('message', "Expected valveIndex to be a 'number' greater than 0 and smaller than 6; found: 6")
       }
     })
 
@@ -247,76 +286,370 @@ describe('MoonPipe', () => {
       testCase('map')
       testCase('filter')
     })
-  })
 
-  describe('onBusyTap', () => {
-    it('throws for a missing callback', () => {
-      const moonPipe = new MoonPipe()
-      try {
-        moonPipe.onBusyTap()
-        throw new Error('should have thrown')
-      }
-      catch (err) {
-        expect(err).to.have.property('message', "Unexpected 'callback': undefined")
-      }
-    })
+    describe('splitBy', () => {
+      function testCase(method) {
+        it(`${ method } passes options on`, () => {
+          const classifyFn = () => 1
+          const poolSize = 2
+          const mp = new MoonPipe()
+            .splitBy(poolSize, classifyFn)
 
-    it('throws for a wrong type callback', () => {
-      const moonPipe = new MoonPipe()
-      try {
-        moonPipe.onBusyTap(2)
-        throw new Error('should have thrown')
+          expect(mp.getChannelValveAt(0).valve.classify).eql(classifyFn)
+          expect(mp.getChannelValveAt(0).valve.poolSize).eql(2)
+        })
       }
-      catch (err) {
-        expect(err).to.have.property('message', "Unexpected 'callback': 2")
-      }
-    })
 
-    it('throws when a callback is added twice', () => {
-      const moonPipe = new MoonPipe()
-      try {
-        moonPipe.onBusyTap(() => {})
-        moonPipe.onBusyTap(() => {})
-        throw new Error('should have thrown')
-      }
-      catch (err) {
-        expect(err).to.have.property('message', "Only one callback allowed")
-      }
+      testCase('map')
+      testCase('filter')
     })
   })
 
-  describe('onIdle', () => {
-    it('throws for a missing callback', () => {
+  describe('hooks', () => {
+    function testValidation(hookName) {
+      it('throws for a missing callback', () => {
+        const moonPipe = new MoonPipe()
+        try {
+          moonPipe[hookName]()
+          throw new Error('should have thrown')
+        }
+        catch (err) {
+          expect(err).to.have.property('message', "Unexpected 'callback': undefined")
+        }
+      })
+
+      it('throws for a wrong type callback', () => {
+        const moonPipe = new MoonPipe()
+        try {
+          moonPipe[hookName]('ss')
+          throw new Error('should have thrown')
+        }
+        catch (err) {
+          expect(err).to.have.property('message', "Unexpected 'callback': ss")
+        }
+      })
+
+      it('throws when a callback is added twice', () => {
+        const moonPipe = new MoonPipe()
+        try {
+          moonPipe[hookName](() => {})
+          moonPipe[hookName](() => {})
+          throw new Error('should have thrown')
+        }
+        catch (err) {
+          expect(err).to.have.property('message', "Only one callback allowed")
+        }
+      })
+    }
+
+    describe('onBusyTap', () => {
+      testValidation('onBusyTap')
+    })
+
+    describe('onIdle', () => {
+      testValidation('onIdle')
+    })
+
+    describe('onData', () => {
+      testValidation('onData')
+
+      it('emits when no valves are attached', () => {
+        const results = []
+        const mp = new MoonPipe()
+          .onData(value => results.push(value))
+        mp.pump(2)
+        expect(results).to.eql([2])
+      })
+
+      it('emits when a synchronous valve is attached', () => {
+        const results = []
+        const mp = new MoonPipe()
+          .map(value => value * 2)
+          .onData(value => results.push(value))
+        mp.pump(2)
+        expect(results).to.eql([4])
+      })
+
+      it('emits when a Promise valve is attached', async () => {
+        const results = []
+        const mp = new MoonPipe()
+          .queueMap(value => value * 2)
+          .onData(value => results.push(value))
+        mp.pump(2)
+        await delayPromise(2)
+        expect(results).to.eql([4])
+      })
+
+      it('emits when a Time valve is attached', async () => {
+        const results = []
+        const mp = new MoonPipe()
+          .queueLazy(0)
+          .onData(value => results.push(value))
+        mp.pump(2)
+        await delayPromise(2)
+        expect(results).to.eql([2])
+      })
+
+      it('emits when 2 valves are attached', async () => {
+        const results = []
+        const mp = new MoonPipe()
+          .queueMap(value => value * 2)
+          .queueMap(value => value * 2)
+          .onData(value => results.push(value))
+        mp.pump(2)
+        await delayPromise(2)
+        expect(results).to.eql([8])
+      })
+
+      it('emits twice when 2 values are pumped', async () => {
+        const results = []
+        const mp = new MoonPipe()
+          .queueMap(value => value * 2)
+          .queueMap(value => value * 2)
+          .onData(value => results.push(value))
+        mp.pump(2)
+        mp.pump(100)
+        await delayPromise(2)
+        expect(results).to.eql([8, 400])
+      })
+
+      it('emits when an empty Splitter is attached', async () => {
+        const results = []
+        const mp = new MoonPipe()
+          .splitBy(1, () => 100)
+          .onData(value => results.push(value))
+        mp.pump(2)
+        await delayPromise(2)
+        expect(results).to.eql([2])
+      })
+
+      it('emits when 2 empty Splitters are attached', async () => {
+        const results = []
+        const mp = new MoonPipe()
+          .splitBy(1, () => 100)
+          .join()
+          .splitBy(1, () => 100)
+          .onData(value => results.push(value))
+        mp.pump(2)
+        await delayPromise(2)
+        expect(results).to.eql([2])
+      })
+
+      it('emits when a non-empty Splitter is attached', async () => {
+        const results = []
+        const mp = new MoonPipe()
+          .splitBy(1, () => 100)
+          .queueMap(value => value + 100)
+          .onData(value => results.push(value))
+        mp.pump(2)
+        await delayPromise(2)
+        expect(results).to.eql([102])
+      })
+
+      it('emits when 2 non-empty Splitters are attached', async () => {
+        const results = []
+        const mp = new MoonPipe()
+          .splitBy(1, () => 100)
+          .queueMap(value => value + 100)
+          .join()
+          .splitBy(1, () => 100)
+          .queueMap(value => value + 100)
+          .onData(value => results.push(value))
+        mp.pump(2)
+        await delayPromise(2)
+        expect(results).to.eql([202])
+      })
+
+      it('emits when 2 non-empty nested Splitters are attached', async () => {
+        const results = []
+        const mp = new MoonPipe()
+          .splitBy(1, () => 100)
+          .queueMap(value => value + 100)
+          .splitBy(1, () => 100)
+          .queueMap(value => value + 100)
+          .onData(value => results.push(value))
+        mp.pump(2)
+        await delayPromise(2)
+        expect(results).to.eql([202])
+      })
+
+      it('emits when the pipe is in an ERROR state', async () => {
+        const results = []
+        const mp = new MoonPipe()
+          .queueMap(async value => {
+            if (value === 2) {
+              await delayPromise(2)
+              throw 'map_err_' + value
+            }
+            return value
+          })
+          .queueMap(async value => {
+            await delayPromise(4)
+            return value
+          })
+          .queueError(async (err) => {
+            await delayPromise(4)
+            return 'handled_' + err
+          })
+          .onData(value => results.push('on_data_' + value))
+        mp.pump(1)
+        mp.pump(2)
+        await delayPromise(20)
+        expect(results).to.eql([
+          'on_data_1',
+          'on_data_handled_map_err_2',
+        ])
+      })
+    })
+
+    describe('onError', () => {
+      testValidation('onError')
+
+      it('emits when a synchronous valve is attached', () => {
+        const results = []
+        const mp = new MoonPipe()
+          .map(value => { throw 'err_' + value })
+          .onError(value => results.push(value))
+        mp.pump(2)
+        expect(results).to.eql(['err_2'])
+      })
+
+      it('emits when a Promise valve is attached', async () => {
+        const results = []
+        const mp = new MoonPipe()
+          .queueMap(value => { throw 'err_' + value })
+          .onError(value => results.push(value))
+        mp.pump(4)
+        await delayPromise(2)
+        expect(results).to.eql(['err_4'])
+      })
+
+      it('emits when a non-empty Splitter is attached', async () => {
+        const results = []
+        const mp = new MoonPipe()
+          .splitBy(1, () => 100)
+          .queueMap(value => { throw 'err_' + value })
+          .onError(value => results.push(value))
+        mp.pump(2)
+        await delayPromise(2)
+        expect(results).to.eql(['err_2'])
+      })
+
+      it('emits when 2 non-empty nested Splitters are attached', async () => {
+        const results = []
+        const mp = new MoonPipe()
+          .splitBy(1, () => 100)
+          .queueMap(value => value + 100)
+          .splitBy(1, () => 100)
+          .queueMap(value => { throw 'err_' + value })
+          .onError(value => results.push(value))
+        mp.pump(2)
+        await delayPromise(2)
+        expect(results).to.eql(['err_102'])
+      })
+
+      it('if it is the last error, the the subsequent value is not blocked in any way', async () => {
+        const results = []
+        const mp = new MoonPipe()
+          .map(value => {
+            if (value === 2) {
+              throw 'err_' + value
+            }
+            return value + 100
+          })
+          .map(value => {
+            results.push('res_' + value)
+            return value
+          })
+          .onError(value => results.push(value))
+        mp.pump(2)
+        mp.pump(3)
+        expect(results).to.eql([
+          'err_2',
+          'res_103',
+        ])
+      })
+
+      it('if it is NOT the last error, the subsequent value will wait for its turn', async () => {
+        const results = []
+        const mp = new MoonPipe()
+          .map(value => {
+            if (value === 2) {
+              throw 'map_err_' + value
+            }
+            return value
+          })
+          .queueError(async (err) => {
+            await delayPromise(10)
+            return 'handled_' + err
+          })
+          .queueTap(async value => {
+            if (value === 1) {
+              await delayPromise(5)
+              throw 'tap_err_' + value
+            }
+          })
+          .map(value => {
+            results.push('res_' + value)
+            return value
+          })
+          .onError(value => results.push('on_err_' + value))
+        mp.pump(1)
+        mp.pump(2)
+        await delayPromise(7)
+        mp.pump(3)
+        await delayPromise(20)
+        expect(results).to.eql([
+          'on_err_tap_err_1',
+          'res_handled_map_err_2',
+          'res_3',
+        ])
+        // The order when things are broken:
+        //   'on_err_tap_err_1',
+        //   'res_3',
+        //   'res_handled_map_err_2',
+        //
+      })
+    })
+  })
+
+  describe('join', () => {
+    it('throws if no spliiters have been added', () => {
       const moonPipe = new MoonPipe()
       try {
-        moonPipe.onIdle()
+        moonPipe.join()
         throw new Error('should have thrown')
       }
       catch (err) {
-        expect(err).to.have.property('message', "Unexpected 'callback': undefined")
+        expect(err).to.have.property('message', "There are no splitters to join")
       }
     })
 
-    it('throws for a wrong type callback', () => {
+    it('throws if called twice and only one splitter has been added', () => {
       const moonPipe = new MoonPipe()
       try {
-        moonPipe.onIdle('ss')
+        moonPipe.splitBy(1, () => 1)
+        moonPipe.join()
+        moonPipe.join()
         throw new Error('should have thrown')
       }
       catch (err) {
-        expect(err).to.have.property('message', "Unexpected 'callback': ss")
+        expect(err).to.have.property('message', "There are no splitters to join")
       }
     })
 
-    it('throws when a callback is added twice', () => {
+    it('throws if called three times and only two splitters have been added', () => {
       const moonPipe = new MoonPipe()
       try {
-        moonPipe.onIdle(() => {})
-        moonPipe.onIdle(() => {})
+        moonPipe.splitBy(1, () => 1)
+        moonPipe.splitBy(1, () => 1)
+        moonPipe.join()
+        moonPipe.join()
+        moonPipe.join()
         throw new Error('should have thrown')
       }
       catch (err) {
-        expect(err).to.have.property('message', "Only one callback allowed")
+        expect(err).to.have.property('message', "There are no splitters to join")
       }
     })
   })

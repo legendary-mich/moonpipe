@@ -1,9 +1,7 @@
 'use strict'
 
+const { delayPromise } = require('../index.js')
+
 module.exports = {
-  delayPromise(ms) {
-    return new Promise(resolve => {
-      setTimeout(() => { resolve() }, ms)
-    })
-  },
+  delayPromise,
 }

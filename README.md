@@ -9,16 +9,19 @@ Compose promises in a structured way.
   - [onBusyTap](#onbusytap)
   - [onIdle](#onidle)
 - [Clearing out buffers](#clearing-out-buffers)
-- [Cache in PromiseValves](#cache-in-promisevalves)
-- [Timeout in PromiseValves](#timeout-in-promisevalves)
-- [Repeating on Error in PromiseValves](#repeating-on-error-in-promisevalves)
-- [onCancel callback](#oncancel-callback)
-- [Pooling in PromiseValves](#pooling-in-promisevalves)
+- [PromiseValves](#promisevalves)
+  - [Cache](#cache-in-promisevalves)
+  - [Timeout](#timeout-in-promisevalves)
+  - [Repeating on Error](#repeating-on-error-in-promisevalves)
+  - [onCancel callback](#oncancel-callback)
+  - [Pooling](#pooling-in-promisevalves)
+- [SplitBy/Join](#splitbyjoin)
 - [Custom valves](#custom-valves)
 - [Presets explained](#presets-explained)
   - [Base Preset Params](#base-preset-params-these-params-are-common-to-both-the-timevalves-and-promisevalves)
   - [TimeValve Preset Params](#timevalve-preset-params)
   - [PromiseValve Preset Params](#promisevalve-preset-params)
+- [Utilities](#utilities)
 - [Contributing](#contributing)
 
 ### TL;DR
@@ -55,10 +58,11 @@ throttleTap throttleMap throttleEager throttleLazy throttleError
 skipTap     skipMap     skipEager     skipLazy     skipError
 sliceTap    sliceMap    sliceEager    sliceLazy
 poolTap     poolMap
+splitBy     join
 flatten     map         filter
 ```
 
-Among the predefined valves there are 3 synchronous valves **(flatten, map, filter)**, and 20+4+2 asynchronous valves. The names of the asynchronous valves consist of a prefix and a suffix. There are 5 different prefixes **(queue, cancel, throttle, skip, slice)**, and 5 different suffixes **(Map, Tap, Eager, Lazy, Error)**.
+Among the predefined valves there are 3 synchronous valves **(flatten, map, filter)**, and 20+4+2+2 asynchronous valves. The names of the asynchronous valves consist of a prefix and a suffix. There are 5 different prefixes **(queue, cancel, throttle, skip, slice)**, and 5 different suffixes **(Map, Tap, Eager, Lazy, Error)**.
 
 The valves with the **Map**, **Tap**, and **Error** suffixes operate on **Promises**, whereas the valves with the **Eager** and **Lazy** suffixes operate on **Timeouts**.
 
@@ -237,24 +241,25 @@ mp.pump(2)
 ```
 
 ### Clearing out buffers
-There are two methods that you can use to clear out `buffers`. These are `buffersClearAll()`, and `buffersClearOne(valveIndex)`. The `valveIndex` is a `0-based` index of a valve plugged into the pipe. In the following code the cancelLazy valve has index = 0.
+There are two methods that you can use to clear out `buffers`. These are `buffersClearAll()`, and `buffersClearOne(valveIndex)`. The `valveIndex` is a `0-based` index of a valve plugged into the pipe. In the following code the cancelLazy valve has index = 0. Notice that the `splitBy` valve is different, as clearing cache on it applies to everything that's between `splitBy` and `join`.
 ```javascript
-const { MoonPipe } = require('moonpipe')
 const mp = new MoonPipe()
-  .cancelLazy(1000)             // valveIndex = 0
-  .queueMap(async (val) => val) // valveIndex = 1
-  .queueTap(async (val) => {    // valveIndex = 2
-    throw 'thrown in queueTap'
-  })
-  .queueError(async (err) => {  // valveIndex = 3
-    console.log('error:', err)
-  })
+  .cancelLazy(1000)              // valveIndex = 0
+  .queueMap(async (val) => val)  // valveIndex = 1
+  .splitBy(1, () => 'whatever')  // valveIndex = 2
+  .queueTap(async (val) => val)  // valveIndex = 3
+  .queueTap(async (val) => val)  // valveIndex = 4
+  .join()
+  .queueError(async (err) => {}) // valveIndex = 5
 
 mp.buffersClearOne(1) // this will clear out the buffer in the queueMap valve
-mp.buffersClearAll() // this will clear out buffers in all the valves
+mp.buffersClearOne(2) // this will clear out everything that's between splitBy() and join()
+mp.buffersClearOne(3) // this will clear out the buffer in the first queueTap valve
+mp.buffersClearAll()  // this will clear out buffers in all the valves
 ```
 In addition to clearing out buffers, the mentioned methods cancel `active promises` in `PromiseValves`, and `active timeouts` in `TimeValves`.
 
+### PromiseValves
 ### Cache in PromiseValves
 You can cache the result of a promise. In order to do that you just add a `cache: true` param to the options and you are done. Results are cached in a hash map, where the value provided is used as the key. You can customize the hash function if you don't like how the keys are derived (see down below).
 ```javascript
@@ -280,13 +285,14 @@ mp.pump('a')
 // output: mapped_b
 // output: mapped_a <-- no side effect, because the value comes directly from the cache
 ```
-You can clear the cache later with one of these:
+You can clear the cache later with one of the following (look at the [Clearing out buffers](#clearing-out-buffers) section for the info about how valves are indexed):
 ```javascript
 mp.cacheClearAll() // clears the entire cache in all valves.
 mp.cacheClearOne(0) // clears the entire cache in the valve at the index 0.
 mp.cacheClearOne(1, 'a') // clears only the entry at the key derived from the value 'a' in the valve at the index 1.
 mp.cacheClearOne(2, 'a', 'b') // clears entries at keys derived from values 'a' and 'b' in the valve at the index 2.
 ```
+
 You can also use a custom hash function to generate custom keys at which the values will be stored in cache.
 ```javascript
 const { MoonPipe } = require('moonpipe')
@@ -375,7 +381,7 @@ mp.pump('c')
 Sometimes you may want to do some cleanup when the promise is being canceled. In order to do that you can utilize the `onCancel` callback which can be attached to the `promiseContext` that is passed as the second argument to the promise factory function. What follows is an example of how to clear a timeout from within one of the `cancel` promise valves.
 
 ```javascript
-const { MoonPipe } = require('../index.js')
+const { MoonPipe } = require('moonpipe')
 
 const mp = new MoonPipe()
   .queueLazy(0)
@@ -428,6 +434,48 @@ mp.pump('a')
 mp.pump('b')
 mp.pump('c')
 ```
+
+### SplitBy/Join
+Sometimes it is useful to run a few pipes of the same type concurrently. In that case you can use the `splitBy` valve to split the incoming data by a factor that you define in the classification function. The first argument passed to the `splitBy` function is the number of pipes that are going to be created under the hood. The second argument is a classification function. The classification function takes the pumped value as the first argument and returns the label of a bucket the data will be put into. Every data bucket will be processed by a dedicated pipe in separation from the other buckets. For example `.splitBy(2, value => value.id)` will create 2 pipes, and will group the incoming values by the `value.id`.
+
+It is perfectly fine to have more groups than the number of underlying pipes. If there are more groups than the pipes, some of the groups will wait for a free pipe before they move on.
+
+When you are done with splitting, use the `join()` valve to collect the results. Everything that is between `splitBy` and `join` constitutes a full-fledged pipe.
+
+The `splitBy/join` pattern can be useful when e.g. you make a few consecutive PUT requests, and you want to have one pipe per object id. E.g:
+```javascript
+const mp = new MoonPipe()
+  .splitBy(2, value => value.id)     //  /\
+  .throttleMap(async value => value) //  ||
+  .join()                            //  \/
+  .queueTap(value => {
+    console.log('// queue   ', value)
+  })
+
+mp.pump({ id: 1, n: 'a' })
+mp.pump({ id: 1, n: 'b' })
+mp.pump({ id: 1, n: 'c' })
+mp.pump({ id: 2, n: 'e' })
+mp.pump({ id: 2, n: 'f' })
+mp.pump({ id: 2, n: 'g' })
+
+// output:
+// queue    { id: 1, n: 'c' }
+// queue    { id: 2, n: 'g' }
+```
+
+Note that the `splitBy` valves can be nested. The following example creates 2 concurrent pipes, and for each of the 2 created pipes creates another 2, which gives you a fork with 4 teeth.
+```javascript
+const mp = new MoonPipe()
+  .splitBy(2, value => value.id) //   /\
+  .splitBy(2, value => value.id) //  /\/\
+  .queueTap(value => {})         //  ||||
+  .queueTap(value => {})         //  ||||
+  .join()                        //  \/\/
+  .join()                        //   \/
+```
+
+Also note that inner pipes behave like regular valves. This means that errors from inner pipes are propagated to the outer pipes, which changes the active channel on the outer pipes to the `ERROR` one. However, if you decide to handle errors on the inner pipes, errors will not be propagated to the outer pipes and the outer pipes will continue operating in the `DATA` mode, while the inner pipes will be handling errors in the `ERROR` mode (active channel = ERROR).
 
 ### Custom valves
 You can create your own flavors of the `TimeValve` and `PromiseValve`, and use the `.pipe` method to add them to an instance of the MoonPipe. Look at [Presets explained](#presets-explained) for additional info about the presets. Here I will show you an example of a time-based valve which is similar the the `throttleLazy` valve, but has a bigger `maxBufferSize`.
@@ -502,6 +550,16 @@ mp.pipe(valve, CHANNEL_TYPE.ERROR)
 - `repeatPredicate` - an `async` function which takes an `attemptsMade` counter as the first argument and an `error` as the second one. It returns `true` or `false`.
 
 Predefined presets can be found in the `TimeValve.js` and `PromiseValve.js` files.
+
+### Utilities
+##### delayPromise
+`delayPromise` is a function that takes the number of milliseconds as the first argument and returns a promise which is resolved after the provided number of milliseconds. Normally you don't need it, as valves like `queueLazy` can do a similar thing. However, it can be useful for debugging or playing around.
+```javascript
+const { delayPromise } = require('moonpipe')
+async function run() {
+  await delayPromise(2000)
+}
+```
 
 ## Contributing
 By contributing your code to this project, you agree to license your contribution under the MIT license.
