@@ -12,6 +12,7 @@ const {
   FlattenValve,
   MapValve,
   FilterValve,
+  Splitter,
 } = require('../index.js')
 
 function baseValveAssertions(TargetClass) {
@@ -337,4 +338,27 @@ describe('MapValve constructor', () => {
 describe('FilterValve constructor', () => {
   baseValveAssertions(FilterValve)
   synchronousValveAssertions(FilterValve, 'predicateFunc')
+})
+
+describe('Splitter constructor', () => {
+  it('throws for an unknown classifyFn', () => {
+    try {
+      new Splitter(33, 'hahah')
+      throw new Error('should have thrown')
+    }
+    catch (err) {
+      expect(err).to.have.property('message', "Unexpected 'classifyFn': hahah")
+    }
+  })
+
+  it('throws for a poolSize lower than 1', () => {
+    try {
+      new Splitter(0, () => 1)
+      throw new Error('should have thrown')
+    }
+    catch (err) {
+      expect(err).to.have.property('message', "Expected poolSize to be a 'number' greater or equal to 1; found: 0")
+    }
+  })
+
 })

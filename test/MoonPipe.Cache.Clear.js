@@ -204,3 +204,461 @@ describe('MoonPipe.Cache', () => {
     })
   })
 })
+
+describe('MoonPipe.Cache with Splitter', () => {
+
+  async function testInput(method, expected) {
+    let side_1 = []
+    let side_2 = []
+    let side_3 = []
+    let result = []
+    const mp = new MoonPipe()
+      .splitBy(1, () => 'wahtever')
+      .queueTap(async (value) => {
+        side_1.push(value)
+      }, { cache: true})
+      .queueTap(async (value) => {
+        side_2.push(value)
+      }, { cache: true })
+      .join()
+      .queueTap(async (value) => {
+        side_3.push(value)
+      }, { cache: true })
+      .queueTap(async (value) => {
+        result.push(value)
+      })
+
+    mp.pump(10)
+    mp.pump(20)
+    mp.pump(30)
+    mp.pump(40)
+    mp.pump(null)
+    mp.pump(undefined)
+
+    await delayPromise(5)
+    expect(side_1).to.eql([10, 20, 30, 40, null, undefined])
+    expect(side_2).to.eql([10, 20, 30, 40, null, undefined])
+    expect(side_3).to.eql([10, 20, 30, 40, null, undefined])
+    expect(result).to.eql([10, 20, 30, 40, null, undefined])
+
+    // -------------------------------------------------------------------------
+
+    method(mp)
+
+    side_1 = []
+    side_2 = []
+    side_3 = []
+    result = []
+
+    mp.pump(10)
+    mp.pump(20)
+    mp.pump(30)
+    mp.pump(40)
+    mp.pump(null)
+    mp.pump(undefined)
+
+    await delayPromise(5)
+    expect(side_1).to.eql(expected[0])
+    expect(side_2).to.eql(expected[1])
+    expect(side_3).to.eql(expected[2])
+    expect(result).to.eql(expected[3])
+  }
+
+  describe('Sibling PromiseValves', () => {
+    it('share the cache', async () => {
+      const side = []
+      const results = []
+      const mp = new MoonPipe()
+        .splitBy(2, () => Math.random())
+        .queueTap((value) => {
+          side.push(value)
+        }, { cache:  true })
+        .join()
+        .queueTap((value) => {
+          results.push(value)
+        })
+
+      for (let i = 0; i < 10; ++i) {
+        mp.pump(0)
+        mp.pump(1)
+        mp.pump(2)
+        mp.pump(3)
+        await delayPromise(1)
+      }
+      await delayPromise(20)
+      expect(results).to.have.lengthOf(40)
+      expect(side).to.eql([0, 1, 2, 3])
+    })
+  })
+
+  describe('ClearOne at 0 - meaning wipe out the whole Splitter', () => {
+    it('clears out the cache in the whole Splitter', () => {
+      return testInput(mp => mp.cacheClearOne(0), [
+        [10, 20, 30, 40, null, undefined],
+        [10, 20, 30, 40, null, undefined],
+        [],
+        [10, 20, 30, 40, null, undefined],
+      ])
+    })
+
+    it('clears out the cache in the wholse Splitter regardles of key 10', () => {
+      return testInput(mp => mp.cacheClearOne(0, 10), [
+        [10, 20, 30, 40, null, undefined],
+        [10, 20, 30, 40, null, undefined],
+        [],
+        [10, 20, 30, 40, null, undefined],
+      ])
+    })
+
+    it('clears out the cache in the wholse Splitter regardles of key 30', () => {
+      return testInput(mp => mp.cacheClearOne(0, 30), [
+        [10, 20, 30, 40, null, undefined],
+        [10, 20, 30, 40, null, undefined],
+        [],
+        [10, 20, 30, 40, null, undefined],
+      ])
+    })
+
+    it('clears out the cache in the wholse Splitter regardles of keys 20 and 40', () => {
+      return testInput(mp => mp.cacheClearOne(0, 20, 40), [
+        [10, 20, 30, 40, null, undefined],
+        [10, 20, 30, 40, null, undefined],
+        [],
+        [10, 20, 30, 40, null, undefined],
+      ])
+    })
+  })
+
+  describe('ClearOne at 1', () => {
+    it('clears out the cache in the first valve', async () => {
+      return testInput(mp => mp.cacheClearOne(1), [
+        [10, 20, 30, 40, null, undefined],
+        [],
+        [],
+        [10, 20, 30, 40, null, undefined],
+      ])
+    })
+
+    it('clears out the cache in the first valve at key 20', async () => {
+      return testInput(mp => mp.cacheClearOne(1, 20), [
+        [20],
+        [],
+        [],
+        [10, 20, 30, 40, null, undefined],
+      ])
+    })
+
+    it('clears out the cache in the first valve at key 40', async () => {
+      return testInput(mp => mp.cacheClearOne(1, 40), [
+        [40],
+        [],
+        [],
+        [10, 20, 30, 40, null, undefined],
+      ])
+    })
+
+    it('clears out the cache in the first valve at keys 10 and 30', async () => {
+      return testInput(mp => mp.cacheClearOne(1, 10, 30), [
+        [10, 30],
+        [],
+        [],
+        [10, 20, 30, 40, null, undefined],
+      ])
+    })
+
+    it('clears out the cache in the first valve at key null', async () => {
+      return testInput(mp => mp.cacheClearOne(1, null), [
+        [null],
+        [],
+        [],
+        [10, 20, 30, 40, null, undefined],
+      ])
+    })
+
+    it('clears out the cache in the first valve at key undefined', async () => {
+      return testInput(mp => mp.cacheClearOne(1, undefined), [
+        [undefined],
+        [],
+        [],
+        [10, 20, 30, 40, null, undefined],
+      ])
+    })
+
+    it('clears out the cache in the first valve at keys undefined, null, and 20', async () => {
+      return testInput(mp => mp.cacheClearOne(1, undefined, null, 20), [
+        [20, null, undefined],
+        [],
+        [],
+        [10, 20, 30, 40, null, undefined],
+      ])
+    })
+  })
+
+  describe('ClearOne at 2', () => {
+    it('clears out the cache in the second valve', async () => {
+      return testInput(mp => mp.cacheClearOne(2), [
+        [],
+        [10, 20, 30, 40, null, undefined],
+        [],
+        [10, 20, 30, 40, null, undefined],
+      ])
+    })
+
+    it('clears out the cache in the second valve at key 20', async () => {
+      return testInput(mp => mp.cacheClearOne(2, 20), [
+        [],
+        [20],
+        [],
+        [10, 20, 30, 40, null, undefined],
+      ])
+    })
+
+    it('clears out the cache in the second valve at key 40', async () => {
+      return testInput(mp => mp.cacheClearOne(2, 40), [
+        [],
+        [40],
+        [],
+        [10, 20, 30, 40, null, undefined],
+      ])
+    })
+
+    it('clears out the cache in the second valve at keys 10 and 30', async () => {
+      return testInput(mp => mp.cacheClearOne(2, 10, 30), [
+        [],
+        [10, 30],
+        [],
+        [10, 20, 30, 40, null, undefined],
+      ])
+    })
+
+    it('clears out the cache in the second valve at key null', async () => {
+      return testInput(mp => mp.cacheClearOne(2, null), [
+        [],
+        [null],
+        [],
+        [10, 20, 30, 40, null, undefined],
+      ])
+    })
+
+    it('clears out the cache in the second valve at key undefined', async () => {
+      return testInput(mp => mp.cacheClearOne(2, undefined), [
+        [],
+        [undefined],
+        [],
+        [10, 20, 30, 40, null, undefined],
+      ])
+    })
+
+    it('clears out the cache in the second valve at keys undefined, null, and 20', async () => {
+      return testInput(mp => mp.cacheClearOne(2, undefined, null, 20), [
+        [],
+        [20, null, undefined],
+        [],
+        [10, 20, 30, 40, null, undefined],
+      ])
+    })
+  })
+
+  describe('ClearOne at 3', () => {
+    it('clears out the cache in the third valve', async () => {
+      return testInput(mp => mp.cacheClearOne(3), [
+        [],
+        [],
+        [10, 20, 30, 40, null, undefined],
+        [10, 20, 30, 40, null, undefined],
+      ])
+    })
+
+    it('clears out the cache in the third valve at key 20', async () => {
+      return testInput(mp => mp.cacheClearOne(3, 20), [
+        [],
+        [],
+        [20],
+        [10, 20, 30, 40, null, undefined],
+      ])
+    })
+
+    it('clears out the cache in the third valve at key 40', async () => {
+      return testInput(mp => mp.cacheClearOne(3, 40), [
+        [],
+        [],
+        [40],
+        [10, 20, 30, 40, null, undefined],
+      ])
+    })
+  })
+
+  describe('ClearAll', () => {
+    it('clears out all valves', async () => {
+      return testInput(mp => mp.cacheClearAll(), [
+        [10, 20, 30, 40, null, undefined],
+        [10, 20, 30, 40, null, undefined],
+        [10, 20, 30, 40, null, undefined],
+        [10, 20, 30, 40, null, undefined],
+      ])
+    })
+  })
+})
+
+describe('MoonPipe.Cache with Splitter + nesting and dbl join', () => {
+
+  async function testInput(method, expected) {
+    let side_1 = []
+    let side_2 = []
+    let side_3 = []
+    let side_4 = []
+    let result = []
+    const mp = new MoonPipe()
+      .splitBy(1, () => 'wahtever')
+      .splitBy(1, () => 'wahtever')
+      .queueTap(async (value) => {
+        side_1.push(value)
+      }, { cache: true})
+      .join()
+      .queueTap(async (value) => {
+        side_2.push(value)
+      }, { cache: true })
+      .join()
+      .splitBy(1, () => 'wahtever')
+      .queueTap(async (value) => {
+        side_3.push(value)
+      }, { cache: true })
+      .join()
+      .queueTap(async (value) => {
+        side_4.push(value)
+      }, { cache: true })
+      .queueTap(async (value) => {
+        result.push(value)
+      })
+
+    mp.pump(10)
+    mp.pump(20)
+    mp.pump(30)
+    mp.pump(40)
+
+    await delayPromise(5)
+    expect(side_1).to.eql([10, 20, 30, 40])
+    expect(side_2).to.eql([10, 20, 30, 40])
+    expect(side_3).to.eql([10, 20, 30, 40])
+    expect(side_4).to.eql([10, 20, 30, 40])
+    expect(result).to.eql([10, 20, 30, 40])
+
+    // -------------------------------------------------------------------------
+
+    method(mp)
+
+    side_1 = []
+    side_2 = []
+    side_3 = []
+    side_4 = []
+    result = []
+
+    mp.pump(10)
+    mp.pump(20)
+    mp.pump(30)
+    mp.pump(40)
+
+    await delayPromise(5)
+    expect(side_1).to.eql(expected[0])
+    expect(side_2).to.eql(expected[1])
+    expect(side_3).to.eql(expected[2])
+    expect(side_4).to.eql(expected[3])
+    expect(result).to.eql(expected[4])
+  }
+
+  describe('ClearOne at 0 - first Splitter', () => {
+    it('clears out the cache', () => {
+      return testInput(mp => mp.cacheClearOne(0), [
+        [10, 20, 30, 40],
+        [10, 20, 30, 40],
+        [],
+        [],
+        [10, 20, 30, 40],
+      ])
+    })
+  })
+
+  describe('ClearOne at 1 - second Splitter', () => {
+    it('clears out the cache', async () => {
+      return testInput(mp => mp.cacheClearOne(1), [
+        [10, 20, 30, 40],
+        [],
+        [],
+        [],
+        [10, 20, 30, 40],
+      ])
+    })
+  })
+
+  describe('ClearOne at 2 - first valve in the second Splitter', () => {
+    it('clears out the cache', async () => {
+      return testInput(mp => mp.cacheClearOne(2), [
+        [10, 20, 30, 40],
+        [],
+        [],
+        [],
+        [10, 20, 30, 40],
+      ])
+    })
+  })
+
+  describe('ClearOne at 3 - first valve in the first Splitter', () => {
+    it('clears out the cache', async () => {
+      return testInput(mp => mp.cacheClearOne(3), [
+        [],
+        [10, 20, 30, 40],
+        [],
+        [],
+        [10, 20, 30, 40],
+      ])
+    })
+  })
+
+  describe('ClearOne at 4 - third Splitter', () => {
+    it('clears out the cache', async () => {
+      return testInput(mp => mp.cacheClearOne(4), [
+        [],
+        [],
+        [10, 20, 30, 40],
+        [],
+        [10, 20, 30, 40],
+      ])
+    })
+  })
+
+  describe('ClearOne at 5 - first valve in the third Splitter', () => {
+    it('clears out the cache', async () => {
+      return testInput(mp => mp.cacheClearOne(5), [
+        [],
+        [],
+        [10, 20, 30, 40],
+        [],
+        [10, 20, 30, 40],
+      ])
+    })
+  })
+
+  describe('ClearOne at 6 - first top level valve', () => {
+    it('clears out the cache', async () => {
+      return testInput(mp => mp.cacheClearOne(6), [
+        [],
+        [],
+        [],
+        [10, 20, 30, 40],
+        [10, 20, 30, 40],
+      ])
+    })
+  })
+
+  describe('ClearAll', () => {
+    it('clears out all valves', async () => {
+      return testInput(mp => mp.cacheClearAll(), [
+        [10, 20, 30, 40],
+        [10, 20, 30, 40],
+        [10, 20, 30, 40],
+        [10, 20, 30, 40],
+        [10, 20, 30, 40],
+      ])
+    })
+  })
+})

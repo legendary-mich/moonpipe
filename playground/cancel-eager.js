@@ -1,7 +1,6 @@
 'use strict'
 
-const { MoonPipe } = require('../index.js')
-const { delayPromise } = require('../test/utils.js')
+const { MoonPipe, delayPromise } = require('../index.js')
 
 let counter = 0
 const mp = new MoonPipe()

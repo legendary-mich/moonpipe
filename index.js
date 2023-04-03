@@ -26,6 +26,10 @@ const {
   FilterValve,
 } = require('./lib/SynchronousValves.js')
 
+const { Splitter } = require('./lib/Splitter.js')
+
+const { delayPromise } = require('./lib/utils.js')
+
 module.exports = {
   MoonPipe,
   BaseValve,
@@ -43,4 +47,6 @@ module.exports = {
   FlattenValve,
   MapValve,
   FilterValve,
+  Splitter,
+  delayPromise,
 }
