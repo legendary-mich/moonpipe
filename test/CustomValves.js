@@ -17,6 +17,7 @@ describe('Custom Valves,', () => {
   describe('Custom TimeValve', () => {
     it('does not throw', async () => {
       const preset = {
+        name: null,
         maxBufferSize: 3,
         bufferType: BUFFER_TYPE.QUEUE,
         overflowAction: OVERFLOW_ACTION.SHIFT,
@@ -45,6 +46,7 @@ describe('Custom Valves,', () => {
   describe('Custom PromiseValve', () => {
     it('does not throw', async () => {
       const preset = {
+        name: null,
         maxBufferSize: 3,
         bufferType: BUFFER_TYPE.QUEUE,
         overflowAction: OVERFLOW_ACTION.SHIFT,

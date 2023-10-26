@@ -13,10 +13,10 @@ describe('MoonPipe.Cache', () => {
     const mp = new MoonPipe()
       .queueTap(async (value) => {
         side_1.push(value)
-      }, { cache: true})
+      }, { cache: true, name: '1st' })
       .queueTap(async (value) => {
         side_2.push(value)
-      }, { cache: true })
+      }, { cache: true, name: '2nd' })
       .queueTap(async (value) => {
         result.push(value)
       })
@@ -56,7 +56,7 @@ describe('MoonPipe.Cache', () => {
 
   describe('ClearOne at 0', () => {
     it('clears out the cache in the first valve', () => {
-      return testInput(mp => mp.cacheClearOne(0), [
+      return testInput(mp => mp.cacheClearOne('1st'), [
         [10, 20, 30, 40, null, undefined],
         [],
         [10, 20, 30, 40, null, undefined],
@@ -64,7 +64,7 @@ describe('MoonPipe.Cache', () => {
     })
 
     it('clears out the cache in the first valve at key 10', () => {
-      return testInput(mp => mp.cacheClearOne(0, 10), [
+      return testInput(mp => mp.cacheClearOne('1st', 10), [
         [10],
         [],
         [10, 20, 30, 40, null, undefined],
@@ -72,7 +72,7 @@ describe('MoonPipe.Cache', () => {
     })
 
     it('clears out the cache in the first valve at key 30', () => {
-      return testInput(mp => mp.cacheClearOne(0, 30), [
+      return testInput(mp => mp.cacheClearOne('1st', 30), [
         [30],
         [],
         [10, 20, 30, 40, null, undefined],
@@ -80,7 +80,7 @@ describe('MoonPipe.Cache', () => {
     })
 
     it('clears out the cache in the first valve at keys 20 and 40', () => {
-      return testInput(mp => mp.cacheClearOne(0, 20, 40), [
+      return testInput(mp => mp.cacheClearOne('1st', 20, 40), [
         [20, 40],
         [],
         [10, 20, 30, 40, null, undefined],
@@ -90,7 +90,7 @@ describe('MoonPipe.Cache', () => {
 
   describe('ClearOne at 1', () => {
     it('clears out the cache in the second valve', async () => {
-      return testInput(mp => mp.cacheClearOne(1), [
+      return testInput(mp => mp.cacheClearOne('2nd'), [
         [],
         [10, 20, 30, 40, null, undefined],
         [10, 20, 30, 40, null, undefined],
@@ -98,7 +98,7 @@ describe('MoonPipe.Cache', () => {
     })
 
     it('clears out the cache in the second valve at key 20', async () => {
-      return testInput(mp => mp.cacheClearOne(1, 20), [
+      return testInput(mp => mp.cacheClearOne('2nd', 20), [
         [],
         [20],
         [10, 20, 30, 40, null, undefined],
@@ -106,7 +106,7 @@ describe('MoonPipe.Cache', () => {
     })
 
     it('clears out the cache in the second valve at key 40', async () => {
-      return testInput(mp => mp.cacheClearOne(1, 40), [
+      return testInput(mp => mp.cacheClearOne('2nd', 40), [
         [],
         [40],
         [10, 20, 30, 40, null, undefined],
@@ -114,7 +114,7 @@ describe('MoonPipe.Cache', () => {
     })
 
     it('clears out the cache in the second valve at keys 10 and 30', async () => {
-      return testInput(mp => mp.cacheClearOne(1, 10, 30), [
+      return testInput(mp => mp.cacheClearOne('2nd', 10, 30), [
         [],
         [10, 30],
         [10, 20, 30, 40, null, undefined],
@@ -122,7 +122,7 @@ describe('MoonPipe.Cache', () => {
     })
 
     it('clears out the cache in the second valve at key null', async () => {
-      return testInput(mp => mp.cacheClearOne(1, null), [
+      return testInput(mp => mp.cacheClearOne('2nd',  null), [
         [],
         [null],
         [10, 20, 30, 40, null, undefined],
@@ -130,7 +130,7 @@ describe('MoonPipe.Cache', () => {
     })
 
     it('clears out the cache in the second valve at key undefined', async () => {
-      return testInput(mp => mp.cacheClearOne(1, undefined), [
+      return testInput(mp => mp.cacheClearOne('2nd', undefined), [
         [],
         [undefined],
         [10, 20, 30, 40, null, undefined],
@@ -138,7 +138,7 @@ describe('MoonPipe.Cache', () => {
     })
 
     it('clears out the cache in the second valve at keys undefined, null, and 20', async () => {
-      return testInput(mp => mp.cacheClearOne(1, undefined, null, 20), [
+      return testInput(mp => mp.cacheClearOne('2nd', undefined, null, 20), [
         [],
         [20, null, undefined],
         [10, 20, 30, 40, null, undefined],
@@ -155,6 +155,7 @@ describe('MoonPipe.Cache', () => {
         .queueTap(async (value) => {
           side_1.push(value)
         }, {
+          name: '1st',
           cache: true,
           hashFunction: (value) => {
             if (value === 20 || value === 40) return 'zz'
@@ -176,7 +177,7 @@ describe('MoonPipe.Cache', () => {
 
       // -------------------------------------------------------------------------
 
-      mp.cacheClearOne(0, 20)
+      mp.cacheClearOne('1st', 20)
 
       side_1 = []
       side_2 = []
@@ -213,17 +214,17 @@ describe('MoonPipe.Cache with Splitter', () => {
     let side_3 = []
     let result = []
     const mp = new MoonPipe()
-      .splitBy(1, () => 'wahtever')
+      .splitBy(1, () => 'wahtever', { name: 'splitter' })
       .queueTap(async (value) => {
         side_1.push(value)
-      }, { cache: true})
+      }, { cache: true, name: 's-1st' })
       .queueTap(async (value) => {
         side_2.push(value)
-      }, { cache: true })
+      }, { cache: true, name: 's-2nd' })
       .join()
       .queueTap(async (value) => {
         side_3.push(value)
-      }, { cache: true })
+      }, { cache: true, name: 'tap-1st' })
       .queueTap(async (value) => {
         result.push(value)
       })
@@ -293,7 +294,7 @@ describe('MoonPipe.Cache with Splitter', () => {
 
   describe('ClearOne at 0 - meaning wipe out the whole Splitter', () => {
     it('clears out the cache in the whole Splitter', () => {
-      return testInput(mp => mp.cacheClearOne(0), [
+      return testInput(mp => mp.cacheClearOne('splitter'), [
         [10, 20, 30, 40, null, undefined],
         [10, 20, 30, 40, null, undefined],
         [],
@@ -301,8 +302,8 @@ describe('MoonPipe.Cache with Splitter', () => {
       ])
     })
 
-    it('clears out the cache in the wholse Splitter regardles of key 10', () => {
-      return testInput(mp => mp.cacheClearOne(0, 10), [
+    it('clears out the cache in the whole Splitter regardles of key 10', () => {
+      return testInput(mp => mp.cacheClearOne('splitter', 10), [
         [10, 20, 30, 40, null, undefined],
         [10, 20, 30, 40, null, undefined],
         [],
@@ -310,8 +311,8 @@ describe('MoonPipe.Cache with Splitter', () => {
       ])
     })
 
-    it('clears out the cache in the wholse Splitter regardles of key 30', () => {
-      return testInput(mp => mp.cacheClearOne(0, 30), [
+    it('clears out the cache in the whole Splitter regardles of key 30', () => {
+      return testInput(mp => mp.cacheClearOne('splitter', 30), [
         [10, 20, 30, 40, null, undefined],
         [10, 20, 30, 40, null, undefined],
         [],
@@ -319,8 +320,8 @@ describe('MoonPipe.Cache with Splitter', () => {
       ])
     })
 
-    it('clears out the cache in the wholse Splitter regardles of keys 20 and 40', () => {
-      return testInput(mp => mp.cacheClearOne(0, 20, 40), [
+    it('clears out the cache in the whole Splitter regardles of keys 20 and 40', () => {
+      return testInput(mp => mp.cacheClearOne('splitter', 20, 40), [
         [10, 20, 30, 40, null, undefined],
         [10, 20, 30, 40, null, undefined],
         [],
@@ -331,7 +332,7 @@ describe('MoonPipe.Cache with Splitter', () => {
 
   describe('ClearOne at 1', () => {
     it('clears out the cache in the first valve', async () => {
-      return testInput(mp => mp.cacheClearOne(1), [
+      return testInput(mp => mp.cacheClearOne('s-1st'), [
         [10, 20, 30, 40, null, undefined],
         [],
         [],
@@ -340,7 +341,7 @@ describe('MoonPipe.Cache with Splitter', () => {
     })
 
     it('clears out the cache in the first valve at key 20', async () => {
-      return testInput(mp => mp.cacheClearOne(1, 20), [
+      return testInput(mp => mp.cacheClearOne('s-1st', 20), [
         [20],
         [],
         [],
@@ -349,7 +350,7 @@ describe('MoonPipe.Cache with Splitter', () => {
     })
 
     it('clears out the cache in the first valve at key 40', async () => {
-      return testInput(mp => mp.cacheClearOne(1, 40), [
+      return testInput(mp => mp.cacheClearOne('s-1st', 40), [
         [40],
         [],
         [],
@@ -358,7 +359,7 @@ describe('MoonPipe.Cache with Splitter', () => {
     })
 
     it('clears out the cache in the first valve at keys 10 and 30', async () => {
-      return testInput(mp => mp.cacheClearOne(1, 10, 30), [
+      return testInput(mp => mp.cacheClearOne('s-1st', 10, 30), [
         [10, 30],
         [],
         [],
@@ -367,7 +368,7 @@ describe('MoonPipe.Cache with Splitter', () => {
     })
 
     it('clears out the cache in the first valve at key null', async () => {
-      return testInput(mp => mp.cacheClearOne(1, null), [
+      return testInput(mp => mp.cacheClearOne('s-1st', null), [
         [null],
         [],
         [],
@@ -376,7 +377,7 @@ describe('MoonPipe.Cache with Splitter', () => {
     })
 
     it('clears out the cache in the first valve at key undefined', async () => {
-      return testInput(mp => mp.cacheClearOne(1, undefined), [
+      return testInput(mp => mp.cacheClearOne('s-1st', undefined), [
         [undefined],
         [],
         [],
@@ -385,7 +386,7 @@ describe('MoonPipe.Cache with Splitter', () => {
     })
 
     it('clears out the cache in the first valve at keys undefined, null, and 20', async () => {
-      return testInput(mp => mp.cacheClearOne(1, undefined, null, 20), [
+      return testInput(mp => mp.cacheClearOne('s-1st', undefined, null, 20), [
         [20, null, undefined],
         [],
         [],
@@ -396,7 +397,7 @@ describe('MoonPipe.Cache with Splitter', () => {
 
   describe('ClearOne at 2', () => {
     it('clears out the cache in the second valve', async () => {
-      return testInput(mp => mp.cacheClearOne(2), [
+      return testInput(mp => mp.cacheClearOne('s-2nd'), [
         [],
         [10, 20, 30, 40, null, undefined],
         [],
@@ -405,7 +406,7 @@ describe('MoonPipe.Cache with Splitter', () => {
     })
 
     it('clears out the cache in the second valve at key 20', async () => {
-      return testInput(mp => mp.cacheClearOne(2, 20), [
+      return testInput(mp => mp.cacheClearOne('s-2nd', 20), [
         [],
         [20],
         [],
@@ -414,7 +415,7 @@ describe('MoonPipe.Cache with Splitter', () => {
     })
 
     it('clears out the cache in the second valve at key 40', async () => {
-      return testInput(mp => mp.cacheClearOne(2, 40), [
+      return testInput(mp => mp.cacheClearOne('s-2nd', 40), [
         [],
         [40],
         [],
@@ -423,7 +424,7 @@ describe('MoonPipe.Cache with Splitter', () => {
     })
 
     it('clears out the cache in the second valve at keys 10 and 30', async () => {
-      return testInput(mp => mp.cacheClearOne(2, 10, 30), [
+      return testInput(mp => mp.cacheClearOne('s-2nd', 10, 30), [
         [],
         [10, 30],
         [],
@@ -432,7 +433,7 @@ describe('MoonPipe.Cache with Splitter', () => {
     })
 
     it('clears out the cache in the second valve at key null', async () => {
-      return testInput(mp => mp.cacheClearOne(2, null), [
+      return testInput(mp => mp.cacheClearOne('s-2nd', null), [
         [],
         [null],
         [],
@@ -441,7 +442,7 @@ describe('MoonPipe.Cache with Splitter', () => {
     })
 
     it('clears out the cache in the second valve at key undefined', async () => {
-      return testInput(mp => mp.cacheClearOne(2, undefined), [
+      return testInput(mp => mp.cacheClearOne('s-2nd', undefined), [
         [],
         [undefined],
         [],
@@ -450,7 +451,7 @@ describe('MoonPipe.Cache with Splitter', () => {
     })
 
     it('clears out the cache in the second valve at keys undefined, null, and 20', async () => {
-      return testInput(mp => mp.cacheClearOne(2, undefined, null, 20), [
+      return testInput(mp => mp.cacheClearOne('s-2nd', undefined, null, 20), [
         [],
         [20, null, undefined],
         [],
@@ -461,7 +462,7 @@ describe('MoonPipe.Cache with Splitter', () => {
 
   describe('ClearOne at 3', () => {
     it('clears out the cache in the third valve', async () => {
-      return testInput(mp => mp.cacheClearOne(3), [
+      return testInput(mp => mp.cacheClearOne('tap-1st'), [
         [],
         [],
         [10, 20, 30, 40, null, undefined],
@@ -470,7 +471,7 @@ describe('MoonPipe.Cache with Splitter', () => {
     })
 
     it('clears out the cache in the third valve at key 20', async () => {
-      return testInput(mp => mp.cacheClearOne(3, 20), [
+      return testInput(mp => mp.cacheClearOne('tap-1st', 20), [
         [],
         [],
         [20],
@@ -479,7 +480,7 @@ describe('MoonPipe.Cache with Splitter', () => {
     })
 
     it('clears out the cache in the third valve at key 40', async () => {
-      return testInput(mp => mp.cacheClearOne(3, 40), [
+      return testInput(mp => mp.cacheClearOne('tap-1st', 40), [
         [],
         [],
         [40],
@@ -509,24 +510,24 @@ describe('MoonPipe.Cache with Splitter + nesting and dbl join', () => {
     let side_4 = []
     let result = []
     const mp = new MoonPipe()
-      .splitBy(1, () => 'wahtever')
-      .splitBy(1, () => 'wahtever')
+      .splitBy(1, () => 'wahtever', { name: 'split-1' })
+      .splitBy(1, () => 'wahtever', { name: 'split-2' })
       .queueTap(async (value) => {
         side_1.push(value)
-      }, { cache: true})
+      }, { cache: true, name: 's2-1st' })
       .join()
       .queueTap(async (value) => {
         side_2.push(value)
-      }, { cache: true })
+      }, { cache: true, name: 's1-1st'  })
       .join()
-      .splitBy(1, () => 'wahtever')
+      .splitBy(1, () => 'wahtever', { name: 'split-3' })
       .queueTap(async (value) => {
         side_3.push(value)
-      }, { cache: true })
+      }, { cache: true, name: 's3-1st'  })
       .join()
       .queueTap(async (value) => {
         side_4.push(value)
-      }, { cache: true })
+      }, { cache: true, name: 'b-1st'  })
       .queueTap(async (value) => {
         result.push(value)
       })
@@ -568,7 +569,7 @@ describe('MoonPipe.Cache with Splitter + nesting and dbl join', () => {
 
   describe('ClearOne at 0 - first Splitter', () => {
     it('clears out the cache', () => {
-      return testInput(mp => mp.cacheClearOne(0), [
+      return testInput(mp => mp.cacheClearOne('split-1'), [
         [10, 20, 30, 40],
         [10, 20, 30, 40],
         [],
@@ -580,7 +581,7 @@ describe('MoonPipe.Cache with Splitter + nesting and dbl join', () => {
 
   describe('ClearOne at 1 - second Splitter', () => {
     it('clears out the cache', async () => {
-      return testInput(mp => mp.cacheClearOne(1), [
+      return testInput(mp => mp.cacheClearOne('split-2'), [
         [10, 20, 30, 40],
         [],
         [],
@@ -592,7 +593,7 @@ describe('MoonPipe.Cache with Splitter + nesting and dbl join', () => {
 
   describe('ClearOne at 2 - first valve in the second Splitter', () => {
     it('clears out the cache', async () => {
-      return testInput(mp => mp.cacheClearOne(2), [
+      return testInput(mp => mp.cacheClearOne('s2-1st'), [
         [10, 20, 30, 40],
         [],
         [],
@@ -604,7 +605,7 @@ describe('MoonPipe.Cache with Splitter + nesting and dbl join', () => {
 
   describe('ClearOne at 3 - first valve in the first Splitter', () => {
     it('clears out the cache', async () => {
-      return testInput(mp => mp.cacheClearOne(3), [
+      return testInput(mp => mp.cacheClearOne('s1-1st'), [
         [],
         [10, 20, 30, 40],
         [],
@@ -616,7 +617,7 @@ describe('MoonPipe.Cache with Splitter + nesting and dbl join', () => {
 
   describe('ClearOne at 4 - third Splitter', () => {
     it('clears out the cache', async () => {
-      return testInput(mp => mp.cacheClearOne(4), [
+      return testInput(mp => mp.cacheClearOne('split-3'), [
         [],
         [],
         [10, 20, 30, 40],
@@ -628,7 +629,7 @@ describe('MoonPipe.Cache with Splitter + nesting and dbl join', () => {
 
   describe('ClearOne at 5 - first valve in the third Splitter', () => {
     it('clears out the cache', async () => {
-      return testInput(mp => mp.cacheClearOne(5), [
+      return testInput(mp => mp.cacheClearOne('s3-1st'), [
         [],
         [],
         [10, 20, 30, 40],
@@ -640,7 +641,7 @@ describe('MoonPipe.Cache with Splitter + nesting and dbl join', () => {
 
   describe('ClearOne at 6 - first top level valve', () => {
     it('clears out the cache', async () => {
-      return testInput(mp => mp.cacheClearOne(6), [
+      return testInput(mp => mp.cacheClearOne('b-1st'), [
         [],
         [],
         [],

@@ -18,6 +18,7 @@ const {
 function baseValveAssertions(TargetClass) {
 
   const properBaseValvePreset = {
+    name: null,
     bufferType: BUFFER_TYPE.QUEUE,
     maxBufferSize: 1000,
     overflowAction: OVERFLOW_ACTION.SHIFT,
@@ -31,6 +32,19 @@ function baseValveAssertions(TargetClass) {
     }
     catch (err) {
       expect(err).to.have.property('message', "Expected 'preset' to be an 'object'")
+    }
+  })
+
+  it('throws for a name other than string or null', () => {
+    try {
+      const preset = Object.assign({}, properBaseValvePreset, {
+        name: 300,
+      })
+      new TargetClass(preset)
+      throw new Error('should have thrown')
+    }
+    catch (err) {
+      expect(err).to.have.property('message', "Expected the 'name' to be either a 'string' or 'null'; found: 300")
     }
   })
 
@@ -104,6 +118,7 @@ function baseValveAssertions(TargetClass) {
 function timeValveAssertions(TargetClass) {
 
   const properTimeValvePreset = {
+    name: null,
     maxBufferSize: 1000,
     bufferType: BUFFER_TYPE.QUEUE,
     overflowAction: OVERFLOW_ACTION.EMIT_ERROR,
@@ -164,6 +179,7 @@ function timeValveAssertions(TargetClass) {
 function promiseValveAssertions(TargetClass) {
 
   const properPromiseValvePreset = {
+    name: null,
     maxBufferSize: 1000,
     bufferType: BUFFER_TYPE.QUEUE,
     overflowAction: OVERFLOW_ACTION.EMIT_ERROR,
@@ -296,6 +312,7 @@ function promiseValveAssertions(TargetClass) {
 function synchronousValveAssertions(TargetClass, functionType) {
 
   const properSynchronousValvePreset = {
+    name: null,
     maxBufferSize: 1000,
     bufferType: BUFFER_TYPE.QUEUE,
     overflowAction: OVERFLOW_ACTION.EMIT_ERROR,
@@ -358,6 +375,26 @@ describe('Splitter constructor', () => {
     }
     catch (err) {
       expect(err).to.have.property('message', "Expected poolSize to be a 'number' greater or equal to 1; found: 0")
+    }
+  })
+
+  it('throws for a preset other than object', () => {
+    try {
+      new Splitter(1, () => 1, '33')
+      throw new Error('should have thrown')
+    }
+    catch (err) {
+      expect(err).to.have.property('message', "Expected 'preset' to be an 'object'")
+    }
+  })
+
+  it('throws for a name other than string or null', () => {
+    try {
+      new Splitter(1, () => 1, { name: 200 })
+      throw new Error('should have thrown')
+    }
+    catch (err) {
+      expect(err).to.have.property('message', "Expected the 'name' to be either a 'string' or 'null'; found: 200")
     }
   })
 

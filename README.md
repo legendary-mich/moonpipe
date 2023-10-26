@@ -241,20 +241,20 @@ mp.pump(2)
 ```
 
 ### Clearing out buffers
-There are two methods that you can use to clear out `buffers`. These are `buffersClearAll()`, and `buffersClearOne(valveIndex)`. The `valveIndex` is a `0-based` index of a valve plugged into the pipe. In the following code the cancelLazy valve has index = 0. Notice that the `splitBy` valve is different, as clearing cache on it applies to everything that's between `splitBy` and `join`.
+There are two methods that you can use to clear out `buffers`. These are `buffersClearAll()`, and `buffersClearOne(valveName)`. The `valveName` is a `string` passed into the valve constructor under the `name` field. Notice that the `splitBy` valve is different, as clearing buffers (or cache) on it applies to everything that's between `splitBy` and `join`.
 ```javascript
 const mp = new MoonPipe()
-  .cancelLazy(1000)              // valveIndex = 0
-  .queueMap(async (val) => val)  // valveIndex = 1
-  .splitBy(1, () => 'whatever')  // valveIndex = 2
-  .queueTap(async (val) => val)  // valveIndex = 3
-  .queueTap(async (val) => val)  // valveIndex = 4
+  .cancelLazy(1000, {name: 'cl'})
+  .queueMap(async (val) => val, {name: 'qm'})
+  .splitBy(1, () => 'whatever', {name: 'splitter'})
+  .queueTap(async (val) => val, {name: 'qt'})
+  .queueTap(async (val) => val)
   .join()
-  .queueError(async (err) => {}) // valveIndex = 5
+  .queueError(async (err) => {})
 
-mp.buffersClearOne(1) // this will clear out the buffer in the queueMap valve
-mp.buffersClearOne(2) // this will clear out everything that's between splitBy() and join()
-mp.buffersClearOne(3) // this will clear out the buffer in the first queueTap valve
+mp.buffersClearOne('qm') // this will clear out the buffer in the valve named 'qm'
+mp.buffersClearOne('splitter') // this will clear out everything that's between splitBy() and join()
+mp.buffersClearOne('qt') // this will clear out the buffer in the valve named 'qt'
 mp.buffersClearAll()  // this will clear out buffers in all the valves
 ```
 In addition to clearing out buffers, the mentioned methods cancel `active promises` in `PromiseValves`, and `active timeouts` in `TimeValves`.
@@ -270,6 +270,7 @@ const mp = new MoonPipe()
     return 'mapped_' + val
   }, {
     cache: true, // <------ cache is enabled HERE
+    name: 'bigJohn', // <-- a name that you can use to wipe out the cache in this particular valve (see below)
   })
   .queueTap(async (val) => {
     console.log('output:', val)
@@ -285,12 +286,12 @@ mp.pump('a')
 // output: mapped_b
 // output: mapped_a <-- no side effect, because the value comes directly from the cache
 ```
-You can clear the cache later with one of the following (look at the [Clearing out buffers](#clearing-out-buffers) section for the info about how valves are indexed):
+You can clear the cache later with one of the following (look at the [Clearing out buffers](#clearing-out-buffers) section for the info on how to add names to the valves):
 ```javascript
 mp.cacheClearAll() // clears the entire cache in all valves.
-mp.cacheClearOne(0) // clears the entire cache in the valve at the index 0.
-mp.cacheClearOne(1, 'a') // clears only the entry at the key derived from the value 'a' in the valve at the index 1.
-mp.cacheClearOne(2, 'a', 'b') // clears entries at keys derived from values 'a' and 'b' in the valve at the index 2.
+mp.cacheClearOne('bigJohn') // clears the entire cache in the valve named bigJohn.
+mp.cacheClearOne('littleJohn', 'a') // clears only the entry at the key derived from the value 'a' in the valve named littleJohn.
+mp.cacheClearOne('oldJohn', 'a', 'b') // clears entries at keys derived from values 'a' and 'b' in the valve at the valve named oldJohn.
 ```
 
 You can also use a custom hash function to generate custom keys at which the values will be stored in cache.
@@ -490,6 +491,7 @@ const {
 } = require('moonpipe')
 
 const preset = {
+  name: null,
   maxBufferSize: 3,
   bufferType: BUFFER_TYPE.QUEUE,
   overflowAction: OVERFLOW_ACTION.SHIFT,
@@ -523,6 +525,7 @@ mp.pipe(valve, CHANNEL_TYPE.ERROR)
 
 ### Presets explained
 ##### Base Preset Params (These params are common to both the TimeValves and PromiseValves):
+- `name` - A name that is used when the valve is added to the pipe
 - `maxBufferSize` - the size of the internal buffer
 - `bufferType`- describes the order in which values are processed
   - `QUEUE` - values are processed one after another

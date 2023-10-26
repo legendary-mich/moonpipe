@@ -9,6 +9,7 @@ const {
 } = require('../index.js')
 
 const preset = {
+  name: null,
   maxBufferSize: 3,
   bufferType: BUFFER_TYPE.QUEUE,
   overflowAction: OVERFLOW_ACTION.SHIFT,

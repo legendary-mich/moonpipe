@@ -43,133 +43,119 @@ describe('MoonPipe', () => {
         expect(err).to.have.property('message', "Unexpected 'channel' name: haha")
       }
     })
+
+    it('throws for a valve with an occupied name', () => {
+      const moonPipe = new MoonPipe()
+      try {
+        const preset1 = Object.assign({}, BasePresets.queue, { name: 'one' })
+        const preset2 = Object.assign({}, BasePresets.queue, { name: 'one' })
+        moonPipe.pipe(new BaseValve(preset1))
+        moonPipe.pipe(new BaseValve(preset2))
+        throw new Error('should have thrown')
+      }
+      catch (err) {
+        expect(err).to.have.property('message', "A valve named: 'one' already exists")
+      }
+    })
   })
 
   describe('buffersClearOne', () => {
-    it('throws for a missing valveIndex', () => {
+    it('throws for a missing valveName', () => {
       const moonPipe = new MoonPipe()
       try {
         moonPipe.buffersClearOne()
         throw new Error('should have thrown')
       }
       catch (err) {
-        expect(err).to.have.property('message', "Expected valveIndex to be a 'number' greater than 0 and smaller than 0; found: undefined")
+        expect(err).to.have.property('message', "Expected valveName to be a 'string'; found: undefined")
       }
     })
 
-    it('throws for valveIndex lower than 0', () => {
+    it('throws for valveName not being a string', () => {
       const moonPipe = new MoonPipe().queueLazy(1)
-      try {
-        moonPipe.buffersClearOne(-1)
-        throw new Error('should have thrown')
-      }
-      catch (err) {
-        expect(err).to.have.property('message', "Expected valveIndex to be a 'number' greater than 0 and smaller than 1; found: -1")
-      }
-    })
-
-    it('throws for valveIndex greater than the max index', () => {
-      const moonPipe = new MoonPipe().queueLazy(1).queueLazy(1)
       try {
         moonPipe.buffersClearOne(2)
         throw new Error('should have thrown')
       }
       catch (err) {
-        expect(err).to.have.property('message', "Expected valveIndex to be a 'number' greater than 0 and smaller than 2; found: 2")
+        expect(err).to.have.property('message', "Expected valveName to be a 'string'; found: 2")
       }
     })
 
-    it('throws for valveIndex greater than the max index when a Splitter is involved', () => {
-      const moonPipe = new MoonPipe()
-        .splitBy(2, () => {})
-        .queueLazy(1)
-        .splitBy(2, () => {})
-        .queueLazy(1)
-        .join()
-        .queueLazy(1)
-        .join()
-        .queueLazy(1)
+    it('throws if a valve with a given valveName is missing', () => {
+      const moonPipe = new MoonPipe().queueLazy(1)
       try {
-        moonPipe.buffersClearOne(6)
+        moonPipe.buffersClearOne('valve-1')
         throw new Error('should have thrown')
       }
       catch (err) {
-        expect(err).to.have.property('message', "Expected valveIndex to be a 'number' greater than 0 and smaller than 6; found: 6")
+        expect(err).to.have.property('message', "A valve named: 'valve-1' does not exist")
       }
+    })
+
+    it('does not throw if called on a timeValve', () => {
+      const moonPipe = new MoonPipe().queueEager(1, { name: 'valve-1' })
+      moonPipe.buffersClearOne('valve-1')
+    })
+
+    it('does not throw if called on a synchronousValve', () => {
+      const moonPipe = new MoonPipe().map(() => 'zz', { name: 'valve-3' })
+      moonPipe.buffersClearOne('valve-3')
     })
   })
 
   describe('cacheClearOne', () => {
-    it('throws for a missing valveIndex', () => {
+    it('throws for a missing valveName', () => {
       const moonPipe = new MoonPipe()
       try {
         moonPipe.cacheClearOne()
         throw new Error('should have thrown')
       }
       catch (err) {
-        expect(err).to.have.property('message', "Expected valveIndex to be a 'number' greater than 0 and smaller than 0; found: undefined")
+        expect(err).to.have.property('message', "Expected valveName to be a 'string'; found: undefined")
       }
     })
 
-    it('throws for valveIndex lower than 0', () => {
-      const moonPipe = new MoonPipe().queueLazy(1)
-      try {
-        moonPipe.cacheClearOne(-1)
-        throw new Error('should have thrown')
-      }
-      catch (err) {
-        expect(err).to.have.property('message', "Expected valveIndex to be a 'number' greater than 0 and smaller than 1; found: -1")
-      }
-    })
-
-    it('throws for valveIndex greater than the max index', () => {
+    it('throws for valveName not being a string', () => {
       const moonPipe = new MoonPipe().queueLazy(1).queueLazy(1)
       try {
         moonPipe.cacheClearOne(2)
         throw new Error('should have thrown')
       }
       catch (err) {
-        expect(err).to.have.property('message', "Expected valveIndex to be a 'number' greater than 0 and smaller than 2; found: 2")
+        expect(err).to.have.property('message', "Expected valveName to be a 'string'; found: 2")
       }
     })
 
-    it('throws for valveIndex greater than the max index when a Splitter is involved', () => {
-      const moonPipe = new MoonPipe()
-        .splitBy(2, () => {})
-        .queueLazy(1)
-        .splitBy(2, () => {})
-        .queueLazy(1)
-        .join()
-        .queueLazy(1)
-        .join()
-        .queueLazy(1)
+    it('throws if a valve with a given valveName is missing', () => {
+      const moonPipe = new MoonPipe().queueLazy(1).queueLazy(1)
       try {
-        moonPipe.cacheClearOne(6)
+        moonPipe.cacheClearOne('valve-1')
         throw new Error('should have thrown')
       }
       catch (err) {
-        expect(err).to.have.property('message', "Expected valveIndex to be a 'number' greater than 0 and smaller than 6; found: 6")
+        expect(err).to.have.property('message', "A valve named: 'valve-1' does not exist")
       }
     })
 
     it('does not throw if called on a timeValve', () => {
-      const moonPipe = new MoonPipe().queueEager(1)
-      moonPipe.cacheClearOne(0)
+      const moonPipe = new MoonPipe().queueEager(1, { name: 'valve-1' })
+      moonPipe.cacheClearOne('valve-1')
     })
 
     it('does not throw if called on a timeValve at a key', () => {
-      const moonPipe = new MoonPipe().queueEager(1)
-      moonPipe.cacheClearOne(0, 100)
+      const moonPipe = new MoonPipe().queueEager(1, { name: 'valve-2' })
+      moonPipe.cacheClearOne('valve-2', 100)
     })
 
     it('does not throw if called on a synchronousValve', () => {
-      const moonPipe = new MoonPipe().map(() => 'zz')
-      moonPipe.cacheClearOne(0)
+      const moonPipe = new MoonPipe().map(() => 'zz', { name: 'valve-3' })
+      moonPipe.cacheClearOne('valve-3')
     })
 
     it('does not throw if called on a synchronousValve at a key', () => {
-      const moonPipe = new MoonPipe().map(() => 'zz')
-      moonPipe.cacheClearOne(0, 100)
+      const moonPipe = new MoonPipe().map(() => 'zz', { name: 'valve-4' })
+      moonPipe.cacheClearOne('valve-4', 100)
     })
   })
 
