@@ -1,5 +1,5 @@
 # Moon Pipe
-Compose promises in a structured way.
+Throttle streams of data while passing them through promises an timers. Use various valves to discard redundant data points.
 
 - [TL;DR](#tldr)
 - [Predefined valves](#predefined-valves)
@@ -346,7 +346,7 @@ You can use a `repeatPredicate` which takes an `attemptsMade` counter as the fir
 
 If a `repeatPredicate` throws an error, the promise is automatically rejected and will not be retried anymore.
 
-The `repeatPredicate` is `async` to make it future proof. Keep in mind however that the `timeoutMs` is not applied to it which means that if it hangs, it will keep the main promise hanging. Make sure that you understand the risk, before making a call to an external service from the `repeatPredicate`. For super safety it is strongly advised to do only synchronous operation within the predicate.
+Since moonpipe **v2.0.0** the `repeatPredicate` is expected to be **synchronous** and will not be awaited.
 
 ```javascript
 const { MoonPipe } = require('moonpipe')
@@ -355,7 +355,7 @@ const mp = new MoonPipe()
     console.log('// side:', val)
     throw 'err_' + val
   }, {
-    repeatPredicate: async (attemptsMade, err) => {
+    repeatPredicate: (attemptsMade, err) => {
       return attemptsMade <= 3 && err === 'err_b'
     },
   })
@@ -550,7 +550,7 @@ mp.pipe(valve, CHANNEL_TYPE.ERROR)
 - `poolSize` - number of promises running concurrently
 - `cache` - if `true`, the result of the promise will be cached
 - `hashFunction` - a function from a `value` to the `key` at witch the result will be cached. Defaults to `value => value`
-- `repeatPredicate` - an `async` function which takes an `attemptsMade` counter as the first argument and an `error` as the second one. It returns `true` or `false`.
+- `repeatPredicate` - a synchronous function which takes an `attemptsMade` counter as the first argument and an `error` as the second one. It returns `true` or `false`.
 
 Predefined presets can be found in the `TimeValve.js` and `PromiseValve.js` files.
 

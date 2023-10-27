@@ -56,7 +56,7 @@ describe('Custom Valves,', () => {
         poolSize: 1,
         cache: false,
         hashFunction: value => value,
-        repeatPredicate: async () => false,
+        repeatPredicate: () => false,
       }
       const customPromiseValve = new PromiseValve(preset, async (value) => value + 100)
       const results = []

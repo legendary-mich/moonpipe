@@ -189,7 +189,7 @@ function promiseValveAssertions(TargetClass) {
     poolSize: 1,
     cache: false,
     hashFunction: value => value,
-    repeatPredicate: async () => false,
+    repeatPredicate: () => false,
   }
 
   it('throws for an unknown cancelOnPump', () => {

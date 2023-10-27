@@ -11,7 +11,7 @@ async function testInput(method, expected) {
     await delayPromise(5)
     throw new Error(value + 100)
   }, {
-    repeatPredicate: async () => { throw new Error('pred failure') },
+    repeatPredicate: () => { throw new Error('pred failure') },
   })
     .queueTap(async (value) => {
       results.push('res_' + value)

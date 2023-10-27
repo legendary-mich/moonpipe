@@ -16,7 +16,7 @@ async function testInput(method, expected) {
       results.push('res_' + value)
     })
     .queueError(async (err) => {
-      await delayPromise(2)
+      await delayPromise(1)
       results.push('err_' + err.message)
     })
 
@@ -64,6 +64,8 @@ describe('PromiseValves.OnCancel.Callback.Validate', () => {
         "side_2",
         "side_3",
         "err_Expected 'onCancel' to be a 'function'",
+        "err_Expected 'onCancel' to be a 'function'",
+        "err_Expected 'onCancel' to be a 'function'",
       ])
     })
   })
@@ -74,6 +76,8 @@ describe('PromiseValves.OnCancel.Callback.Validate', () => {
         "side_1",
         "side_2",
         "side_3",
+        "err_Expected 'onCancel' to be a 'function'",
+        "err_Expected 'onCancel' to be a 'function'",
         "err_Expected 'onCancel' to be a 'function'",
       ])
     })
