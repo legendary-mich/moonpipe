@@ -358,29 +358,15 @@ describe('FilterValve constructor', () => {
 })
 
 describe('Splitter constructor', () => {
-  it('throws for an unknown classifyFn', () => {
-    try {
-      new Splitter(33, 'hahah')
-      throw new Error('should have thrown')
-    }
-    catch (err) {
-      expect(err).to.have.property('message', "Unexpected 'classifyFn': hahah")
-    }
-  })
 
-  it('throws for a poolSize lower than 1', () => {
-    try {
-      new Splitter(0, () => 1)
-      throw new Error('should have thrown')
-    }
-    catch (err) {
-      expect(err).to.have.property('message', "Expected poolSize to be a 'number' greater or equal to 1; found: 0")
-    }
-  })
+  const properSplitterPreset = {
+    name: null,
+    poolSize: 2,
+  }
 
   it('throws for a preset other than object', () => {
     try {
-      new Splitter(1, () => 1, '33')
+      new Splitter('33', () => 1)
       throw new Error('should have thrown')
     }
     catch (err) {
@@ -388,13 +374,47 @@ describe('Splitter constructor', () => {
     }
   })
 
-  it('throws for a name other than string or null', () => {
+  it('throws for a name other than a string or null', () => {
     try {
-      new Splitter(1, () => 1, { name: 200 })
+      const preset = Object.assign({}, properSplitterPreset, { name: 200 })
+      new Splitter(preset, () => 1)
       throw new Error('should have thrown')
     }
     catch (err) {
       expect(err).to.have.property('message', "Expected the 'name' to be either a 'string' or 'null'; found: 200")
+    }
+  })
+
+  it('throws for a poolSize other than a number', () => {
+    try {
+      const preset = Object.assign({}, properSplitterPreset, { poolSize: 'bob' })
+      new Splitter(preset, () => 1)
+      throw new Error('should have thrown')
+    }
+    catch (err) {
+      expect(err).to.have.property('message', "Expected poolSize to be a 'number' greater or equal to 1; found: bob")
+    }
+  })
+
+  it('throws for a poolSize lower than 1', () => {
+    try {
+      const preset = Object.assign({}, properSplitterPreset, { poolSize: 0 })
+      new Splitter(preset, () => 1)
+      throw new Error('should have thrown')
+    }
+    catch (err) {
+      expect(err).to.have.property('message', "Expected poolSize to be a 'number' greater or equal to 1; found: 0")
+    }
+  })
+
+  it('throws for an unknown classifyFn', () => {
+    try {
+      const preset = Object.assign({}, properSplitterPreset)
+      new Splitter(preset, 'hahah')
+      throw new Error('should have thrown')
+    }
+    catch (err) {
+      expect(err).to.have.property('message', "Unexpected 'classifyFn': hahah")
     }
   })
 

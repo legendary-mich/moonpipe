@@ -9,6 +9,12 @@ const {
 } = require('../lib/RichPromise.js')
 
 const newPromise = new RichPromise(
+  {
+    resolveType: PROMISE_RESOLVE_TYPE.MAP,
+    timeoutMs: 0,
+    // repeatPredicate: () => true,
+    repeatPredicate: (attemptsMade) => attemptsMade < 3,
+  },
   // () => delayPromise(4000),
   async (val, context) => {
     let a = Math.floor(Math.random() * 100)
@@ -18,11 +24,7 @@ const newPromise = new RichPromise(
     console.log('waiting a:', a)
     await delayPromise(1000)
     throw new Error('ho')
-  },
-  PROMISE_RESOLVE_TYPE.MAP,
-  0, //  timeoutMs
-  // () => true // repeat predicate
-  (attemptsMade) => attemptsMade < 3 // repeat predicate
+  }
 )
 
 async function main() {
