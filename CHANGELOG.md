@@ -1,5 +1,26 @@
 # Changelog
 
+### 2.0.0
+#### major breaking changes:
+- `MoonPipe->buffersClearOne(valveName)` takes a `valveName` instead of the `valveIndex` now
+- `MoonPipe->cacheClearOne(valveName, ...values)` takes a `valveName` instead of the `valveIndex` now
+- expect the `repeatePredicate` to be a **synchronous** function and do not await it anymore
+
+#### less important breaking changes:
+- Add a `name` param to the `BaseValve` presets
+- Add a `preset` param to the `Splitter` constructor
+- `Splitter>buffersClearOne(valveName)` takes a `valveName` instead of the `valveIndex` now
+- `Splitter->cacheClearOne(valveName, ...values)` takes a `valveName` instead of the `valveIndex` now
+- Remove `MoonPipe->getValveAtTotalIndex(valveIndex)`
+- Remove `MoonPipe->validateValveTotalIdnex(valveIndex)`
+- remove `BaseValve->isEmpty()`
+- Change the constructor signatures of the `RichPromise` and `Splitter`
+
+#### non-breaking changes:
+- `MoonPipe->splitBy(poolSize, classifyFn, options)` can take `options` as the 3rd parameter
+- `BaseValve->cacheClearAt(...values)` can take more than a single value now
+- `PromiseValve>cacheClearAt(...values)` can take more than a single value now
+
 ### 1.3.0
 - add a `splitBy`/`join` combo
 - add a `delayPromise` utility function
