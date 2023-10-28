@@ -11,7 +11,7 @@ async function testInput(method, expected) {
     await delayPromise(5)
     throw new Error(value + 100)
   }, {
-    repeatPredicate: async (attemptsMade, err) => {
+    repeatPredicate: (attemptsMade, err) => {
       return attemptsMade <= 2 && err.message === '101'
     },
   })

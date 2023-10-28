@@ -6,7 +6,7 @@ const { delayPromise } = require('./utils.js')
 
 async function testInput(method, expected) {
   const results = []
-  const pipe = new MoonPipe()[method](10)
+  const pipe = new MoonPipe()[method](10, { name: '0th' })
     .queueTap(async (value) => {
       results.push('res_' + value)
     })
@@ -26,7 +26,7 @@ async function testInput(method, expected) {
 
   await delayPromise(5)
   expect(results).to.eql(expected[0])
-  pipe.buffersClearOne(0)
+  pipe.buffersClearOne('0th')
   await delayPromise(10)
   expect(results).to.eql(expected[1])
   pipe.pump(3)

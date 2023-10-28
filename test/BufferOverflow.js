@@ -51,6 +51,7 @@ describe('Buffer Overflow', () => {
   describe('with a PromiseValve and a bufferSize of 1', () => {
     it('pumps ORIGINAL values', () => {
       const preset = {
+        name: null,
         maxBufferSize: 1,
         bufferType: BUFFER_TYPE.QUEUE,
         overflowAction: OVERFLOW_ACTION.EMIT_ERROR,
@@ -60,7 +61,7 @@ describe('Buffer Overflow', () => {
         poolSize: 1,
         cache: false,
         hashFunction: value => value,
-        repeatPredicate: async () => false,
+        repeatPredicate: () => false,
       }
       const valve = new PromiseValve(preset, value => value + 100)
       return testInput(valve, [
@@ -77,6 +78,7 @@ describe('Buffer Overflow', () => {
   describe('with a PromiseValve and a bufferSize of 2', () => {
     it('pumps ORIGINAL values', () => {
       const preset = {
+        name: null,
         maxBufferSize: 2,
         bufferType: BUFFER_TYPE.QUEUE,
         overflowAction: OVERFLOW_ACTION.EMIT_ERROR,
@@ -86,7 +88,7 @@ describe('Buffer Overflow', () => {
         poolSize: 1,
         cache: false,
         hashFunction: value => value,
-        repeatPredicate: async () => false,
+        repeatPredicate: () => false,
       }
       const valve = new PromiseValve(preset, value => value + 100)
       return testInput(valve, [
@@ -103,6 +105,7 @@ describe('Buffer Overflow', () => {
   describe('with a TimeValve and TIME_RESOLVE_TYPE.LAZY', () => {
     it('pumps ORIGINAL values', () => {
       const preset = {
+        name: null,
         maxBufferSize: 1,
         bufferType: BUFFER_TYPE.QUEUE,
         overflowAction: OVERFLOW_ACTION.EMIT_ERROR,
@@ -124,6 +127,7 @@ describe('Buffer Overflow', () => {
   describe('with a TimeValve and TIME_RESOLVE_TYPE.EAGER', () => {
     it('pumps ORIGINAL values', () => {
       const preset = {
+        name: null,
         maxBufferSize: 1,
         bufferType: BUFFER_TYPE.QUEUE,
         overflowAction: OVERFLOW_ACTION.EMIT_ERROR,
@@ -145,6 +149,7 @@ describe('Buffer Overflow', () => {
   describe('with a FlattenValve', () => {
     it('pumps ORIGINAL values', async () => {
       const preset = {
+        name: null,
         maxBufferSize: 1,
         bufferType: BUFFER_TYPE.QUEUE,
         overflowAction: OVERFLOW_ACTION.EMIT_ERROR,
@@ -186,6 +191,7 @@ describe('Buffer Overflow', () => {
   describe('with a MapValve', () => {
     it('pumps ORIGINAL values', () => {
       const preset = {
+        name: null,
         maxBufferSize: 1,
         bufferType: BUFFER_TYPE.QUEUE,
         overflowAction: OVERFLOW_ACTION.EMIT_ERROR,
@@ -208,6 +214,7 @@ describe('Buffer Overflow', () => {
   describe('with a FilterValve', () => {
     it('pumps ORIGINAL values', () => {
       const preset = {
+        name: null,
         maxBufferSize: 1,
         bufferType: BUFFER_TYPE.QUEUE,
         overflowAction: OVERFLOW_ACTION.EMIT_ERROR,

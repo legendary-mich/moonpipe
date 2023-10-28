@@ -18,6 +18,7 @@ const {
 function baseValveAssertions(TargetClass) {
 
   const properBaseValvePreset = {
+    name: null,
     bufferType: BUFFER_TYPE.QUEUE,
     maxBufferSize: 1000,
     overflowAction: OVERFLOW_ACTION.SHIFT,
@@ -31,6 +32,19 @@ function baseValveAssertions(TargetClass) {
     }
     catch (err) {
       expect(err).to.have.property('message', "Expected 'preset' to be an 'object'")
+    }
+  })
+
+  it('throws for a name other than string or null', () => {
+    try {
+      const preset = Object.assign({}, properBaseValvePreset, {
+        name: 300,
+      })
+      new TargetClass(preset)
+      throw new Error('should have thrown')
+    }
+    catch (err) {
+      expect(err).to.have.property('message', "Expected the 'name' to be either a 'string' or 'null'; found: 300")
     }
   })
 
@@ -104,6 +118,7 @@ function baseValveAssertions(TargetClass) {
 function timeValveAssertions(TargetClass) {
 
   const properTimeValvePreset = {
+    name: null,
     maxBufferSize: 1000,
     bufferType: BUFFER_TYPE.QUEUE,
     overflowAction: OVERFLOW_ACTION.EMIT_ERROR,
@@ -164,6 +179,7 @@ function timeValveAssertions(TargetClass) {
 function promiseValveAssertions(TargetClass) {
 
   const properPromiseValvePreset = {
+    name: null,
     maxBufferSize: 1000,
     bufferType: BUFFER_TYPE.QUEUE,
     overflowAction: OVERFLOW_ACTION.EMIT_ERROR,
@@ -173,7 +189,7 @@ function promiseValveAssertions(TargetClass) {
     poolSize: 1,
     cache: false,
     hashFunction: value => value,
-    repeatPredicate: async () => false,
+    repeatPredicate: () => false,
   }
 
   it('throws for an unknown cancelOnPump', () => {
@@ -296,6 +312,7 @@ function promiseValveAssertions(TargetClass) {
 function synchronousValveAssertions(TargetClass, functionType) {
 
   const properSynchronousValvePreset = {
+    name: null,
     maxBufferSize: 1000,
     bufferType: BUFFER_TYPE.QUEUE,
     overflowAction: OVERFLOW_ACTION.EMIT_ERROR,
@@ -341,23 +358,63 @@ describe('FilterValve constructor', () => {
 })
 
 describe('Splitter constructor', () => {
-  it('throws for an unknown classifyFn', () => {
+
+  const properSplitterPreset = {
+    name: null,
+    poolSize: 2,
+  }
+
+  it('throws for a preset other than object', () => {
     try {
-      new Splitter(33, 'hahah')
+      new Splitter('33', () => 1)
       throw new Error('should have thrown')
     }
     catch (err) {
-      expect(err).to.have.property('message', "Unexpected 'classifyFn': hahah")
+      expect(err).to.have.property('message', "Expected 'preset' to be an 'object'")
+    }
+  })
+
+  it('throws for a name other than a string or null', () => {
+    try {
+      const preset = Object.assign({}, properSplitterPreset, { name: 200 })
+      new Splitter(preset, () => 1)
+      throw new Error('should have thrown')
+    }
+    catch (err) {
+      expect(err).to.have.property('message', "Expected the 'name' to be either a 'string' or 'null'; found: 200")
+    }
+  })
+
+  it('throws for a poolSize other than a number', () => {
+    try {
+      const preset = Object.assign({}, properSplitterPreset, { poolSize: 'bob' })
+      new Splitter(preset, () => 1)
+      throw new Error('should have thrown')
+    }
+    catch (err) {
+      expect(err).to.have.property('message', "Expected poolSize to be a 'number' greater or equal to 1; found: bob")
     }
   })
 
   it('throws for a poolSize lower than 1', () => {
     try {
-      new Splitter(0, () => 1)
+      const preset = Object.assign({}, properSplitterPreset, { poolSize: 0 })
+      new Splitter(preset, () => 1)
       throw new Error('should have thrown')
     }
     catch (err) {
       expect(err).to.have.property('message', "Expected poolSize to be a 'number' greater or equal to 1; found: 0")
+    }
+  })
+
+  it('throws for an unknown classifyFn', () => {
+    try {
+      const preset = Object.assign({}, properSplitterPreset)
+      new Splitter(preset, 'hahah')
+      throw new Error('should have thrown')
+    }
+    catch (err) {
+      expect(err).to.have.property('message', "Unexpected 'classifyFn': hahah")
     }
   })
 

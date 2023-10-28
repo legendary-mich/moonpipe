@@ -11,13 +11,13 @@ describe('MoonPipe.Buffers', () => {
     const mp = new MoonPipe()
       .queueTap(async () => {
         await delayPromise(10)
-      })
+      }, { name: '0th' })
       .queueTap(async () => {
         await delayPromise(20)
-      })
+      }, { name: '1st' })
       .queueTap(async (value) => {
         result.push(value)
-      })
+      }, { name: '2nd' })
       .onBusyTap(async (value) => {
         result.push('on_busy_' + value)
       })
@@ -43,7 +43,7 @@ describe('MoonPipe.Buffers', () => {
 
   describe('ClearOne at 0', () => {
     it('clears out the first valve', async () => {
-      return testInput(mp => mp.buffersClearOne(0), [
+      return testInput(mp => mp.buffersClearOne('0th'), [
         [],
         [2],
         ['on_busy_1', 1, 2, 'on_idle'],
@@ -53,7 +53,7 @@ describe('MoonPipe.Buffers', () => {
 
   describe('ClearOne at 1', () => {
     it('clears out the second valve', async () => {
-      return testInput(mp => mp.buffersClearOne(1), [
+      return testInput(mp => mp.buffersClearOne('1st'), [
         [4],
         [],
         ['on_busy_1', 3, 4, 'on_idle'],
@@ -78,17 +78,17 @@ describe('MoonPipe.Buffers with Splitter', () => {
   async function testInput(method, expected) {
     const result = []
     const mp = new MoonPipe()
-      .splitBy(1, () => 'wahtever')
+      .splitBy(1, () => 'wahtever', { name: '0th' })
       .queueTap(async () => {
         await delayPromise(10)
-      })
+      }, { name: '1st' })
       .queueTap(async () => {
         await delayPromise(20)
-      })
+      }, { name: '2nd' })
       .join()
       .queueTap(async (value) => {
         result.push(value)
-      })
+      }, { name: '3rd' })
       .onBusyTap(async (value) => {
         result.push('on_busy_' + value)
       })
@@ -119,7 +119,7 @@ describe('MoonPipe.Buffers with Splitter', () => {
 
   describe('ClearOne at 0 - meaning wipe out the whole Splitter', () => {
     it('clears out the whole Splitter', async () => {
-      return testInput(mp => mp.buffersClearOne(0), [
+      return testInput(mp => mp.buffersClearOne('0th'), [
         [],
         [],
         ['on_busy_1', 'on_idle'],
@@ -129,7 +129,7 @@ describe('MoonPipe.Buffers with Splitter', () => {
 
   describe('ClearOne at 1', () => {
     it('clears out the first valve', async () => {
-      return testInput(mp => mp.buffersClearOne(1), [
+      return testInput(mp => mp.buffersClearOne('1st'), [
         [],
         [2],
         ['on_busy_1', 1, 2, 'on_idle'],
@@ -139,7 +139,7 @@ describe('MoonPipe.Buffers with Splitter', () => {
 
   describe('ClearOne at 2', () => {
     it('clears out the second valve', async () => {
-      return testInput(mp => mp.buffersClearOne(2), [
+      return testInput(mp => mp.buffersClearOne('2nd'), [
         [4],
         [],
         ['on_busy_1', 3, 4, 'on_idle'],
@@ -164,17 +164,17 @@ describe('MoonPipe.Buffers with Splitter, 2nd case', () => {
   async function testInput(method, expected) {
     const result = []
     const mp = new MoonPipe()
-      .splitBy(1, () => 'wahtever')
+      .splitBy(1, () => 'wahtever', { name: '0th' })
       .queueTap(async () => {
         await delayPromise(10)
-      })
+      }, { name: '1st' })
       .join()
       .queueTap(async () => {
         await delayPromise(20)
-      })
+      }, { name: '2nd' })
       .queueTap(async (value) => {
         result.push(value)
-      })
+      }, { name: '3rd' })
       .onBusyTap(async (value) => {
         result.push('on_busy_' + value)
       })
@@ -205,7 +205,7 @@ describe('MoonPipe.Buffers with Splitter, 2nd case', () => {
 
   describe('ClearOne at 0 - meaning wipe out the whole Splitter', () => {
     it('clears out the whole Splitter', async () => {
-      return testInput(mp => mp.buffersClearOne(0), [
+      return testInput(mp => mp.buffersClearOne('0th'), [
         [],
         [2],
         ['on_busy_1', 1, 2, 'on_idle'],
@@ -215,7 +215,7 @@ describe('MoonPipe.Buffers with Splitter, 2nd case', () => {
 
   describe('ClearOne at 1', () => {
     it('clears out the first valve', async () => {
-      return testInput(mp => mp.buffersClearOne(1), [
+      return testInput(mp => mp.buffersClearOne('1st'), [
         [],
         [2],
         ['on_busy_1', 1, 2, 'on_idle'],
@@ -225,7 +225,7 @@ describe('MoonPipe.Buffers with Splitter, 2nd case', () => {
 
   describe('ClearOne at 2', () => {
     it('clears out the second valve', async () => {
-      return testInput(mp => mp.buffersClearOne(2), [
+      return testInput(mp => mp.buffersClearOne('2nd'), [
         [4],
         [],
         ['on_busy_1', 3, 4, 'on_idle'],

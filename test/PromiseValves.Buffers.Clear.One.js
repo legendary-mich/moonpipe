@@ -14,7 +14,7 @@ describe('PromiseValves.Buffers.Clear.One.js', () => {
         results.push('a_' + value)
         await delayPromise(2)
         return value + '_mapped'
-      })
+      }, { name: '0th' })
         .queueTap(async (value) => {
           results.push('b_' + value)
           await delayPromise(2)
@@ -31,7 +31,7 @@ describe('PromiseValves.Buffers.Clear.One.js', () => {
       pipe.pump(300)
 
       await delayPromise(4)
-      pipe.buffersClearOne(0)
+      pipe.buffersClearOne('0th')
 
       pipe.pump(4000)
 
@@ -77,7 +77,7 @@ describe('PromiseValves.Buffers.Clear.One.js', () => {
         results.push('a_' + value)
         await delayPromise(2)
         return value + '_mapped'
-      })
+      }, { name: '0th' })
         .queueTap(async (value) => {
           results.push('b_' + value)
           await delayPromise(2)
@@ -91,7 +91,7 @@ describe('PromiseValves.Buffers.Clear.One.js', () => {
 
       pipe.pump(1)
       await delayPromise(1)
-      pipe.buffersClearOne(0)
+      pipe.buffersClearOne('0th')
       await delayPromise(2)
 
       pipe.pump(4000)
@@ -137,7 +137,7 @@ describe('PromiseValves.Buffers.Clear.One.js', () => {
         results.push('a_' + value)
         await delayPromise(2)
         return value + '_mapped'
-      })
+      }, { name: '0th' })
         .queueTap(async (value) => {
           results.push('b_' + value)
           await delayPromise(2)
@@ -151,7 +151,7 @@ describe('PromiseValves.Buffers.Clear.One.js', () => {
 
       pipe.pump(1)
       await delayPromise(1)
-      pipe.buffersClearOne(0)
+      pipe.buffersClearOne('0th')
       await delayPromise(2)
 
       pipe.pump(4000)
@@ -197,7 +197,7 @@ describe('PromiseValves.Buffers.Clear.One.js', () => {
         results.push('a_' + value)
         await delayPromise(2)
         return value + '_mapped'
-      })
+      }, { name: '0th' })
         .queueTap(async (value) => {
           results.push('b_' + value)
           await delayPromise(2)
@@ -211,7 +211,7 @@ describe('PromiseValves.Buffers.Clear.One.js', () => {
 
       pipe.pump(1)
       await delayPromise(1)
-      pipe.buffersClearOne(0)
+      pipe.buffersClearOne('0th')
       await delayPromise(2)
 
       pipe.pump(4000)

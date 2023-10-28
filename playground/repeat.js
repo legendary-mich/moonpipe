@@ -6,7 +6,7 @@ const mp = new MoonPipe()
     console.log('// side:', val)
     throw 'err_' + val
   }, {
-    repeatPredicate: async (attemptsMade, err) => {
+    repeatPredicate: (attemptsMade, err) => {
       return attemptsMade <= 3 && err === 'err_b'
     },
   })
