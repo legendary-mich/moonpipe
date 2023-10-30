@@ -13,11 +13,11 @@
     "test-cov": "npm run lint && nyc mocha -t 5000 -b test/**/*.js"
   },
   "devDependencies": {
-    "chai": "^4.3.7",
-    "eslint": "^8.37.0",
+    "chai": "^4.3.10",
+    "eslint": "^8.52.0",
     "mocha": "^10.2.0",
     "nyc": "^15.1.0",
-    "sinon": "^15.0.3"
+    "sinon": "^17.0.0"
   },
   "homepage": "https://github.com/legendary-mich/moonpipe",
   "repository": {
