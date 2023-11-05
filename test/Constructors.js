@@ -355,6 +355,26 @@ describe('MapValve constructor', () => {
 describe('FilterValve constructor', () => {
   baseValveAssertions(FilterValve)
   synchronousValveAssertions(FilterValve, 'predicateFunc')
+
+  const properSynchronousValvePreset = {
+    name: null,
+    maxBufferSize: 1000,
+    bufferType: BUFFER_TYPE.QUEUE,
+    overflowAction: OVERFLOW_ACTION.EMIT_ERROR,
+  }
+
+  it(`throws for an unknown ouput channel`, () => {
+    try {
+      const preset = Object.assign({}, properSynchronousValvePreset, {
+        outputChannel: 'fake-channel',
+      })
+      new FilterValve(preset, () => true)
+      throw new Error('should have thrown')
+    }
+    catch (err) {
+      expect(err).to.have.property('message', `Unexpected 'outputChannel' name: fake-channel`)
+    }
+  })
 })
 
 describe('Splitter constructor', () => {
