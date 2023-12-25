@@ -271,23 +271,24 @@ describe('MoonPipe', () => {
 
       testCase('map')
       testCase('filter')
+      testCase('filterError')
     })
 
     describe('splitBy', () => {
-      function testCase(method) {
-        it(`${ method } passes options on`, () => {
+      function testCase() {
+        it(`passes options on`, () => {
           const classifyFn = () => 1
           const poolSize = 2
           const mp = new MoonPipe()
-            .splitBy(poolSize, classifyFn)
+            .splitBy(poolSize, classifyFn, {name: 'spltr'})
 
           expect(mp.getChannelValveAt(0).valve.classify).eql(classifyFn)
           expect(mp.getChannelValveAt(0).valve.poolSize).eql(2)
+          expect(mp.getChannelValveAt(0).valve.name).eql('spltr')
         })
       }
 
-      testCase('map')
-      testCase('filter')
+      testCase()
     })
   })
 

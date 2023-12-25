@@ -4,6 +4,7 @@ const { MoonPipe } = require('./lib/MoonPipe.js')
 const {
   BaseValve,
   BUFFER_TYPE,
+  CHANNEL_TYPE,
   OVERFLOW_ACTION,
   BufferOverflowError,
   BasePresets,
@@ -24,6 +25,7 @@ const {
   FlattenValve,
   MapValve,
   FilterValve,
+  SynchronousPresets,
 } = require('./lib/SynchronousValves.js')
 
 const { Splitter } = require('./lib/Splitter.js')
@@ -34,6 +36,7 @@ module.exports = {
   MoonPipe,
   BaseValve,
   BUFFER_TYPE,
+  CHANNEL_TYPE,
   OVERFLOW_ACTION,
   BufferOverflowError,
   BasePresets,
@@ -47,6 +50,7 @@ module.exports = {
   FlattenValve,
   MapValve,
   FilterValve,
+  SynchronousPresets,
   Splitter,
   delayPromise,
 }

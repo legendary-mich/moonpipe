@@ -59,10 +59,10 @@ skipTap     skipMap     skipEager     skipLazy     skipError
 sliceTap    sliceMap    sliceEager    sliceLazy
 poolTap     poolMap
 splitBy     join
-flatten     map         filter
+flatten     map         filter        filterError
 ```
 
-Among the predefined valves there are 3 synchronous valves **(flatten, map, filter)**, and 20+4+2+2 asynchronous valves. The names of the asynchronous valves consist of a prefix and a suffix. There are 5 different prefixes **(queue, cancel, throttle, skip, slice)**, and 5 different suffixes **(Map, Tap, Eager, Lazy, Error)**.
+Among the predefined valves there are 4 synchronous valves **(flatten, map, filter, filterError)**, and 20+4+2+2 asynchronous valves. The names of the asynchronous valves consist of a prefix and a suffix. There are 5 different prefixes **(queue, cancel, throttle, skip, slice)**, and 5 different suffixes **(Map, Tap, Eager, Lazy, Error)**.
 
 The valves with the **Map**, **Tap**, and **Error** suffixes operate on **Promises**, whereas the valves with the **Eager** and **Lazy** suffixes operate on **Timeouts**.
 
@@ -194,6 +194,12 @@ mp.pump('a')
 // out 1: a
 // error: thrown in queueTap
 // out 2: b
+```
+
+There is also 1 synchronous error handler, namely `filterError`. It operates in the `error mode`, like other error handlers, and swallows errors that do not meet the criteria of the filter predicate.
+```javascript
+  // Errors other than the `new Error('haha')` will be passed down the pipe.
+  .filterError(err => err.message !== 'haha')
 ```
 
 ### Hooks
@@ -534,6 +540,9 @@ mp.pipe(valve, CHANNEL_TYPE.ERROR)
   - `SHIFT` - the first value from the buffer is removed
   - `SKIP` - new values are skipped (not added to the buffer and so never processed)
   - `SLICE` - In the SLICE mode values are packed into an array which is later processed as a whole. When the array is full, a new array is created.
+- `outputChannel` - the channel that regular data will be emitted to. Unexpected errors are always emitted to the `ERROR` channel. Data can be emitted to either `DATA` or `ERROR`
+  - `DATA` - data is emitted to the `DATA` channel, unexpected errors are emitted to the `ERROR` channel
+  - `ERROR` - both data and errors are emitted to the `ERROR` channel
 
 ##### TimeValve Preset Params:
 - `resolveType` - determines when the value is emitted
