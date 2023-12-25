@@ -1,5 +1,12 @@
 # Changelog
 
+### 2.1.0
+- Update dev dependencies
+- Add a `filterError` valve
+- Add an `outputChannel` preset param
+- Export `CHANNEL_TYPE`
+- Export `SynchronousPresets`
+
 ### 2.0.0
 #### major breaking changes:
 - `MoonPipe->buffersClearOne(valveName)` takes a `valveName` instead of the `valveIndex` now
