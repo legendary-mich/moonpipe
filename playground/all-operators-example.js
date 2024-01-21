@@ -8,7 +8,7 @@ const mp = new MoonPipe()
   .queueMap(async (val) => val + 1000)
   // errors thrown from any of the promise-based valves are
   // propagated through the error channel to the first error handler.
-  .queueTap(async (val) => { if (val === 'what?1000') throw new Error('ha!') })
+  .queueTap(async (val) => { if (val === 'what?1000') throw new Error('I did not expect that!') })
   // the filter valve takes a function which returns a `boolean` value
   .filter((val) => val % 2 === 0)
   // the map valve takes a function which returns an arbitrary value
@@ -29,6 +29,6 @@ mp.pump(4)
 
 // output: 1002
 // output: 1002
-// output: error handled: ha!
+// output: error handled: I did not expect that!
 // output: 1004
 // output: 1004

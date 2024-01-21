@@ -1,4 +1,4 @@
-# Moon Pipe
+# moonpipe
 Throttle streams of data while passing them through promises an timers. Use various valves to discard redundant data points.
 
 - [TL;DR](#tldr)
@@ -13,7 +13,7 @@ Throttle streams of data while passing them through promises an timers. Use vari
   - [Cache](#cache-in-promisevalves)
   - [Timeout](#timeout-in-promisevalves)
   - [Repeating on Error](#repeating-on-error-in-promisevalves)
-  - [onCancel callback](#oncancel-callback)
+  - [onCancel callback](#oncancel-callback-in-promisevalves)
   - [Pooling](#pooling-in-promisevalves)
 - [SplitBy/Join](#splitbyjoin)
 - [Custom valves](#custom-valves)
@@ -90,7 +90,7 @@ const mp = new MoonPipe()
   .queueMap(async (val) => val + 1000)
   // errors thrown from any of the promise-based valves are
   // propagated through the error channel to the first error handler.
-  .queueTap(async (val) => { if (val === 'what?1000') throw new Error('ha!') })
+  .queueTap(async (val) => { if (val === 'what?1000') throw new Error('I did not expect that!') })
   // the filter valve takes a function which returns a `boolean` value
   .filter((val) => val % 2 === 0)
   // the map valve takes a function which returns an arbitrary value
@@ -111,7 +111,7 @@ mp.pump(4)
 
 // output: 1002
 // output: 1002
-// output: error handled: ha!
+// output: error handled: I did not expect that!
 // output: 1004
 // output: 1004
 ```
@@ -204,7 +204,7 @@ There is also 1 synchronous error handler, namely `filterError`. It operates in 
 
 ### Hooks
 
-##### onBusyTap
+#### onBusyTap
 The `onBusyTap` hook is called every time the pipe goes from an `idle` state to a `busy` state. The callback provided by you is supposed to be `synchronous`. It takes the pumped value as the first argument. **If it throws** an error, the error will be pumped to the **nearest error valve**. There can be **only one** onBusyTap hook.
 ```javascript
 const mp = new MoonPipe()
@@ -213,8 +213,8 @@ const mp = new MoonPipe()
   })
 ```
 
-##### onIdle
-The `onIdle` hook is called every time the pipe goes from a `busy` state to an `idle` state. The callback provided by you is supposed to be `synchronous`. It does NOT take any value as the first argument. **If it throws** an error, the error will be **silently ignored**. There can be **only one** onIdle hook.
+#### onIdle
+The `onIdle` hook is called every time the pipe goes from a `busy` state to an `idle` state. The callback provided by you is supposed to be `synchronous`. It does NOT take any arguments. **If it throws** an error, the error will be **silently ignored**. There can be **only one** onIdle hook.
 
 ```javascript
 const mp = new MoonPipe()
@@ -247,7 +247,7 @@ mp.pump(2)
 ```
 
 ### Clearing out buffers
-There are two methods that you can use to clear out `buffers`. These are `buffersClearAll()`, and `buffersClearOne(valveName)`. The `valveName` is a `string` passed into the valve constructor under the `name` field. Notice that the `splitBy` valve is different, as clearing buffers (or cache) on it applies to everything that's between `splitBy` and `join`.
+Sometimes you may want to stop the pipe, or a valve, from what it's doing and remove every pumped value that waits for its turn. Methods that do that are `buffersClearAll()`, and `buffersClearOne(valveName)`. `buffersClearAll()` removes every value from the entire pipe, whereas `buffersClearOne(valveName)` removes every value from a single valve or a single splitter. In addition to clearing out buffers, the mentioned methods cancel `active promises` in `PromiseValves`, and `active timeouts` in `TimeValves`. Notice that the `splitBy` valve is special, as clearing buffers (or the cache) on it applies to everything that's between `splitBy` and `join`.
 ```javascript
 const mp = new MoonPipe()
   .cancelLazy(1000, {name: 'cl'})
@@ -263,11 +263,10 @@ mp.buffersClearOne('splitter') // this will clear out everything that's between 
 mp.buffersClearOne('qt') // this will clear out the buffer in the valve named 'qt'
 mp.buffersClearAll()  // this will clear out buffers in all the valves
 ```
-In addition to clearing out buffers, the mentioned methods cancel `active promises` in `PromiseValves`, and `active timeouts` in `TimeValves`.
 
 ### PromiseValves
-### Cache in PromiseValves
-You can cache the result of a promise. In order to do that you just add a `cache: true` param to the options and you are done. Results are cached in a hash map, where the value provided is used as the key. You can customize the hash function if you don't like how the keys are derived (see down below).
+#### Cache in PromiseValves
+The result of a promise can be cached with the `cache: true` param provided to the options. Results are cached in a hash map, where by default the pumped value is used as the key. The way the keys are derived can be customized with a custom hash function (see down below).
 ```javascript
 const { MoonPipe } = require('moonpipe')
 const mp = new MoonPipe()
@@ -276,7 +275,7 @@ const mp = new MoonPipe()
     return 'mapped_' + val
   }, {
     cache: true, // <------ cache is enabled HERE
-    name: 'bigJohn', // <-- a name that you can use to wipe out the cache in this particular valve (see below)
+    name: 'bigJohn', // <-- a name that you will refer to when wiping out the cache in this particular valve
   })
   .queueTap(async (val) => {
     console.log('output:', val)
@@ -292,13 +291,14 @@ mp.pump('a')
 // output: mapped_b
 // output: mapped_a <-- no side effect, because the value comes directly from the cache
 ```
-You can clear the cache later with one of the following (look at the [Clearing out buffers](#clearing-out-buffers) section for the info on how to add names to the valves):
+The cache can be invalidated later with one of the following:
 ```javascript
 mp.cacheClearAll() // clears the entire cache in all valves.
 mp.cacheClearOne('bigJohn') // clears the entire cache in the valve named bigJohn.
 mp.cacheClearOne('littleJohn', 'a') // clears only the entry at the key derived from the value 'a' in the valve named littleJohn.
 mp.cacheClearOne('oldJohn', 'a', 'b') // clears entries at keys derived from values 'a' and 'b' in the valve at the valve named oldJohn.
 ```
+*If you are curious how running a method by a valve name acts on the `splitBy` valve, look at the [Clearing out buffers](#clearing-out-buffers) section.*
 
 You can also use a custom hash function to generate custom keys at which the values will be stored in cache.
 ```javascript
@@ -309,7 +309,7 @@ const mp = new MoonPipe()
     return 'mapped_' + val
   }, {
     cache: true,
-    hashFunction: (val) => val.toLowerCase(),
+    hashFunction: (val) => val.toLowerCase(), // <--- HERE
   })
   .queueTap(async (val) => {
     console.log('output:', val)
@@ -323,8 +323,8 @@ mp.pump('a')
 // output: mapped_A <-- a value from the cache at the key 'a'
 ```
 
-### Timeout in PromiseValves
-You can provide a `timeoutMs` param to every promise-based valve. If the promise is not settled within the provided number of milliseconds, it will be rejected with a `TimeoutError`.
+#### Timeout in PromiseValves
+Use the `timeoutMs` param for promise-based valves that are not supposed to live too long. If the promise is not settled within the provided number of milliseconds, it will be rejected with a `TimeoutError`.
 ```javascript
 const { MoonPipe } = require('moonpipe')
 const { delayPromise } = require('../test/utils.js')
@@ -347,8 +347,8 @@ mp.pump('a')
 // error: TimeoutError
 ```
 
-### Repeating on error in PromiseValves
-You can use a `repeatPredicate` which takes an `attemptsMade` counter as the first argument, an `error` as the second one, and returns a `boolean` value which signifies whether the promise should be retried or not.
+#### Repeating on error in PromiseValves
+A rejected promise can be retried before the error is reported to the pipe. Every error returned from a rejected promise is passed to a `repeatPredicate` function, that takes an `attemptsMade` counter as the first argument, an `error` as the second one, and returns a `boolean` value which signifies whether the promise should be retried or not.
 
 If a `repeatPredicate` throws an error, the promise is automatically rejected and will not be retried anymore.
 
@@ -384,8 +384,8 @@ mp.pump('c')
 // error: err_c
 ```
 
-### onCancel callback
-Sometimes you may want to do some cleanup when the promise is being canceled. In order to do that you can utilize the `onCancel` callback which can be attached to the `promiseContext` that is passed as the second argument to the promise factory function. What follows is an example of how to clear a timeout from within one of the `cancel` promise valves.
+#### onCancel callback in PromiseValves
+Sometimes you may want to do some cleanup when a promise is being canceled. To facilitate custom logic on promise cancellation a `promiseContext` is provided to the promise factory function as the second argument. The `onCancel` callback can be attached to the `promiseContext`; it will be called when the promise is being canceled. What follows is an example of how to clear a timeout from within one of the `cancel` promise valves. *(Note that the sole purpose of this example is to show how to use the `onCancel` callback. Normally, for anything related to timeouts, you are better off using TimeValves like e.g. cancelLazy)*
 
 ```javascript
 const { MoonPipe } = require('moonpipe')
@@ -421,8 +421,8 @@ mp.pump('d')
 // output: d
 ```
 
-### Pooling in PromiseValves
-Promises can be run concurrently. In order to do that you can either use the `poolMap`, `poolTap` valves (see the [Predefined valves](#predefined-valves) section for an example), or override the `poolSize` param in any of the promise-based valves.
+#### Pooling in PromiseValves
+Promises can be run concurrently in two ways; either with the `poolMap`, `poolTap` predefined valves (see the [Predefined valves](#predefined-valves) section for an example), or with the `poolSize` param set in any of the promise-based valves. Here comes an example of the `poolSize` param:
 
 ```javascript
 const { MoonPipe } = require('moonpipe')
@@ -443,7 +443,7 @@ mp.pump('c')
 ```
 
 ### SplitBy/Join
-Sometimes it is useful to run a few pipes of the same type concurrently. In that case you can use the `splitBy` valve to split the incoming data by a factor that you define in the classification function. The first argument passed to the `splitBy` function is the number of pipes that are going to be created under the hood. The second argument is a classification function. The classification function takes the pumped value as the first argument and returns the label of a bucket the data will be put into. Every data bucket will be processed by a dedicated pipe in separation from the other buckets. For example `.splitBy(2, value => value.id)` will create 2 pipes, and will group the incoming values by the `value.id`.
+Sometimes it is desirable to split the input into groups based on some factor, and give each group a separate pipe. The `splitBy` valve does exactly that. It splits the incoming data by a factor that can be defined in the classification function, which is passed to the `splitBy` valve as the second argument. The first argument passed to the `splitBy` valve is the number of pipes that are going to be created under the hood. The second argument is a classification function. The classification function takes the pumped value as the first argument and returns the label of a bucket the data will be put into. Every data bucket will be processed by a dedicated pipe in separation from the other buckets. For example `.splitBy(2, value => value.id)` will create 2 pipes, and will group the incoming values by the `value.id`.
 
 It is perfectly fine to have more groups than the number of underlying pipes. If there are more groups than the pipes, some of the groups will wait for a free pipe before they move on.
 
@@ -474,18 +474,18 @@ mp.pump({ id: 2, n: 'g' })
 Note that the `splitBy` valves can be nested. The following example creates 2 concurrent pipes, and for each of the 2 created pipes creates another 2, which gives you a fork with 4 teeth.
 ```javascript
 const mp = new MoonPipe()
-  .splitBy(2, value => value.id) //   /\
-  .splitBy(2, value => value.id) //  /\/\
-  .queueTap(value => {})         //  ||||
-  .queueTap(value => {})         //  ||||
-  .join()                        //  \/\/
-  .join()                        //   \/
+  .splitBy(2, value => value.color) //   /\
+  .splitBy(2, value => value.id)    //  /\/\
+  .queueTap(value => {})            //  ||||
+  .queueTap(value => {})            //  ||||
+  .join()                           //  \/\/
+  .join()                           //   \/
 ```
 
-Also note that inner pipes behave like regular valves. This means that errors from inner pipes are propagated to the outer pipes, which changes the active channel on the outer pipes to the `ERROR` one. However, if you decide to handle errors on the inner pipes, errors will not be propagated to the outer pipes and the outer pipes will continue operating in the `DATA` mode, while the inner pipes will be handling errors in the `ERROR` mode (active channel = ERROR).
+Also note that inner pipes behave a lot like regular valves. This means that errors from inner pipes are propagated to the parent pipe. However, if you decide to handle errors in inner pipes, errors will not be propagated to the parent pipe and the parent pipe will continue operating in the `DATA` mode, while the inner pipes will be handling errors in the `ERROR` mode.
 
 ### Custom valves
-You can create your own flavors of the `TimeValve` and `PromiseValve`, and use the `.pipe` method to add them to an instance of the MoonPipe. Look at [Presets explained](#presets-explained) for additional info about the presets. Here I will show you an example of a time-based valve which is similar the the `throttleLazy` valve, but has a bigger `maxBufferSize`.
+Most of the predefined valves internally run an instance of either the `TimeValve` or the `PromiseValve` class. It is possible to create your own flavors of the mentioned valves and connect them to the pipe with the `.pipe` method. Here I will show you an example of a time-based valve which is similar to the `throttleLazy` valve, but has a bigger `maxBufferSize`. For the complete info about presets look at the [Presets explained](#presets-explained) section.
 
 ```javascript
 const {
@@ -530,7 +530,7 @@ mp.pipe(valve, CHANNEL_TYPE.ERROR)
 ```
 
 ### Presets explained
-##### Base Preset Params (These params are common to both the TimeValves and PromiseValves):
+#### Base Preset Params (These params are common to both the TimeValves and PromiseValves):
 - `name` - A name that is used when the valve is added to the pipe
 - `maxBufferSize` - the size of the internal buffer
 - `bufferType`- describes the order in which values are processed
@@ -544,13 +544,13 @@ mp.pipe(valve, CHANNEL_TYPE.ERROR)
   - `DATA` - data is emitted to the `DATA` channel, unexpected errors are emitted to the `ERROR` channel
   - `ERROR` - both data and errors are emitted to the `ERROR` channel
 
-##### TimeValve Preset Params:
+#### TimeValve Preset Params:
 - `resolveType` - determines when the value is emitted
   - `LAZY` - first the timeout is set. The value is emitted only after the timeout ends.
   - `EAGER` - if there's no active timeout, the value is emitted immediately and the timeout is set. Otherwise the value is emitted after the previous timeout ends.
 - `cancelOnPump` - if `true`, the active timeout is reset on every new value
 
-##### PromiseValve Preset Params:
+#### PromiseValve Preset Params:
 - `resolveType` - determines what value is emitted
   - `MAP` - the result of the promise is emitted
   - `TAP` - the value that is fed into the promise is emitted
@@ -564,7 +564,7 @@ mp.pipe(valve, CHANNEL_TYPE.ERROR)
 Predefined presets can be found in the `TimeValve.js` and `PromiseValve.js` files.
 
 ### Utilities
-##### delayPromise
+#### delayPromise
 `delayPromise` is a function that takes the number of milliseconds as the first argument and returns a promise which is resolved after the provided number of milliseconds. Normally you don't need it, as valves like `queueLazy` can do a similar thing. However, it can be useful for debugging or playing around.
 ```javascript
 const { delayPromise } = require('moonpipe')

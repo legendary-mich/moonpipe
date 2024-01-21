@@ -8,7 +8,7 @@ const mp = new MoonPipe()
     return 'mapped_' + val
   }, {
     cache: true, // <------ cache is enabled HERE
-    name: 'bigJohn', // <-- a name that you can use to wipe out the cache in this particular valve
+    name: 'bigJohn', // <-- a name that you will refer to when wiping out the cache in this particular valve
   })
   .queueTap(async (val) => {
     console.log('output:', val)
