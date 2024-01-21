@@ -8,7 +8,7 @@ const mp = new MoonPipe()
     return 'mapped_' + val
   }, {
     cache: true,
-    hashFunction: (val) => val.toLowerCase(),
+    hashFunction: (val) => val.toLowerCase(), // <--- HERE
   })
   .queueTap(async (val) => {
     console.log('output:', val)
