@@ -72,7 +72,6 @@ describe('PromiseValves.Buffers.Clear.All.js', () => {
     })
   })
 
-
   describe('MoonPipe.cancel', () => {
 
     async function testInput(method, expected) {
@@ -241,6 +240,69 @@ describe('PromiseValves.Buffers.Clear.All.js', () => {
     describe('Map', () => {
       it('whatever', () => {
         return testInput('skipMap', [
+          'on_busy_1',
+          'a_1',
+          'on_idle_undefined',
+          'on_busy_4000',
+          'a_4000',
+          'b_4000_mapped',
+          'on_idle_undefined',
+        ])
+      })
+    })
+  })
+
+  describe('Error thrown in onCancel', () => {
+
+    async function testInput(method, expected) {
+      const results = []
+      const pipe = new MoonPipe()[method](async (value, ctx) => {
+        ctx.onCancel = () => {
+          throw new Error('hoho') // <---- should be silently ignored
+        }
+        results.push('a_' + value)
+        await delayPromise(2)
+        return value + '_mapped'
+      })
+        .queueTap(async (value) => {
+          results.push('b_' + value)
+          await delayPromise(2)
+        })
+        .onBusyTap(async (value) => {
+          results.push('on_busy_' + value)
+        })
+        .onIdle(async (value) => {
+          results.push('on_idle_' + value)
+        })
+
+      pipe.pump(1)
+      await delayPromise(1)
+      pipe.buffersClearAll()
+      await delayPromise(2)
+
+      pipe.pump(4000)
+
+      await delayPromise(10)
+      expect(results).to.eql(expected)
+    }
+
+    describe('Tap', () => {
+      it('silently swallows the error', () => {
+        return testInput('cancelTap', [
+          'on_busy_1',
+          'a_1',
+          'on_idle_undefined',
+          'on_busy_4000',
+          'a_4000',
+          'b_4000',
+          'on_idle_undefined',
+        ])
+      })
+    })
+
+    describe('Map', () => {
+      it('silently swallows the error', () => {
+        return testInput('cancelMap', [
           'on_busy_1',
           'a_1',
           'on_idle_undefined',

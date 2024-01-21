@@ -1,5 +1,8 @@
 # Changelog
 
+### 2.1.1
+- Silently ignore errors in the onCancel callbacks
+
 ### 2.1.0
 - Update dev dependencies
 - Add a `filterError` valve

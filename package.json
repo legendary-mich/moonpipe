@@ -1,6 +1,6 @@
 {
   "name": "moonpipe",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Throttle streams of data while passing them through promises an timers. Use various valves to discard redundant data points.",
   "license": "MIT",
   "author": "Michał Wojciechowski",
