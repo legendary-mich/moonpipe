@@ -173,7 +173,7 @@ When an error is thrown by one of the normal valves, the pipe switches its activ
 
 There are 4 predefined valves that can be used to handle errors. They all behave like their brothers from the `Map` family with that difference that they operate only in the `error mode`. The most common one is the `queueError` valve, which handles errors one after another. Another one that may be useful is the `skipError` valve. It handles the first error, and let all the subsequent ones slide. Other valves that can be used for error handling are `cancelError` and `throttleError`.
 
-If there are no error handlers, errors will be silently ignored.
+If there are no error handlers, errors will be **silently ignored**.
 ```javascript
 const { MoonPipe } = require('moonpipe')
 const mp = new MoonPipe()
@@ -385,7 +385,7 @@ mp.pump('c')
 ```
 
 #### onCancel callback in PromiseValves
-Sometimes you may want to do some cleanup when a promise is being canceled. To facilitate custom logic on promise cancellation a `promiseContext` is provided to the promise factory function as the second argument. The `onCancel` callback can be attached to the `promiseContext`; it will be called when the promise is being canceled. What follows is an example of how to clear a timeout from within one of the `cancel` promise valves. *(Note that the sole purpose of this example is to show how to use the `onCancel` callback. Normally, for anything related to timeouts, you are better off using TimeValves like e.g. cancelLazy)*
+Sometimes you may want to do some cleanup when a promise is being canceled. To facilitate custom logic on promise cancellation a `promiseContext` is provided to the promise factory function as the second argument. The `onCancel` callback can be attached to the `promiseContext`; it will be called when the promise is being canceled. **If it throws** an error, the error will be **silently ignored**. What follows is an example of how to clear a timeout from within one of the `cancel` promise valves. *(Note that the sole purpose of this example is to show how to use the `onCancel` callback. Normally, for anything related to timeouts, you are better off using TimeValves like e.g. cancelLazy)*
 
 ```javascript
 const { MoonPipe } = require('moonpipe')
