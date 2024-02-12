@@ -348,14 +348,14 @@ mp.pump('a')
 ```
 
 #### Repeating on error in PromiseValves
-A rejected promise can be retried before the error is reported to the pipe. Every error returned from a rejected promise is passed to a `repeatPredicate` function, that takes an `attemptsMade` counter as the first argument, an `error` as the second one, and returns a `boolean` value which signifies whether the promise should be retried or not.
+A rejected promise can be retried before the error is reported to the pipe. Every error returned from a rejected promise is passed to the `repeatPredicate` function, that takes an `attemptsMade` counter as the first argument, an `error` as the second one, and returns a `boolean` value which signifies whether the promise should be retried or not. By default promises are retried immediately. If you want to add a delay between retries, use a `repeatBackoffFactory` function.
 
-If a `repeatPredicate` throws an error, the promise is automatically rejected and will not be retried anymore.
+If the `repeatPredicate` throws an error, the promise is automatically rejected and will not be retried anymore.
 
 Since moonpipe **v2.0.0** the `repeatPredicate` is expected to be **synchronous** and will not be awaited.
 
 ```javascript
-const { MoonPipe } = require('moonpipe')
+const { MoonPipe, ConstantBackoff, LinearBackoff } = require('moonpipe')
 const mp = new MoonPipe()
   .queueTap(async (val) => {
     console.log('// side:', val)
@@ -364,6 +364,9 @@ const mp = new MoonPipe()
     repeatPredicate: (attemptsMade, err) => {
       return attemptsMade <= 3 && err === 'err_b'
     },
+    // repeatBackoffFactory: () => new ConstantBackoff(1000), // OPTIONAL
+    // repeatBackoffFactory: () => new LinearBackoff(1000), // OPTIONAL
+    // repeatBackoffFactory: () => new ConstantBackoff(0), // OPTIONAL DEFAULT
   })
   .queueError(async (err) => {
     console.log('// error:', err)
@@ -560,6 +563,7 @@ mp.pipe(valve, CHANNEL_TYPE.ERROR)
 - `cache` - if `true`, the result of the promise will be cached
 - `hashFunction` - a function from a `value` to the `key` at witch the result will be cached. Defaults to `value => value`
 - `repeatPredicate` - a synchronous function which takes an `attemptsMade` counter as the first argument and an `error` as the second one. It returns `true` or `false`.
+- `repeatBackoffFactory` - a function that returns an instance of a `Backoff` class. Currently `ConstantBackoff` and `LinearBackoff` classes are implemented.
 
 Predefined presets can be found in the `TimeValve.js` and `PromiseValve.js` files.
 
