@@ -18,11 +18,11 @@ async function testInput(method, expected) {
       await delayPromise(2)
       results.push('err_' + err.message)
     })
-    .onBusyTap(async (value) => {
-      results.push('on_busy_' + value)
+    .onBusy(() => {
+      results.push('on_busy')
     })
-    .onIdle(async (value) => {
-      results.push('on_idle_' + value)
+    .onIdle(() => {
+      results.push('on_idle')
     })
 
   pipe.pump(1)
@@ -38,14 +38,14 @@ describe('PromiseSliceValves with the chunkSize set to 0', () => {
   describe('MoonPipe.sliceTap', () => {
     it('pumps ORIGINAL values', () => {
       return testInput('sliceTap', [
-        'on_busy_1',
+        'on_busy',
         'side_[]',
         'res_[]',
         'side_[]',
         'res_[]',
         'side_[]',
         'res_[]',
-        'on_idle_undefined',
+        'on_idle',
       ])
     })
   })
@@ -53,14 +53,14 @@ describe('PromiseSliceValves with the chunkSize set to 0', () => {
   describe('MoonPipe.sliceMap', () => {
     it('pumps MODIFIED values', () => {
       return testInput('sliceMap', [
-        'on_busy_1',
+        'on_busy',
         'side_[]',
         'res_[100]',
         'side_[]',
         'res_[100]',
         'side_[]',
         'res_[100]',
-        'on_idle_undefined',
+        'on_idle',
       ])
     })
   })

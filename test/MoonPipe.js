@@ -333,6 +333,10 @@ describe('MoonPipe', () => {
       testValidation('onBusyTap')
     })
 
+    describe('onBusy', () => {
+      testValidation('onBusy')
+    })
+
     describe('onIdle', () => {
       testValidation('onIdle')
     })

@@ -3,8 +3,8 @@
 const { MoonPipe } = require('../index.js')
 
 const mp = new MoonPipe()
-  .onBusyTap((value) => {
-    console.log('is loading', value)
+  .onBusy(() => {
+    console.log('is loading')
   })
   .onIdle(() => {
     console.log('is NOT loading anymore')

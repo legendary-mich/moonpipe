@@ -15,7 +15,7 @@ class Test {
   async testInput(method, param, input, expected) {
     const results = []
     const mp = new MoonPipe()
-      .onBusyTap(value => results.push('on_busy_' + value))
+      .onBusy(() => results.push('on_busy'))
       .splitBy(this.poolSize, this.classify
       )[method](param)
       .join()
@@ -50,7 +50,7 @@ describe('Splitter.TransformValves', () => {
           [100, 200],
           [1000, 2000],
         ], [
-          'on_busy_1,2',
+          'on_busy',
           'res_1',
           'res_2',
           'res_10',
@@ -70,7 +70,7 @@ describe('Splitter.TransformValves', () => {
           100,
           [1000, 2000],
         ], [
-          'on_busy_1',
+          'on_busy',
           'err_Expected an array; found: number',
           'res_10',
           'err_Expected an array; found: number',
@@ -90,7 +90,7 @@ describe('Splitter.TransformValves', () => {
           3,
           4,
         ], [
-          'on_busy_1',
+          'on_busy',
           'res_2',
           'res_4',
           'res_6',
@@ -106,7 +106,7 @@ describe('Splitter.TransformValves', () => {
           3,
           4,
         ], [
-          'on_busy_1',
+          'on_busy',
           'err_wrong',
           'err_wrong',
           'err_wrong',
@@ -128,7 +128,7 @@ describe('Splitter.TransformValves', () => {
           4,
           4,
         ], [
-          'on_busy_1',
+          'on_busy',
           'res_1',
           'res_1',
           'res_3',
@@ -144,7 +144,7 @@ describe('Splitter.TransformValves', () => {
           3,
           4,
         ], [
-          'on_busy_1',
+          'on_busy',
           'err_zonk',
           'err_zonk',
           'err_zonk',
@@ -167,7 +167,7 @@ describe('Splitter.TransformValves', () => {
           [100, 200],
           [1000, 2000],
         ], [
-          'on_busy_1,2',
+          'on_busy',
           'res_1',
           'res_2',
           'res_10',
@@ -187,7 +187,7 @@ describe('Splitter.TransformValves', () => {
           100,
           [1000, 2000],
         ], [
-          'on_busy_1',
+          'on_busy',
           'err_Expected an array; found: number',
           'res_10',
           'err_Expected an array; found: number',
@@ -207,7 +207,7 @@ describe('Splitter.TransformValves', () => {
           3,
           4,
         ], [
-          'on_busy_1',
+          'on_busy',
           'res_2',
           'res_4',
           'res_6',
@@ -223,7 +223,7 @@ describe('Splitter.TransformValves', () => {
           3,
           4,
         ], [
-          'on_busy_1',
+          'on_busy',
           'err_wrong',
           'err_wrong',
           'err_wrong',
@@ -245,7 +245,7 @@ describe('Splitter.TransformValves', () => {
           4,
           4,
         ], [
-          'on_busy_1',
+          'on_busy',
           'res_1',
           'res_1',
           'res_3',
@@ -261,7 +261,7 @@ describe('Splitter.TransformValves', () => {
           3,
           4,
         ], [
-          'on_busy_1',
+          'on_busy',
           'err_zonk',
           'err_zonk',
           'err_zonk',
@@ -284,7 +284,7 @@ describe('Splitter.TransformValves', () => {
           [100, 200],
           [1000, 2000],
         ], [
-          'on_busy_1,2',
+          'on_busy',
           'res_1',
           'res_2',
           'res_10',
@@ -304,7 +304,7 @@ describe('Splitter.TransformValves', () => {
           100,
           [1000, 2000],
         ], [
-          'on_busy_1',
+          'on_busy',
           'err_Expected an array; found: number',
           'res_10',
           'err_Expected an array; found: number',
@@ -324,7 +324,7 @@ describe('Splitter.TransformValves', () => {
           3,
           4,
         ], [
-          'on_busy_1',
+          'on_busy',
           'res_2',
           'res_4',
           'res_6',
@@ -340,7 +340,7 @@ describe('Splitter.TransformValves', () => {
           3,
           4,
         ], [
-          'on_busy_1',
+          'on_busy',
           'err_wrong',
           'err_wrong',
           'err_wrong',
@@ -362,7 +362,7 @@ describe('Splitter.TransformValves', () => {
           4,
           4,
         ], [
-          'on_busy_1',
+          'on_busy',
           'res_1',
           'res_1',
           'res_3',
@@ -378,7 +378,7 @@ describe('Splitter.TransformValves', () => {
           3,
           4,
         ], [
-          'on_busy_1',
+          'on_busy',
           'err_zonk',
           'err_zonk',
           'err_zonk',
@@ -401,7 +401,7 @@ describe('Splitter.TransformValves', () => {
           [100, 200],
           [1000, 2000],
         ], [
-          'on_busy_1,2',
+          'on_busy',
           'res_1',
           'res_2',
           'res_10',
@@ -421,7 +421,7 @@ describe('Splitter.TransformValves', () => {
           100,
           [1000, 2000],
         ], [
-          'on_busy_1',
+          'on_busy',
           'err_Expected an array; found: number',
           'res_10',
           'err_Expected an array; found: number',
@@ -441,7 +441,7 @@ describe('Splitter.TransformValves', () => {
           3,
           4,
         ], [
-          'on_busy_1',
+          'on_busy',
           'res_2',
           'res_4',
           'res_6',
@@ -457,7 +457,7 @@ describe('Splitter.TransformValves', () => {
           3,
           4,
         ], [
-          'on_busy_1',
+          'on_busy',
           'err_wrong',
           'err_wrong',
           'err_wrong',
@@ -479,7 +479,7 @@ describe('Splitter.TransformValves', () => {
           4,
           4,
         ], [
-          'on_busy_1',
+          'on_busy',
           'res_1',
           'res_1',
           'res_3',
@@ -495,7 +495,7 @@ describe('Splitter.TransformValves', () => {
           3,
           4,
         ], [
-          'on_busy_1',
+          'on_busy',
           'err_zonk',
           'err_zonk',
           'err_zonk',

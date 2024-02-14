@@ -19,11 +19,11 @@ describe('PromiseValves.Buffers.Clear.All.js', () => {
           results.push('b_' + value)
           await delayPromise(2)
         })
-        .onBusyTap(async (value) => {
-          results.push('on_busy_' + value)
+        .onBusy(() => {
+          results.push('on_busy')
         })
-        .onIdle(async (value) => {
-          results.push('on_idle_' + value)
+        .onIdle(() => {
+          results.push('on_idle')
         })
 
       pipe.pump(1)
@@ -42,15 +42,15 @@ describe('PromiseValves.Buffers.Clear.All.js', () => {
     describe('Tap', () => {
       it('pumps ORIGINAL values', () => {
         return testInput('queueTap', [
-          'on_busy_1',
+          'on_busy',
           'a_1',
           'b_1',
           'a_20',
-          'on_idle_undefined',
-          'on_busy_4000',
+          'on_idle',
+          'on_busy',
           'a_4000',
           'b_4000',
-          'on_idle_undefined',
+          'on_idle',
         ])
       })
     })
@@ -58,15 +58,15 @@ describe('PromiseValves.Buffers.Clear.All.js', () => {
     describe('Map', () => {
       it('pumps MODIFIED values', () => {
         return testInput('queueMap', [
-          'on_busy_1',
+          'on_busy',
           'a_1',
           'b_1_mapped',
           'a_20',
-          'on_idle_undefined',
-          'on_busy_4000',
+          'on_idle',
+          'on_busy',
           'a_4000',
           'b_4000_mapped',
-          'on_idle_undefined',
+          'on_idle',
         ])
       })
     })
@@ -85,11 +85,11 @@ describe('PromiseValves.Buffers.Clear.All.js', () => {
           results.push('b_' + value)
           await delayPromise(2)
         })
-        .onBusyTap(async (value) => {
-          results.push('on_busy_' + value)
+        .onBusy(() => {
+          results.push('on_busy')
         })
-        .onIdle(async (value) => {
-          results.push('on_idle_' + value)
+        .onIdle(() => {
+          results.push('on_idle')
         })
 
       pipe.pump(1)
@@ -106,13 +106,13 @@ describe('PromiseValves.Buffers.Clear.All.js', () => {
     describe('Tap', () => {
       it('cancels initial promises, and resolves the last one with the ORIGINAL value', () => {
         return testInput('cancelTap', [
-          'on_busy_1',
+          'on_busy',
           'a_1',
-          'on_idle_undefined',
-          'on_busy_4000',
+          'on_idle',
+          'on_busy',
           'a_4000',
           'b_4000',
-          'on_idle_undefined',
+          'on_idle',
         ])
       })
     })
@@ -120,13 +120,13 @@ describe('PromiseValves.Buffers.Clear.All.js', () => {
     describe('Map', () => {
       it('cancels initial promises, and resolves the last one with a MODIFIED value', () => {
         return testInput('cancelMap', [
-          'on_busy_1',
+          'on_busy',
           'a_1',
-          'on_idle_undefined',
-          'on_busy_4000',
+          'on_idle',
+          'on_busy',
           'a_4000',
           'b_4000_mapped',
-          'on_idle_undefined',
+          'on_idle',
         ])
       })
     })
@@ -145,11 +145,11 @@ describe('PromiseValves.Buffers.Clear.All.js', () => {
           results.push('b_' + value)
           await delayPromise(2)
         })
-        .onBusyTap(async (value) => {
-          results.push('on_busy_' + value)
+        .onBusy(() => {
+          results.push('on_busy')
         })
-        .onIdle(async (value) => {
-          results.push('on_idle_' + value)
+        .onIdle(() => {
+          results.push('on_idle')
         })
 
       pipe.pump(1)
@@ -166,13 +166,13 @@ describe('PromiseValves.Buffers.Clear.All.js', () => {
     describe('Tap', () => {
       it('removes values which are waiting in the queue, and pumps ORIGINAL ones', () => {
         return testInput('throttleTap', [
-          'on_busy_1',
+          'on_busy',
           'a_1',
-          'on_idle_undefined',
-          'on_busy_4000',
+          'on_idle',
+          'on_busy',
           'a_4000',
           'b_4000',
-          'on_idle_undefined',
+          'on_idle',
         ])
       })
     })
@@ -180,13 +180,13 @@ describe('PromiseValves.Buffers.Clear.All.js', () => {
     describe('Map', () => {
       it('removes values which are waiting in the queue, and pumps MODIFIED ones', () => {
         return testInput('throttleMap', [
-          'on_busy_1',
+          'on_busy',
           'a_1',
-          'on_idle_undefined',
-          'on_busy_4000',
+          'on_idle',
+          'on_busy',
           'a_4000',
           'b_4000_mapped',
-          'on_idle_undefined',
+          'on_idle',
         ])
       })
     })
@@ -205,11 +205,11 @@ describe('PromiseValves.Buffers.Clear.All.js', () => {
           results.push('b_' + value)
           await delayPromise(2)
         })
-        .onBusyTap(async (value) => {
-          results.push('on_busy_' + value)
+        .onBusy(() => {
+          results.push('on_busy')
         })
-        .onIdle(async (value) => {
-          results.push('on_idle_' + value)
+        .onIdle(() => {
+          results.push('on_idle')
         })
 
       pipe.pump(1)
@@ -226,13 +226,13 @@ describe('PromiseValves.Buffers.Clear.All.js', () => {
     describe('Tap', () => {
       it('whatever', () => {
         return testInput('skipTap', [
-          'on_busy_1',
+          'on_busy',
           'a_1',
-          'on_idle_undefined',
-          'on_busy_4000',
+          'on_idle',
+          'on_busy',
           'a_4000',
           'b_4000',
-          'on_idle_undefined',
+          'on_idle',
         ])
       })
     })
@@ -240,13 +240,13 @@ describe('PromiseValves.Buffers.Clear.All.js', () => {
     describe('Map', () => {
       it('whatever', () => {
         return testInput('skipMap', [
-          'on_busy_1',
+          'on_busy',
           'a_1',
-          'on_idle_undefined',
-          'on_busy_4000',
+          'on_idle',
+          'on_busy',
           'a_4000',
           'b_4000_mapped',
-          'on_idle_undefined',
+          'on_idle',
         ])
       })
     })
@@ -268,11 +268,11 @@ describe('PromiseValves.Buffers.Clear.All.js', () => {
           results.push('b_' + value)
           await delayPromise(2)
         })
-        .onBusyTap(async (value) => {
-          results.push('on_busy_' + value)
+        .onBusy(() => {
+          results.push('on_busy')
         })
-        .onIdle(async (value) => {
-          results.push('on_idle_' + value)
+        .onIdle(() => {
+          results.push('on_idle')
         })
 
       pipe.pump(1)
@@ -289,13 +289,13 @@ describe('PromiseValves.Buffers.Clear.All.js', () => {
     describe('Tap', () => {
       it('silently swallows the error', () => {
         return testInput('cancelTap', [
-          'on_busy_1',
+          'on_busy',
           'a_1',
-          'on_idle_undefined',
-          'on_busy_4000',
+          'on_idle',
+          'on_busy',
           'a_4000',
           'b_4000',
-          'on_idle_undefined',
+          'on_idle',
         ])
       })
     })
@@ -303,13 +303,13 @@ describe('PromiseValves.Buffers.Clear.All.js', () => {
     describe('Map', () => {
       it('silently swallows the error', () => {
         return testInput('cancelMap', [
-          'on_busy_1',
+          'on_busy',
           'a_1',
-          'on_idle_undefined',
-          'on_busy_4000',
+          'on_idle',
+          'on_busy',
           'a_4000',
           'b_4000_mapped',
-          'on_idle_undefined',
+          'on_idle',
         ])
       })
     })

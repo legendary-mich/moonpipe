@@ -16,11 +16,11 @@ async function testInput(method, chunkSize, expected) {
     .queueError(async (err) => {
       results.push('err_' + err.message)
     })
-    .onBusyTap(async (value) => {
-      results.push('on_busy_' + value)
+    .onBusy(() => {
+      results.push('on_busy')
     })
-    .onIdle(async (value) => {
-      results.push('on_idle_' + value)
+    .onIdle(() => {
+      results.push('on_idle')
     })
   pipe.pump(9)
   pipe.pump(8)
@@ -36,34 +36,34 @@ describe('PromiseValves Sliced.', () => {
   describe('MoonPipe.sliceTap', () => {
     it('runs chunks of 5 elements when the sliceSize is 5', () => {
       return testInput('sliceTap', 5, [
-        'on_busy_9',
+        'on_busy',
         'side_9,8,7,6,5',
         'res_9,8,7,6,5',
-        'on_idle_undefined',
+        'on_idle',
       ])
     })
 
     it('runs chunks of 3 when the sliceSize is 3', () => {
       return testInput('sliceTap', 3, [
-        'on_busy_9',
+        'on_busy',
         'side_9,8,7',
         'res_9,8,7',
         'side_6,5',
         'res_6,5',
-        'on_idle_undefined',
+        'on_idle',
       ])
     })
 
     it('runs chunks of 2 when the sliceSize is 2', () => {
       return testInput('sliceTap', 2, [
-        'on_busy_9',
+        'on_busy',
         'side_9,8',
         'res_9,8',
         'side_7,6',
         'res_7,6',
         'side_5',
         'res_5',
-        'on_idle_undefined',
+        'on_idle',
       ])
     })
   })
@@ -71,34 +71,34 @@ describe('PromiseValves Sliced.', () => {
   describe('MoonPipe.sliceMap', () => {
     it('runs chunks of 5 elements when the sliceSize is 5', () => {
       return testInput('sliceMap', 5, [
-        'on_busy_9',
+        'on_busy',
         'side_9,8,7,6,5',
         'res_9,8,7,6,5100',
-        'on_idle_undefined',
+        'on_idle',
       ])
     })
 
     it('runs chunks of 3 when the sliceSize is 3', () => {
       return testInput('sliceMap', 3, [
-        'on_busy_9',
+        'on_busy',
         'side_9,8,7',
         'res_9,8,7100',
         'side_6,5',
         'res_6,5100',
-        'on_idle_undefined',
+        'on_idle',
       ])
     })
 
     it('runs chunks of 2 when the sliceSize is 2', () => {
       return testInput('sliceMap', 2, [
-        'on_busy_9',
+        'on_busy',
         'side_9,8',
         'res_9,8100',
         'side_7,6',
         'res_7,6100',
         'side_5',
         'res_5100',
-        'on_idle_undefined',
+        'on_idle',
       ])
     })
   })

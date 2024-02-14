@@ -6,7 +6,8 @@ Throttle streams of data while passing them through promises an timers. Use vari
 - [Overriding predefined valves](#overriding-predefined-valves)
 - [Error handling](#error-handling)
 - [Hooks](#hooks)
-  - [onBusyTap](#onbusytap)
+  - [onBusyTap (DEPRECATED)](#onbusytap-deprecated)
+  - [onBusy](#onbusy)
   - [onIdle](#onidle)
 - [Clearing out buffers](#clearing-out-buffers)
 - [PromiseValves](#promisevalves)
@@ -204,12 +205,21 @@ There is also 1 synchronous error handler, namely `filterError`. It operates in 
 
 ### Hooks
 
-#### onBusyTap
+#### onBusyTap (DEPRECATED)
 The `onBusyTap` hook is called every time the pipe goes from an `idle` state to a `busy` state. The callback provided by you is supposed to be `synchronous`. It takes the pumped value as the first argument. **If it throws** an error, the error will be pumped to the **nearest error valve**. There can be **only one** onBusyTap hook.
 ```javascript
 const mp = new MoonPipe()
   .onBusyTap((value) => {
     console.log('is loading', value)
+  })
+```
+
+#### onBusy
+The `onBusy` hook is called every time the pipe goes from an `idle` state to a `busy` state. The callback provided by you is supposed to be `synchronous`. It does NOT take any arguments. **If it throws** an error, the error will be **silently ignored**. There can be **only one** onBusy hook.
+```javascript
+const mp = new MoonPipe()
+  .onBusy(() => {
+    console.log('is loading')
   })
 ```
 
@@ -223,12 +233,12 @@ const mp = new MoonPipe()
   })
 ```
 
-One use case for the `onBusyTap/onIdle` hooks that I know is to show a spinner in the `onBusyTap` hook, and hide it in the `onIdle` hook.
+One use case for the `onBusy/onIdle` hooks that I know is to show a spinner in the `onBusy` hook, and hide it in the `onIdle` hook.
 
 ```javascript
 const mp = new MoonPipe()
-  .onBusyTap((value) => {
-    console.log('is loading', value)
+  .onBusy(() => {
+    console.log('is loading')
   })
   .onIdle(() => {
     console.log('is NOT loading anymore')
@@ -240,7 +250,7 @@ const mp = new MoonPipe()
 mp.pump(1)
 mp.pump(2)
 
-// is loading 1
+// is loading
 // output: 1
 // output: 2
 // is NOT loading anymore

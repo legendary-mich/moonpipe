@@ -40,6 +40,17 @@ describe('Hooks.ErrorHandler with Asynchronous input.', () => {
     })
   })
 
+  describe('MoonPipe.onBusy', () => {
+    it('handles all errors', () => {
+      return testInput('onBusy', [
+        'on_hook_undefined',
+        'res_1',
+        'res_2',
+        'res_3',
+      ])
+    })
+  })
+
   describe('MoonPipe.onIdle', () => {
     it('silently swallows the error', () => {
       return testInput('onIdle', [
