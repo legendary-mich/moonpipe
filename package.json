@@ -22,7 +22,7 @@
   "homepage": "https://github.com/legendary-mich/moonpipe",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com:legendary-mich/moonpipe.git"
+    "url": "git+ssh://git@github.com/legendary-mich/moonpipe.git"
   },
   "keywords": [
     "cache",
