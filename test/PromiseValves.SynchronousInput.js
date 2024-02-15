@@ -69,6 +69,8 @@ describe('PromiseValves with Synchronous input.', () => {
     it('cancels initial promises, and resolves the last one with the ORIGINAL value', () => {
       return testInput('cancelTap', [
         'on_busy',
+        'side_1',
+        'side_2',
         'side_3',
         'res_3',
         'on_idle',
@@ -80,6 +82,8 @@ describe('PromiseValves with Synchronous input.', () => {
     it('cancels initial promises, and resolves the last one with a MODIFIED value', () => {
       return testInput('cancelMap', [
         'on_busy',
+        'side_1',
+        'side_2',
         'side_3',
         'res_103',
         'on_idle',
@@ -91,6 +95,8 @@ describe('PromiseValves with Synchronous input.', () => {
     it('removes values which are waiting in the queue, and pumps ORIGINAL ones', () => {
       return testInput('throttleTap', [
         'on_busy',
+        'side_1',
+        'res_1',
         'side_3',
         'res_3',
         'on_idle',
@@ -102,6 +108,8 @@ describe('PromiseValves with Synchronous input.', () => {
     it('removes values which are waiting in the queue, and pumps MODIFIED ones', () => {
       return testInput('throttleMap', [
         'on_busy',
+        'side_1',
+        'res_101',
         'side_3',
         'res_103',
         'on_idle',

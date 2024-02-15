@@ -37,8 +37,10 @@ describe('PromiseValves Sliced.', () => {
     it('runs chunks of 5 elements when the sliceSize is 5', () => {
       return testInput('sliceTap', 5, [
         'on_busy',
-        'side_9,8,7,6,5',
-        'res_9,8,7,6,5',
+        'side_9',
+        'res_9',
+        'side_8,7,6,5',
+        'res_8,7,6,5',
         'on_idle',
       ])
     })
@@ -46,10 +48,12 @@ describe('PromiseValves Sliced.', () => {
     it('runs chunks of 3 when the sliceSize is 3', () => {
       return testInput('sliceTap', 3, [
         'on_busy',
-        'side_9,8,7',
-        'res_9,8,7',
-        'side_6,5',
-        'res_6,5',
+        'side_9',
+        'res_9',
+        'side_8,7,6',
+        'res_8,7,6',
+        'side_5',
+        'res_5',
         'on_idle',
       ])
     })
@@ -57,12 +61,12 @@ describe('PromiseValves Sliced.', () => {
     it('runs chunks of 2 when the sliceSize is 2', () => {
       return testInput('sliceTap', 2, [
         'on_busy',
-        'side_9,8',
-        'res_9,8',
-        'side_7,6',
-        'res_7,6',
-        'side_5',
-        'res_5',
+        'side_9',
+        'res_9',
+        'side_8,7',
+        'res_8,7',
+        'side_6,5',
+        'res_6,5',
         'on_idle',
       ])
     })
@@ -72,8 +76,10 @@ describe('PromiseValves Sliced.', () => {
     it('runs chunks of 5 elements when the sliceSize is 5', () => {
       return testInput('sliceMap', 5, [
         'on_busy',
-        'side_9,8,7,6,5',
-        'res_9,8,7,6,5100',
+        'side_9',
+        'res_9100',
+        'side_8,7,6,5',
+        'res_8,7,6,5100',
         'on_idle',
       ])
     })
@@ -81,10 +87,12 @@ describe('PromiseValves Sliced.', () => {
     it('runs chunks of 3 when the sliceSize is 3', () => {
       return testInput('sliceMap', 3, [
         'on_busy',
-        'side_9,8,7',
-        'res_9,8,7100',
-        'side_6,5',
-        'res_6,5100',
+        'side_9',
+        'res_9100',
+        'side_8,7,6',
+        'res_8,7,6100',
+        'side_5',
+        'res_5100',
         'on_idle',
       ])
     })
@@ -92,12 +100,12 @@ describe('PromiseValves Sliced.', () => {
     it('runs chunks of 2 when the sliceSize is 2', () => {
       return testInput('sliceMap', 2, [
         'on_busy',
-        'side_9,8',
-        'res_9,8100',
-        'side_7,6',
-        'res_7,6100',
-        'side_5',
-        'res_5100',
+        'side_9',
+        'res_9100',
+        'side_8,7',
+        'res_8,7100',
+        'side_6,5',
+        'res_6,5100',
         'on_idle',
       ])
     })

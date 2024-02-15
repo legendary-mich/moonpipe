@@ -82,6 +82,7 @@ describe('Splitter.PromiseValves with Synchronous input.', () => {
     it('throttleTap', async () => {
       await test.testInput('throttleTap', [
         'on_busy',
+        'res_1',
         'res_4',
         'on_idle',
       ])
@@ -90,6 +91,7 @@ describe('Splitter.PromiseValves with Synchronous input.', () => {
     it('throttleMap', async () => {
       await test.testInput('throttleMap', [
         'on_busy',
+        'res_101',
         'res_104',
         'on_idle',
       ])
@@ -159,7 +161,9 @@ describe('Splitter.PromiseValves with Synchronous input.', () => {
     it('throttleTap', async () => {
       await test.testInput('throttleTap', [
         'on_busy',
+        'res_1',
         'res_3',
+        'res_2',
         'res_4',
         'on_idle',
       ])
@@ -168,7 +172,9 @@ describe('Splitter.PromiseValves with Synchronous input.', () => {
     it('throttleMap', async () => {
       await test.testInput('throttleMap', [
         'on_busy',
+        'res_101',
         'res_103',
+        'res_102',
         'res_104',
         'on_idle',
       ])
@@ -238,6 +244,7 @@ describe('Splitter.PromiseValves with Synchronous input.', () => {
     it('throttleTap', async () => {
       await test.testInput('throttleTap', [
         'on_busy',
+        'res_1',
         'res_4',
         'on_idle',
       ])
@@ -246,6 +253,7 @@ describe('Splitter.PromiseValves with Synchronous input.', () => {
     it('throttleMap', async () => {
       await test.testInput('throttleMap', [
         'on_busy',
+        'res_101',
         'res_104',
         'on_idle',
       ])
@@ -315,6 +323,8 @@ describe('Splitter.PromiseValves with Synchronous input.', () => {
     it('throttleTap', async () => {
       await test.testInput('throttleTap', [
         'on_busy',
+        'res_1',
+        'res_2',
         'res_3',
         'res_4',
         'on_idle',
@@ -324,6 +334,8 @@ describe('Splitter.PromiseValves with Synchronous input.', () => {
     it('throttleMap', async () => {
       await test.testInput('throttleMap', [
         'on_busy',
+        'res_101',
+        'res_102',
         'res_103',
         'res_104',
         'on_idle',

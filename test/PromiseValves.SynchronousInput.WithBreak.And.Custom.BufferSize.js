@@ -124,10 +124,14 @@ describe('PromiseValves with Synchronous input.', () => {
     it('removes values which are waiting in the queue, and pumps ORIGINAL ones', () => {
       return testInput('throttleTap', [
         'on_busy',
+        'side_1',
+        'res_1',
         'side_2',
         'res_2',
         'on_idle',
         'on_busy',
+        'side_3',
+        'res_3',
         'side_4',
         'res_4',
         'on_idle',
@@ -141,10 +145,14 @@ describe('PromiseValves with Synchronous input.', () => {
     it('removes values which are waiting in the queue, and pumps MODIFIED ones', () => {
       return testInput('throttleMap', [
         'on_busy',
+        'side_1',
+        'res_101',
         'side_2',
         'res_102',
         'on_idle',
         'on_busy',
+        'side_3',
+        'res_103',
         'side_4',
         'res_104',
         'on_idle',

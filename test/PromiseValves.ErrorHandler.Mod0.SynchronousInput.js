@@ -63,6 +63,8 @@ describe('PromiseValves.ErrorHandler Mod0 with Synchronous input.', () => {
   describe('MoonPipe.cancelTap', () => {
     it('handles all errors', () => {
       return testInput('cancelTap', [
+        'side_1',
+        'side_2',
         'side_3',
         'res_3',
       ])
@@ -72,6 +74,8 @@ describe('PromiseValves.ErrorHandler Mod0 with Synchronous input.', () => {
   describe('MoonPipe.cancelMap', () => {
     it('handles all errors', () => {
       return testInput('cancelMap', [
+        'side_1',
+        'side_2',
         'side_3',
         'res_103',
       ])
@@ -81,6 +85,8 @@ describe('PromiseValves.ErrorHandler Mod0 with Synchronous input.', () => {
   describe('MoonPipe.throttleTap', () => {
     it('handles all errors', () => {
       return testInput('throttleTap', [
+        'side_1',
+        'res_1',
         'side_3',
         'res_3',
       ])
@@ -90,6 +96,8 @@ describe('PromiseValves.ErrorHandler Mod0 with Synchronous input.', () => {
   describe('MoonPipe.throttleMap', () => {
     it('handles all errors', () => {
       return testInput('throttleMap', [
+        'side_1',
+        'res_101',
         'side_3',
         'res_103',
       ])

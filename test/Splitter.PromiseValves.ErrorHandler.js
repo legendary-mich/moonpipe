@@ -83,6 +83,7 @@ describe('Splitter.PromiseValves.ErrorHandler', () => {
     it('throttleTap', async () => {
       await test.testInput('throttleTap', [
         'on_busy',
+        'err_101',
         'err_104',
         'on_idle',
       ])
@@ -91,6 +92,7 @@ describe('Splitter.PromiseValves.ErrorHandler', () => {
     it('throttleMap', async () => {
       await test.testInput('throttleMap', [
         'on_busy',
+        'err_101',
         'err_104',
         'on_idle',
       ])
@@ -160,7 +162,9 @@ describe('Splitter.PromiseValves.ErrorHandler', () => {
     it('throttleTap', async () => {
       await test.testInput('throttleTap', [
         'on_busy',
+        'err_101',
         'err_103',
+        'err_102',
         'err_104',
         'on_idle',
       ])
@@ -169,7 +173,9 @@ describe('Splitter.PromiseValves.ErrorHandler', () => {
     it('throttleMap', async () => {
       await test.testInput('throttleMap', [
         'on_busy',
+        'err_101',
         'err_103',
+        'err_102',
         'err_104',
         'on_idle',
       ])
@@ -239,6 +245,7 @@ describe('Splitter.PromiseValves.ErrorHandler', () => {
     it('throttleTap', async () => {
       await test.testInput('throttleTap', [
         'on_busy',
+        'err_101',
         'err_104',
         'on_idle',
       ])
@@ -247,6 +254,7 @@ describe('Splitter.PromiseValves.ErrorHandler', () => {
     it('throttleMap', async () => {
       await test.testInput('throttleMap', [
         'on_busy',
+        'err_101',
         'err_104',
         'on_idle',
       ])
@@ -316,6 +324,8 @@ describe('Splitter.PromiseValves.ErrorHandler', () => {
     it('throttleTap', async () => {
       await test.testInput('throttleTap', [
         'on_busy',
+        'err_101',
+        'err_102',
         'err_103',
         'err_104',
         'on_idle',
@@ -325,6 +335,8 @@ describe('Splitter.PromiseValves.ErrorHandler', () => {
     it('throttleMap', async () => {
       await test.testInput('throttleMap', [
         'on_busy',
+        'err_101',
+        'err_102',
         'err_103',
         'err_104',
         'on_idle',

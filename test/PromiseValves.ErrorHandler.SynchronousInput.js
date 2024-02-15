@@ -69,6 +69,8 @@ describe('PromiseValves.ErrorHandler with Synchronous input.', () => {
     it('handles all errors', () => {
       return testInput('cancelTap', [
         'on_busy',
+        'side_1',
+        'side_2',
         'side_3',
         'err_103',
         'on_idle',
@@ -80,6 +82,8 @@ describe('PromiseValves.ErrorHandler with Synchronous input.', () => {
     it('handles all errors', () => {
       return testInput('cancelMap', [
         'on_busy',
+        'side_1',
+        'side_2',
         'side_3',
         'err_103',
         'on_idle',
@@ -91,6 +95,8 @@ describe('PromiseValves.ErrorHandler with Synchronous input.', () => {
     it('handles all errors', () => {
       return testInput('throttleTap', [
         'on_busy',
+        'side_1',
+        'err_101',
         'side_3',
         'err_103',
         'on_idle',
@@ -102,6 +108,8 @@ describe('PromiseValves.ErrorHandler with Synchronous input.', () => {
     it('handles all errors', () => {
       return testInput('throttleMap', [
         'on_busy',
+        'side_1',
+        'err_101',
         'side_3',
         'err_103',
         'on_idle',

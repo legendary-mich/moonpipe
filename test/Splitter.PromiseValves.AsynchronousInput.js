@@ -169,6 +169,7 @@ describe('Splitter.PromiseValves with Asynchronous input.', () => {
         'on_busy',
         'res_1',
         'res_3',
+        'res_2',
         'res_4',
         'on_idle',
       ])
@@ -179,6 +180,7 @@ describe('Splitter.PromiseValves with Asynchronous input.', () => {
         'on_busy',
         'res_101',
         'res_103',
+        'res_102',
         'res_104',
         'on_idle',
       ])

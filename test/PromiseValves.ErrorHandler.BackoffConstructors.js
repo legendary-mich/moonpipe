@@ -64,11 +64,14 @@ describe('PromiseValves.ErrorHandler.BackoffConstructors.js', () => {
       return testInput('throttleTap', () => new ConstantBackoff('xo'), [
         [
           "err_Expected delay to be a 'number' greater or equal to 0; found: xo",
+          "err_Expected delay to be a 'number' greater or equal to 0; found: xo",
           "on_idle",
         ],
         [
           "err_Expected delay to be a 'number' greater or equal to 0; found: xo",
+          "err_Expected delay to be a 'number' greater or equal to 0; found: xo",
           "on_idle",
+          "err_Expected delay to be a 'number' greater or equal to 0; found: xo",
           "err_Expected delay to be a 'number' greater or equal to 0; found: xo",
           "on_idle",
         ],

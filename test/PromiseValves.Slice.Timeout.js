@@ -31,27 +31,31 @@ describe('PromiseValves Sliced with Timeout.', () => {
   describe('MoonPipe.sliceTap', () => {
     it('runs chunks of 5 elements when the sliceSize is 5', () => {
       return testInput('sliceTap', 5, [
-        'side_9,8,7,6,5',
+        'side_9',
+        'err_TimeoutError',
+        'side_8,7,6,5',
         'err_TimeoutError',
       ])
     })
 
     it('runs chunks of 3 when the sliceSize is 3', () => {
       return testInput('sliceTap', 3, [
-        'side_9,8,7',
+        'side_9',
         'err_TimeoutError',
-        'side_6,5',
+        'side_8,7,6',
+        'err_TimeoutError',
+        'side_5',
         'err_TimeoutError',
       ])
     })
 
     it('runs chunks of 2 when the sliceSize is 2', () => {
       return testInput('sliceTap', 2, [
-        'side_9,8',
+        'side_9',
         'err_TimeoutError',
-        'side_7,6',
+        'side_8,7',
         'err_TimeoutError',
-        'side_5',
+        'side_6,5',
         'err_TimeoutError',
       ])
     })
@@ -60,27 +64,31 @@ describe('PromiseValves Sliced with Timeout.', () => {
   describe('MoonPipe.sliceMap', () => {
     it('runs chunks of 5 elements when the sliceSize is 5', () => {
       return testInput('sliceMap', 5, [
-        'side_9,8,7,6,5',
+        'side_9',
+        'err_TimeoutError',
+        'side_8,7,6,5',
         'err_TimeoutError',
       ])
     })
 
     it('runs chunks of 3 when the sliceSize is 3', () => {
       return testInput('sliceMap', 3, [
-        'side_9,8,7',
+        'side_9',
         'err_TimeoutError',
-        'side_6,5',
+        'side_8,7,6',
+        'err_TimeoutError',
+        'side_5',
         'err_TimeoutError',
       ])
     })
 
     it('runs chunks of 2 when the sliceSize is 2', () => {
       return testInput('sliceMap', 2, [
-        'side_9,8',
+        'side_9',
         'err_TimeoutError',
-        'side_7,6',
+        'side_8,7',
         'err_TimeoutError',
-        'side_5',
+        'side_6,5',
         'err_TimeoutError',
       ])
     })
