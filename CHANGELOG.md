@@ -1,5 +1,15 @@
 # Changelog
 
+### 2.2.0
+- Add the `onBusy` hook. Deprecate the `onBusyTap` hook
+- Add the `repeatBackoffFactory`, `ConstantBackoff`, and `LinearBackoff`
+- Do not accumulate values pumped synchronously in `PromiseValves`
+- Call the `onCancel` callback whenever a promise times out
+- Clear the promise timeout whenever a promise is canceled
+- Create a `PromiseContext` for each inner promise separately
+- Clean up the documentation
+- Fix the repository url in the package.json
+
 ### 2.1.1
 - Silently ignore errors in the onCancel callbacks
 
