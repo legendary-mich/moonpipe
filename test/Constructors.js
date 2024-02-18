@@ -296,6 +296,19 @@ function promiseValveAssertions(TargetClass) {
     }
   })
 
+  it('throws for an unkonwn repeatBackoffFactory', () => {
+    const preset = Object.assign({}, properPromiseValvePreset, {
+      repeatBackoffFactory: 'ribbon',
+    })
+    try {
+      new TargetClass(preset)
+      throw new Error('should have thrown')
+    }
+    catch (err) {
+      expect(err).to.have.property('message', "Unexpected 'repeatBackoffFactory': ribbon")
+    }
+  })
+
   it('throws for an unknown promiseFactory', () => {
     const preset = Object.assign({}, properPromiseValvePreset)
     try {

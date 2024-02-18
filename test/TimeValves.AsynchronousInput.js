@@ -14,11 +14,11 @@ async function testInput(method, expected) {
       await delayPromise(2)
       results.push('err_' + err.message)
     })
-    .onBusyTap(async (value) => {
-      results.push('on_busy_' + value)
+    .onBusy(() => {
+      results.push('on_busy')
     })
-    .onIdle(async (value) => {
-      results.push('on_idle_'+ value)
+    .onIdle(() => {
+      results.push('on_idle')
     })
 
   pipe.pump(1)
@@ -43,10 +43,10 @@ describe('TimeValves with Asynchronous input.', () => {
   describe('MoonPipe.queueEager', () => {
     it('pumps values on a regular interval', () => {
       return testInput('queueEager', [
-        ['on_busy_1', 'res_1'],
-        ['on_busy_1', 'res_1', 'res_2'],
-        ['on_busy_1', 'res_1', 'res_2', 'res_3'],
-        ['on_busy_1', 'res_1', 'res_2', 'res_3', 'on_idle_undefined'],
+        ['on_busy', 'res_1'],
+        ['on_busy', 'res_1', 'res_2'],
+        ['on_busy', 'res_1', 'res_2', 'res_3'],
+        ['on_busy', 'res_1', 'res_2', 'res_3', 'on_idle'],
       ])
     })
   })
@@ -54,10 +54,10 @@ describe('TimeValves with Asynchronous input.', () => {
   describe('MoonPipe.queueLazy', () => {
     it('pumps values on a regular interval', () => {
       return testInput('queueLazy', [
-        ['on_busy_1'],
-        ['on_busy_1', 'res_1'],
-        ['on_busy_1', 'res_1', 'res_2'],
-        ['on_busy_1', 'res_1', 'res_2', 'res_3', 'on_idle_undefined'],
+        ['on_busy'],
+        ['on_busy', 'res_1'],
+        ['on_busy', 'res_1', 'res_2'],
+        ['on_busy', 'res_1', 'res_2', 'res_3', 'on_idle'],
       ])
     })
   })
@@ -65,10 +65,10 @@ describe('TimeValves with Asynchronous input.', () => {
   describe('MoonPipe.cancelEager', () => {
     it('pushes the first value through immediately', () => {
       return testInput('cancelEager', [
-        ['on_busy_1', 'res_1'],
-        ['on_busy_1', 'res_1', 'res_3'],
-        ['on_busy_1', 'res_1', 'res_3', 'on_idle_undefined'],
-        ['on_busy_1', 'res_1', 'res_3', 'on_idle_undefined'],
+        ['on_busy', 'res_1'],
+        ['on_busy', 'res_1', 'res_3'],
+        ['on_busy', 'res_1', 'res_3', 'on_idle'],
+        ['on_busy', 'res_1', 'res_3', 'on_idle'],
       ])
     })
   })
@@ -76,10 +76,10 @@ describe('TimeValves with Asynchronous input.', () => {
   describe('MoonPipe.cancelLazy', () => {
     it('ignores initial values, and pumps the last one', () => {
       return testInput('cancelLazy', [
-        ['on_busy_1'],
-        ['on_busy_1', 'res_3', 'on_idle_undefined'],
-        ['on_busy_1', 'res_3', 'on_idle_undefined'],
-        ['on_busy_1', 'res_3', 'on_idle_undefined'],
+        ['on_busy'],
+        ['on_busy', 'res_3', 'on_idle'],
+        ['on_busy', 'res_3', 'on_idle'],
+        ['on_busy', 'res_3', 'on_idle'],
       ])
     })
   })
@@ -87,10 +87,10 @@ describe('TimeValves with Asynchronous input.', () => {
   describe('MoonPipe.throttleEager', () => {
     it('ignores the 2nd value as it is replaced by the 3rd one', () => {
       return testInput('throttleEager', [
-        ['on_busy_1', 'res_1'],
-        ['on_busy_1', 'res_1', 'res_3'],
-        ['on_busy_1', 'res_1', 'res_3', 'on_idle_undefined'],
-        ['on_busy_1', 'res_1', 'res_3', 'on_idle_undefined'],
+        ['on_busy', 'res_1'],
+        ['on_busy', 'res_1', 'res_3'],
+        ['on_busy', 'res_1', 'res_3', 'on_idle'],
+        ['on_busy', 'res_1', 'res_3', 'on_idle'],
       ])
     })
   })
@@ -98,10 +98,10 @@ describe('TimeValves with Asynchronous input.', () => {
   describe('MoonPipe.throttleLazy', () => {
     it('ignores initial values, and pumps the last one', () => {
       return testInput('throttleLazy', [
-        ['on_busy_1'],
-        ['on_busy_1', 'res_3', 'on_idle_undefined'],
-        ['on_busy_1', 'res_3', 'on_idle_undefined'],
-        ['on_busy_1', 'res_3', 'on_idle_undefined'],
+        ['on_busy'],
+        ['on_busy', 'res_3', 'on_idle'],
+        ['on_busy', 'res_3', 'on_idle'],
+        ['on_busy', 'res_3', 'on_idle'],
       ])
     })
   })
@@ -109,10 +109,10 @@ describe('TimeValves with Asynchronous input.', () => {
   describe('MoonPipe.skipEager', () => {
     it('whatever', () => {
       return testInput('skipEager', [
-        ['on_busy_1', 'res_1'],
-        ['on_busy_1', 'res_1', 'on_idle_undefined'],
-        ['on_busy_1', 'res_1', 'on_idle_undefined'],
-        ['on_busy_1', 'res_1', 'on_idle_undefined'],
+        ['on_busy', 'res_1'],
+        ['on_busy', 'res_1', 'on_idle'],
+        ['on_busy', 'res_1', 'on_idle'],
+        ['on_busy', 'res_1', 'on_idle'],
       ])
     })
   })
@@ -120,10 +120,10 @@ describe('TimeValves with Asynchronous input.', () => {
   describe('MoonPipe.skipLazy', () => {
     it('whatever', () => {
       return testInput('skipLazy', [
-        ['on_busy_1'],
-        ['on_busy_1', 'res_1', 'on_idle_undefined'],
-        ['on_busy_1', 'res_1', 'on_idle_undefined'],
-        ['on_busy_1', 'res_1', 'on_idle_undefined'],
+        ['on_busy'],
+        ['on_busy', 'res_1', 'on_idle'],
+        ['on_busy', 'res_1', 'on_idle'],
+        ['on_busy', 'res_1', 'on_idle'],
       ])
     })
   })

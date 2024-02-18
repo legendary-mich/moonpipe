@@ -18,10 +18,10 @@ describe('MoonPipe.Buffers', () => {
       .queueTap(async (value) => {
         result.push(value)
       }, { name: '2nd' })
-      .onBusyTap(async (value) => {
-        result.push('on_busy_' + value)
+      .onBusy(() => {
+        result.push('on_busy')
       })
-      .onIdle(async () => {
+      .onIdle(() => {
         result.push('on_idle')
       })
 
@@ -46,7 +46,7 @@ describe('MoonPipe.Buffers', () => {
       return testInput(mp => mp.buffersClearOne('0th'), [
         [],
         [2],
-        ['on_busy_1', 1, 2, 'on_idle'],
+        ['on_busy', 1, 2, 'on_idle'],
       ])
     })
   })
@@ -56,7 +56,7 @@ describe('MoonPipe.Buffers', () => {
       return testInput(mp => mp.buffersClearOne('1st'), [
         [4],
         [],
-        ['on_busy_1', 3, 4, 'on_idle'],
+        ['on_busy', 3, 4, 'on_idle'],
       ])
     })
   })
@@ -66,7 +66,7 @@ describe('MoonPipe.Buffers', () => {
       return testInput(mp => mp.buffersClearAll(), [
         [],
         [],
-        ['on_busy_1', 'on_idle'],
+        ['on_busy', 'on_idle'],
       ])
     })
   })
@@ -89,10 +89,10 @@ describe('MoonPipe.Buffers with Splitter', () => {
       .queueTap(async (value) => {
         result.push(value)
       }, { name: '3rd' })
-      .onBusyTap(async (value) => {
-        result.push('on_busy_' + value)
+      .onBusy(() => {
+        result.push('on_busy')
       })
-      .onIdle(async () => {
+      .onIdle(() => {
         result.push('on_idle')
       })
 
@@ -122,7 +122,7 @@ describe('MoonPipe.Buffers with Splitter', () => {
       return testInput(mp => mp.buffersClearOne('0th'), [
         [],
         [],
-        ['on_busy_1', 'on_idle'],
+        ['on_busy', 'on_idle'],
       ])
     })
   })
@@ -132,7 +132,7 @@ describe('MoonPipe.Buffers with Splitter', () => {
       return testInput(mp => mp.buffersClearOne('1st'), [
         [],
         [2],
-        ['on_busy_1', 1, 2, 'on_idle'],
+        ['on_busy', 1, 2, 'on_idle'],
       ])
     })
   })
@@ -142,7 +142,7 @@ describe('MoonPipe.Buffers with Splitter', () => {
       return testInput(mp => mp.buffersClearOne('2nd'), [
         [4],
         [],
-        ['on_busy_1', 3, 4, 'on_idle'],
+        ['on_busy', 3, 4, 'on_idle'],
       ])
     })
   })
@@ -152,7 +152,7 @@ describe('MoonPipe.Buffers with Splitter', () => {
       return testInput(mp => mp.buffersClearAll(), [
         [],
         [],
-        ['on_busy_1', 'on_idle'],
+        ['on_busy', 'on_idle'],
       ])
     })
   })
@@ -175,10 +175,10 @@ describe('MoonPipe.Buffers with Splitter, 2nd case', () => {
       .queueTap(async (value) => {
         result.push(value)
       }, { name: '3rd' })
-      .onBusyTap(async (value) => {
-        result.push('on_busy_' + value)
+      .onBusy(() => {
+        result.push('on_busy')
       })
-      .onIdle(async () => {
+      .onIdle(() => {
         result.push('on_idle')
       })
 
@@ -208,7 +208,7 @@ describe('MoonPipe.Buffers with Splitter, 2nd case', () => {
       return testInput(mp => mp.buffersClearOne('0th'), [
         [],
         [2],
-        ['on_busy_1', 1, 2, 'on_idle'],
+        ['on_busy', 1, 2, 'on_idle'],
       ])
     })
   })
@@ -218,7 +218,7 @@ describe('MoonPipe.Buffers with Splitter, 2nd case', () => {
       return testInput(mp => mp.buffersClearOne('1st'), [
         [],
         [2],
-        ['on_busy_1', 1, 2, 'on_idle'],
+        ['on_busy', 1, 2, 'on_idle'],
       ])
     })
   })
@@ -228,7 +228,7 @@ describe('MoonPipe.Buffers with Splitter, 2nd case', () => {
       return testInput(mp => mp.buffersClearOne('2nd'), [
         [4],
         [],
-        ['on_busy_1', 3, 4, 'on_idle'],
+        ['on_busy', 3, 4, 'on_idle'],
       ])
     })
   })
@@ -238,7 +238,7 @@ describe('MoonPipe.Buffers with Splitter, 2nd case', () => {
       return testInput(mp => mp.buffersClearAll(), [
         [],
         [],
-        ['on_busy_1', 'on_idle'],
+        ['on_busy', 'on_idle'],
       ])
     })
   })

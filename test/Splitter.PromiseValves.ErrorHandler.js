@@ -15,7 +15,7 @@ class Test {
   async testInput(method, expected) {
     const results = []
     const mp = new MoonPipe()
-      .onBusyTap(value => results.push('on_busy_' + value))
+      .onBusy(() => results.push('on_busy'))
       .splitBy(this.poolSize, this.classify)[method](async value => {
         throw new Error(value + 100)
       })
@@ -44,7 +44,7 @@ describe('Splitter.PromiseValves.ErrorHandler', () => {
 
     it('queueTap', async () => {
       await test.testInput('queueTap', [
-        'on_busy_1',
+        'on_busy',
         'err_101',
         'err_102',
         'err_103',
@@ -55,7 +55,7 @@ describe('Splitter.PromiseValves.ErrorHandler', () => {
 
     it('queueMap', async () => {
       await test.testInput('queueMap', [
-        'on_busy_1',
+        'on_busy',
         'err_101',
         'err_102',
         'err_103',
@@ -66,7 +66,7 @@ describe('Splitter.PromiseValves.ErrorHandler', () => {
 
     it('cancelTap', async () => {
       await test.testInput('cancelTap', [
-        'on_busy_1',
+        'on_busy',
         'err_104',
         'on_idle',
       ])
@@ -74,7 +74,7 @@ describe('Splitter.PromiseValves.ErrorHandler', () => {
 
     it('cancelMap', async () => {
       await test.testInput('cancelMap', [
-        'on_busy_1',
+        'on_busy',
         'err_104',
         'on_idle',
       ])
@@ -82,7 +82,8 @@ describe('Splitter.PromiseValves.ErrorHandler', () => {
 
     it('throttleTap', async () => {
       await test.testInput('throttleTap', [
-        'on_busy_1',
+        'on_busy',
+        'err_101',
         'err_104',
         'on_idle',
       ])
@@ -90,7 +91,8 @@ describe('Splitter.PromiseValves.ErrorHandler', () => {
 
     it('throttleMap', async () => {
       await test.testInput('throttleMap', [
-        'on_busy_1',
+        'on_busy',
+        'err_101',
         'err_104',
         'on_idle',
       ])
@@ -98,7 +100,7 @@ describe('Splitter.PromiseValves.ErrorHandler', () => {
 
     it('skipTap', async () => {
       await test.testInput('skipTap', [
-        'on_busy_1',
+        'on_busy',
         'err_101',
         'on_idle',
       ])
@@ -106,7 +108,7 @@ describe('Splitter.PromiseValves.ErrorHandler', () => {
 
     it('skipMap', async () => {
       await test.testInput('skipMap', [
-        'on_busy_1',
+        'on_busy',
         'err_101',
         'on_idle',
       ])
@@ -119,7 +121,7 @@ describe('Splitter.PromiseValves.ErrorHandler', () => {
 
     it('queueTap', async () => {
       await test.testInput('queueTap', [
-        'on_busy_1',
+        'on_busy',
         'err_101',
         'err_103',
         'err_102',
@@ -130,7 +132,7 @@ describe('Splitter.PromiseValves.ErrorHandler', () => {
 
     it('queueMap', async () => {
       await test.testInput('queueMap', [
-        'on_busy_1',
+        'on_busy',
         'err_101',
         'err_103',
         'err_102',
@@ -141,7 +143,7 @@ describe('Splitter.PromiseValves.ErrorHandler', () => {
 
     it('cancelTap', async () => {
       await test.testInput('cancelTap', [
-        'on_busy_1',
+        'on_busy',
         'err_103',
         'err_104',
         'on_idle',
@@ -150,7 +152,7 @@ describe('Splitter.PromiseValves.ErrorHandler', () => {
 
     it('cancelMap', async () => {
       await test.testInput('cancelMap', [
-        'on_busy_1',
+        'on_busy',
         'err_103',
         'err_104',
         'on_idle',
@@ -159,8 +161,10 @@ describe('Splitter.PromiseValves.ErrorHandler', () => {
 
     it('throttleTap', async () => {
       await test.testInput('throttleTap', [
-        'on_busy_1',
+        'on_busy',
+        'err_101',
         'err_103',
+        'err_102',
         'err_104',
         'on_idle',
       ])
@@ -168,8 +172,10 @@ describe('Splitter.PromiseValves.ErrorHandler', () => {
 
     it('throttleMap', async () => {
       await test.testInput('throttleMap', [
-        'on_busy_1',
+        'on_busy',
+        'err_101',
         'err_103',
+        'err_102',
         'err_104',
         'on_idle',
       ])
@@ -177,7 +183,7 @@ describe('Splitter.PromiseValves.ErrorHandler', () => {
 
     it('skipTap', async () => {
       await test.testInput('skipTap', [
-        'on_busy_1',
+        'on_busy',
         'err_101',
         'err_102',
         'on_idle',
@@ -186,7 +192,7 @@ describe('Splitter.PromiseValves.ErrorHandler', () => {
 
     it('skipMap', async () => {
       await test.testInput('skipMap', [
-        'on_busy_1',
+        'on_busy',
         'err_101',
         'err_102',
         'on_idle',
@@ -200,7 +206,7 @@ describe('Splitter.PromiseValves.ErrorHandler', () => {
 
     it('queueTap', async () => {
       await test.testInput('queueTap', [
-        'on_busy_1',
+        'on_busy',
         'err_101',
         'err_102',
         'err_103',
@@ -211,7 +217,7 @@ describe('Splitter.PromiseValves.ErrorHandler', () => {
 
     it('queueMap', async () => {
       await test.testInput('queueMap', [
-        'on_busy_1',
+        'on_busy',
         'err_101',
         'err_102',
         'err_103',
@@ -222,7 +228,7 @@ describe('Splitter.PromiseValves.ErrorHandler', () => {
 
     it('cancelTap', async () => {
       await test.testInput('cancelTap', [
-        'on_busy_1',
+        'on_busy',
         'err_104',
         'on_idle',
       ])
@@ -230,7 +236,7 @@ describe('Splitter.PromiseValves.ErrorHandler', () => {
 
     it('cancelMap', async () => {
       await test.testInput('cancelMap', [
-        'on_busy_1',
+        'on_busy',
         'err_104',
         'on_idle',
       ])
@@ -238,7 +244,8 @@ describe('Splitter.PromiseValves.ErrorHandler', () => {
 
     it('throttleTap', async () => {
       await test.testInput('throttleTap', [
-        'on_busy_1',
+        'on_busy',
+        'err_101',
         'err_104',
         'on_idle',
       ])
@@ -246,7 +253,8 @@ describe('Splitter.PromiseValves.ErrorHandler', () => {
 
     it('throttleMap', async () => {
       await test.testInput('throttleMap', [
-        'on_busy_1',
+        'on_busy',
+        'err_101',
         'err_104',
         'on_idle',
       ])
@@ -254,7 +262,7 @@ describe('Splitter.PromiseValves.ErrorHandler', () => {
 
     it('skipTap', async () => {
       await test.testInput('skipTap', [
-        'on_busy_1',
+        'on_busy',
         'err_101',
         'on_idle',
       ])
@@ -262,7 +270,7 @@ describe('Splitter.PromiseValves.ErrorHandler', () => {
 
     it('skipMap', async () => {
       await test.testInput('skipMap', [
-        'on_busy_1',
+        'on_busy',
         'err_101',
         'on_idle',
       ])
@@ -275,7 +283,7 @@ describe('Splitter.PromiseValves.ErrorHandler', () => {
 
     it('queueTap', async () => {
       await test.testInput('queueTap', [
-        'on_busy_1',
+        'on_busy',
         'err_101',
         'err_102',
         'err_103',
@@ -286,7 +294,7 @@ describe('Splitter.PromiseValves.ErrorHandler', () => {
 
     it('queueMap', async () => {
       await test.testInput('queueMap', [
-        'on_busy_1',
+        'on_busy',
         'err_101',
         'err_102',
         'err_103',
@@ -297,7 +305,7 @@ describe('Splitter.PromiseValves.ErrorHandler', () => {
 
     it('cancelTap', async () => {
       await test.testInput('cancelTap', [
-        'on_busy_1',
+        'on_busy',
         'err_103',
         'err_104',
         'on_idle',
@@ -306,7 +314,7 @@ describe('Splitter.PromiseValves.ErrorHandler', () => {
 
     it('cancelMap', async () => {
       await test.testInput('cancelMap', [
-        'on_busy_1',
+        'on_busy',
         'err_103',
         'err_104',
         'on_idle',
@@ -315,7 +323,9 @@ describe('Splitter.PromiseValves.ErrorHandler', () => {
 
     it('throttleTap', async () => {
       await test.testInput('throttleTap', [
-        'on_busy_1',
+        'on_busy',
+        'err_101',
+        'err_102',
         'err_103',
         'err_104',
         'on_idle',
@@ -324,7 +334,9 @@ describe('Splitter.PromiseValves.ErrorHandler', () => {
 
     it('throttleMap', async () => {
       await test.testInput('throttleMap', [
-        'on_busy_1',
+        'on_busy',
+        'err_101',
+        'err_102',
         'err_103',
         'err_104',
         'on_idle',
@@ -333,7 +345,7 @@ describe('Splitter.PromiseValves.ErrorHandler', () => {
 
     it('skipTap', async () => {
       await test.testInput('skipTap', [
-        'on_busy_1',
+        'on_busy',
         'err_101',
         'err_102',
         'on_idle',
@@ -342,7 +354,7 @@ describe('Splitter.PromiseValves.ErrorHandler', () => {
 
     it('skipMap', async () => {
       await test.testInput('skipMap', [
-        'on_busy_1',
+        'on_busy',
         'err_101',
         'err_102',
         'on_idle',

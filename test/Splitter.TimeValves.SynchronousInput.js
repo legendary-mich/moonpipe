@@ -15,7 +15,7 @@ class Test {
   async testInput(method, expected) {
     const results = []
     const mp = new MoonPipe()
-      .onBusyTap(value => results.push('on_busy_' + value))
+      .onBusy(() => results.push('on_busy'))
       .splitBy(this.poolSize, this.classify
       )[method](10)
       .join()
@@ -51,81 +51,81 @@ describe('Splitter.TimeValves with Synchronous input.', () => {
 
     it('queueEager', () => {
       return test.testInput('queueEager', [
-        ['on_busy_1', 'res_1'],
-        ['on_busy_1', 'res_1', 'res_2'],
-        ['on_busy_1', 'res_1', 'res_2', 'res_3'],
-        ['on_busy_1', 'res_1', 'res_2', 'res_3', 'res_4'],
-        ['on_busy_1', 'res_1', 'res_2', 'res_3', 'res_4', 'on_idle'],
+        ['on_busy', 'res_1'],
+        ['on_busy', 'res_1', 'res_2'],
+        ['on_busy', 'res_1', 'res_2', 'res_3'],
+        ['on_busy', 'res_1', 'res_2', 'res_3', 'res_4'],
+        ['on_busy', 'res_1', 'res_2', 'res_3', 'res_4', 'on_idle'],
       ])
     })
 
     it('queueLazy', () => {
       return test.testInput('queueLazy', [
-        ['on_busy_1' ],
-        ['on_busy_1', 'res_1'],
-        ['on_busy_1', 'res_1', 'res_2'],
-        ['on_busy_1', 'res_1', 'res_2', 'res_3'],
-        ['on_busy_1', 'res_1', 'res_2', 'res_3', 'res_4', 'on_idle'],
+        ['on_busy' ],
+        ['on_busy', 'res_1'],
+        ['on_busy', 'res_1', 'res_2'],
+        ['on_busy', 'res_1', 'res_2', 'res_3'],
+        ['on_busy', 'res_1', 'res_2', 'res_3', 'res_4', 'on_idle'],
       ])
     })
 
     it('cancelEager', () => {
       return test.testInput('cancelEager', [
-        ['on_busy_1', 'res_1'],
-        ['on_busy_1', 'res_1', 'res_4'],
-        ['on_busy_1', 'res_1', 'res_4', 'on_idle'],
-        ['on_busy_1', 'res_1', 'res_4', 'on_idle'],
-        ['on_busy_1', 'res_1', 'res_4', 'on_idle'],
+        ['on_busy', 'res_1'],
+        ['on_busy', 'res_1', 'res_4'],
+        ['on_busy', 'res_1', 'res_4', 'on_idle'],
+        ['on_busy', 'res_1', 'res_4', 'on_idle'],
+        ['on_busy', 'res_1', 'res_4', 'on_idle'],
       ])
     })
 
     it('cancelLazy', () => {
       return test.testInput('cancelLazy', [
-        ['on_busy_1'],
-        ['on_busy_1', 'res_4', 'on_idle'],
-        ['on_busy_1', 'res_4', 'on_idle'],
-        ['on_busy_1', 'res_4', 'on_idle'],
-        ['on_busy_1', 'res_4', 'on_idle'],
+        ['on_busy'],
+        ['on_busy', 'res_4', 'on_idle'],
+        ['on_busy', 'res_4', 'on_idle'],
+        ['on_busy', 'res_4', 'on_idle'],
+        ['on_busy', 'res_4', 'on_idle'],
       ])
     })
 
     it('throttleEager', () => {
       return test.testInput('throttleEager', [
-        ['on_busy_1', 'res_1'],
-        ['on_busy_1', 'res_1', 'res_4'],
-        ['on_busy_1', 'res_1', 'res_4', 'on_idle'],
-        ['on_busy_1', 'res_1', 'res_4', 'on_idle'],
-        ['on_busy_1', 'res_1', 'res_4', 'on_idle'],
+        ['on_busy', 'res_1'],
+        ['on_busy', 'res_1', 'res_4'],
+        ['on_busy', 'res_1', 'res_4', 'on_idle'],
+        ['on_busy', 'res_1', 'res_4', 'on_idle'],
+        ['on_busy', 'res_1', 'res_4', 'on_idle'],
       ])
     })
 
     it('throttleLazy', () => {
       return test.testInput('throttleLazy', [
-        ['on_busy_1'],
-        ['on_busy_1', 'res_4', 'on_idle'],
-        ['on_busy_1', 'res_4', 'on_idle'],
-        ['on_busy_1', 'res_4', 'on_idle'],
-        ['on_busy_1', 'res_4', 'on_idle'],
+        ['on_busy'],
+        ['on_busy', 'res_4', 'on_idle'],
+        ['on_busy', 'res_4', 'on_idle'],
+        ['on_busy', 'res_4', 'on_idle'],
+        ['on_busy', 'res_4', 'on_idle'],
       ])
     })
 
     it('skipEager', () => {
       return test.testInput('skipEager', [
-        ['on_busy_1', 'res_1'],
-        ['on_busy_1', 'res_1', 'on_idle'],
-        ['on_busy_1', 'res_1', 'on_idle'],
-        ['on_busy_1', 'res_1', 'on_idle'],
-        ['on_busy_1', 'res_1', 'on_idle'],
+        ['on_busy', 'res_1'],
+        ['on_busy', 'res_1', 'on_idle'],
+        ['on_busy', 'res_1', 'on_idle'],
+        ['on_busy', 'res_1', 'on_idle'],
+        ['on_busy', 'res_1', 'on_idle'],
       ])
     })
 
     it('skipLazy', () => {
       return test.testInput('skipLazy', [
-        ['on_busy_1'],
-        ['on_busy_1', 'res_1', 'on_idle'],
-        ['on_busy_1', 'res_1', 'on_idle'],
-        ['on_busy_1', 'res_1', 'on_idle'],
-        ['on_busy_1', 'res_1', 'on_idle'],
+        ['on_busy'],
+        ['on_busy', 'res_1', 'on_idle'],
+        ['on_busy', 'res_1', 'on_idle'],
+        ['on_busy', 'res_1', 'on_idle'],
+        ['on_busy', 'res_1', 'on_idle'],
       ])
     })
   })
@@ -135,81 +135,81 @@ describe('Splitter.TimeValves with Synchronous input.', () => {
 
     it('queueEager', () => {
       return test.testInput('queueEager', [
-        ['on_busy_1', 'res_1'],
-        ['on_busy_1', 'res_1', 'res_3'],
-        ['on_busy_1', 'res_1', 'res_3', 'res_2'],
-        ['on_busy_1', 'res_1', 'res_3', 'res_2', 'res_4'],
-        ['on_busy_1', 'res_1', 'res_3', 'res_2', 'res_4', 'on_idle'],
+        ['on_busy', 'res_1'],
+        ['on_busy', 'res_1', 'res_3'],
+        ['on_busy', 'res_1', 'res_3', 'res_2'],
+        ['on_busy', 'res_1', 'res_3', 'res_2', 'res_4'],
+        ['on_busy', 'res_1', 'res_3', 'res_2', 'res_4', 'on_idle'],
       ])
     })
 
     it('queueLazy', () => {
       return test.testInput('queueLazy', [
-        ['on_busy_1' ],
-        ['on_busy_1', 'res_1'],
-        ['on_busy_1', 'res_1', 'res_3'],
-        ['on_busy_1', 'res_1', 'res_3', 'res_2'],
-        ['on_busy_1', 'res_1', 'res_3', 'res_2', 'res_4', 'on_idle'],
+        ['on_busy' ],
+        ['on_busy', 'res_1'],
+        ['on_busy', 'res_1', 'res_3'],
+        ['on_busy', 'res_1', 'res_3', 'res_2'],
+        ['on_busy', 'res_1', 'res_3', 'res_2', 'res_4', 'on_idle'],
       ])
     })
 
     it('cancelEager', () => {
       return test.testInput('cancelEager', [
-        ['on_busy_1', 'res_1'],
-        ['on_busy_1', 'res_1', 'res_3'],
-        ['on_busy_1', 'res_1', 'res_3', 'res_2'],
-        ['on_busy_1', 'res_1', 'res_3', 'res_2', 'res_4'],
-        ['on_busy_1', 'res_1', 'res_3', 'res_2', 'res_4', 'on_idle'],
+        ['on_busy', 'res_1'],
+        ['on_busy', 'res_1', 'res_3'],
+        ['on_busy', 'res_1', 'res_3', 'res_2'],
+        ['on_busy', 'res_1', 'res_3', 'res_2', 'res_4'],
+        ['on_busy', 'res_1', 'res_3', 'res_2', 'res_4', 'on_idle'],
       ])
     })
 
     it('cancelLazy', () => {
       return test.testInput('cancelLazy', [
-        ['on_busy_1'],
-        ['on_busy_1', 'res_3'],
-        ['on_busy_1', 'res_3', 'res_4', 'on_idle'],
-        ['on_busy_1', 'res_3', 'res_4', 'on_idle'],
-        ['on_busy_1', 'res_3', 'res_4', 'on_idle'],
+        ['on_busy'],
+        ['on_busy', 'res_3'],
+        ['on_busy', 'res_3', 'res_4', 'on_idle'],
+        ['on_busy', 'res_3', 'res_4', 'on_idle'],
+        ['on_busy', 'res_3', 'res_4', 'on_idle'],
       ])
     })
 
     it('throttleEager', () => {
       return test.testInput('throttleEager', [
-        ['on_busy_1', 'res_1'],
-        ['on_busy_1', 'res_1', 'res_3'],
-        ['on_busy_1', 'res_1', 'res_3', 'res_2'],
-        ['on_busy_1', 'res_1', 'res_3', 'res_2', 'res_4'],
-        ['on_busy_1', 'res_1', 'res_3', 'res_2', 'res_4', 'on_idle'],
+        ['on_busy', 'res_1'],
+        ['on_busy', 'res_1', 'res_3'],
+        ['on_busy', 'res_1', 'res_3', 'res_2'],
+        ['on_busy', 'res_1', 'res_3', 'res_2', 'res_4'],
+        ['on_busy', 'res_1', 'res_3', 'res_2', 'res_4', 'on_idle'],
       ])
     })
 
     it('throttleLazy', () => {
       return test.testInput('throttleLazy', [
-        ['on_busy_1'],
-        ['on_busy_1', 'res_3'],
-        ['on_busy_1', 'res_3', 'res_4', 'on_idle'],
-        ['on_busy_1', 'res_3', 'res_4', 'on_idle'],
-        ['on_busy_1', 'res_3', 'res_4', 'on_idle'],
+        ['on_busy'],
+        ['on_busy', 'res_3'],
+        ['on_busy', 'res_3', 'res_4', 'on_idle'],
+        ['on_busy', 'res_3', 'res_4', 'on_idle'],
+        ['on_busy', 'res_3', 'res_4', 'on_idle'],
       ])
     })
 
     it('skipEager', () => {
       return test.testInput('skipEager', [
-        ['on_busy_1', 'res_1'],
-        ['on_busy_1', 'res_1', 'res_2'],
-        ['on_busy_1', 'res_1', 'res_2', 'on_idle'],
-        ['on_busy_1', 'res_1', 'res_2', 'on_idle'],
-        ['on_busy_1', 'res_1', 'res_2', 'on_idle'],
+        ['on_busy', 'res_1'],
+        ['on_busy', 'res_1', 'res_2'],
+        ['on_busy', 'res_1', 'res_2', 'on_idle'],
+        ['on_busy', 'res_1', 'res_2', 'on_idle'],
+        ['on_busy', 'res_1', 'res_2', 'on_idle'],
       ])
     })
 
     it('skipLazy', () => {
       return test.testInput('skipLazy', [
-        ['on_busy_1'],
-        ['on_busy_1', 'res_1'],
-        ['on_busy_1', 'res_1', 'res_2', 'on_idle'],
-        ['on_busy_1', 'res_1', 'res_2', 'on_idle'],
-        ['on_busy_1', 'res_1', 'res_2', 'on_idle'],
+        ['on_busy'],
+        ['on_busy', 'res_1'],
+        ['on_busy', 'res_1', 'res_2', 'on_idle'],
+        ['on_busy', 'res_1', 'res_2', 'on_idle'],
+        ['on_busy', 'res_1', 'res_2', 'on_idle'],
       ])
     })
   })
@@ -219,81 +219,81 @@ describe('Splitter.TimeValves with Synchronous input.', () => {
 
     it('queueEager', () => {
       return test.testInput('queueEager', [
-        ['on_busy_1', 'res_1'],
-        ['on_busy_1', 'res_1', 'res_2'],
-        ['on_busy_1', 'res_1', 'res_2', 'res_3'],
-        ['on_busy_1', 'res_1', 'res_2', 'res_3', 'res_4'],
-        ['on_busy_1', 'res_1', 'res_2', 'res_3', 'res_4', 'on_idle'],
+        ['on_busy', 'res_1'],
+        ['on_busy', 'res_1', 'res_2'],
+        ['on_busy', 'res_1', 'res_2', 'res_3'],
+        ['on_busy', 'res_1', 'res_2', 'res_3', 'res_4'],
+        ['on_busy', 'res_1', 'res_2', 'res_3', 'res_4', 'on_idle'],
       ])
     })
 
     it('queueLazy', () => {
       return test.testInput('queueLazy', [
-        ['on_busy_1' ],
-        ['on_busy_1', 'res_1'],
-        ['on_busy_1', 'res_1', 'res_2'],
-        ['on_busy_1', 'res_1', 'res_2', 'res_3'],
-        ['on_busy_1', 'res_1', 'res_2', 'res_3', 'res_4', 'on_idle'],
+        ['on_busy' ],
+        ['on_busy', 'res_1'],
+        ['on_busy', 'res_1', 'res_2'],
+        ['on_busy', 'res_1', 'res_2', 'res_3'],
+        ['on_busy', 'res_1', 'res_2', 'res_3', 'res_4', 'on_idle'],
       ])
     })
 
     it('cancelEager', () => {
       return test.testInput('cancelEager', [
-        ['on_busy_1', 'res_1'],
-        ['on_busy_1', 'res_1', 'res_4'],
-        ['on_busy_1', 'res_1', 'res_4', 'on_idle'],
-        ['on_busy_1', 'res_1', 'res_4', 'on_idle'],
-        ['on_busy_1', 'res_1', 'res_4', 'on_idle'],
+        ['on_busy', 'res_1'],
+        ['on_busy', 'res_1', 'res_4'],
+        ['on_busy', 'res_1', 'res_4', 'on_idle'],
+        ['on_busy', 'res_1', 'res_4', 'on_idle'],
+        ['on_busy', 'res_1', 'res_4', 'on_idle'],
       ])
     })
 
     it('cancelLazy', () => {
       return test.testInput('cancelLazy', [
-        ['on_busy_1'],
-        ['on_busy_1', 'res_4', 'on_idle'],
-        ['on_busy_1', 'res_4', 'on_idle'],
-        ['on_busy_1', 'res_4', 'on_idle'],
-        ['on_busy_1', 'res_4', 'on_idle'],
+        ['on_busy'],
+        ['on_busy', 'res_4', 'on_idle'],
+        ['on_busy', 'res_4', 'on_idle'],
+        ['on_busy', 'res_4', 'on_idle'],
+        ['on_busy', 'res_4', 'on_idle'],
       ])
     })
 
     it('throttleEager', () => {
       return test.testInput('throttleEager', [
-        ['on_busy_1', 'res_1'],
-        ['on_busy_1', 'res_1', 'res_4'],
-        ['on_busy_1', 'res_1', 'res_4', 'on_idle'],
-        ['on_busy_1', 'res_1', 'res_4', 'on_idle'],
-        ['on_busy_1', 'res_1', 'res_4', 'on_idle'],
+        ['on_busy', 'res_1'],
+        ['on_busy', 'res_1', 'res_4'],
+        ['on_busy', 'res_1', 'res_4', 'on_idle'],
+        ['on_busy', 'res_1', 'res_4', 'on_idle'],
+        ['on_busy', 'res_1', 'res_4', 'on_idle'],
       ])
     })
 
     it('throttleLazy', () => {
       return test.testInput('throttleLazy', [
-        ['on_busy_1'],
-        ['on_busy_1', 'res_4', 'on_idle'],
-        ['on_busy_1', 'res_4', 'on_idle'],
-        ['on_busy_1', 'res_4', 'on_idle'],
-        ['on_busy_1', 'res_4', 'on_idle'],
+        ['on_busy'],
+        ['on_busy', 'res_4', 'on_idle'],
+        ['on_busy', 'res_4', 'on_idle'],
+        ['on_busy', 'res_4', 'on_idle'],
+        ['on_busy', 'res_4', 'on_idle'],
       ])
     })
 
     it('skipEager', () => {
       return test.testInput('skipEager', [
-        ['on_busy_1', 'res_1'],
-        ['on_busy_1', 'res_1', 'on_idle'],
-        ['on_busy_1', 'res_1', 'on_idle'],
-        ['on_busy_1', 'res_1', 'on_idle'],
-        ['on_busy_1', 'res_1', 'on_idle'],
+        ['on_busy', 'res_1'],
+        ['on_busy', 'res_1', 'on_idle'],
+        ['on_busy', 'res_1', 'on_idle'],
+        ['on_busy', 'res_1', 'on_idle'],
+        ['on_busy', 'res_1', 'on_idle'],
       ])
     })
 
     it('skipLazy', () => {
       return test.testInput('skipLazy', [
-        ['on_busy_1'],
-        ['on_busy_1', 'res_1', 'on_idle'],
-        ['on_busy_1', 'res_1', 'on_idle'],
-        ['on_busy_1', 'res_1', 'on_idle'],
-        ['on_busy_1', 'res_1', 'on_idle'],
+        ['on_busy'],
+        ['on_busy', 'res_1', 'on_idle'],
+        ['on_busy', 'res_1', 'on_idle'],
+        ['on_busy', 'res_1', 'on_idle'],
+        ['on_busy', 'res_1', 'on_idle'],
       ])
     })
   })
@@ -303,81 +303,81 @@ describe('Splitter.TimeValves with Synchronous input.', () => {
 
     it('queueEager', () => {
       return test.testInput('queueEager', [
-        ['on_busy_1', 'res_1', 'res_2'],
-        ['on_busy_1', 'res_1', 'res_2', 'res_3', 'res_4'],
-        ['on_busy_1', 'res_1', 'res_2', 'res_3', 'res_4', 'on_idle'],
-        ['on_busy_1', 'res_1', 'res_2', 'res_3', 'res_4', 'on_idle'],
-        ['on_busy_1', 'res_1', 'res_2', 'res_3', 'res_4', 'on_idle'],
+        ['on_busy', 'res_1', 'res_2'],
+        ['on_busy', 'res_1', 'res_2', 'res_3', 'res_4'],
+        ['on_busy', 'res_1', 'res_2', 'res_3', 'res_4', 'on_idle'],
+        ['on_busy', 'res_1', 'res_2', 'res_3', 'res_4', 'on_idle'],
+        ['on_busy', 'res_1', 'res_2', 'res_3', 'res_4', 'on_idle'],
       ])
     })
 
     it('queueLazy', () => {
       return test.testInput('queueLazy', [
-        ['on_busy_1' ],
-        ['on_busy_1', 'res_1', 'res_2'],
-        ['on_busy_1', 'res_1', 'res_2', 'res_3', 'res_4', 'on_idle'],
-        ['on_busy_1', 'res_1', 'res_2', 'res_3', 'res_4', 'on_idle'],
-        ['on_busy_1', 'res_1', 'res_2', 'res_3', 'res_4', 'on_idle'],
+        ['on_busy' ],
+        ['on_busy', 'res_1', 'res_2'],
+        ['on_busy', 'res_1', 'res_2', 'res_3', 'res_4', 'on_idle'],
+        ['on_busy', 'res_1', 'res_2', 'res_3', 'res_4', 'on_idle'],
+        ['on_busy', 'res_1', 'res_2', 'res_3', 'res_4', 'on_idle'],
       ])
     })
 
     it('cancelEager', () => {
       return test.testInput('cancelEager', [
-        ['on_busy_1', 'res_1', 'res_2'],
-        ['on_busy_1', 'res_1', 'res_2', 'res_3', 'res_4'],
-        ['on_busy_1', 'res_1', 'res_2', 'res_3', 'res_4', 'on_idle'],
-        ['on_busy_1', 'res_1', 'res_2', 'res_3', 'res_4', 'on_idle'],
-        ['on_busy_1', 'res_1', 'res_2', 'res_3', 'res_4', 'on_idle'],
+        ['on_busy', 'res_1', 'res_2'],
+        ['on_busy', 'res_1', 'res_2', 'res_3', 'res_4'],
+        ['on_busy', 'res_1', 'res_2', 'res_3', 'res_4', 'on_idle'],
+        ['on_busy', 'res_1', 'res_2', 'res_3', 'res_4', 'on_idle'],
+        ['on_busy', 'res_1', 'res_2', 'res_3', 'res_4', 'on_idle'],
       ])
     })
 
     it('cancelLazy', () => {
       return test.testInput('cancelLazy', [
-        ['on_busy_1'],
-        ['on_busy_1', 'res_3', 'res_4', 'on_idle'],
-        ['on_busy_1', 'res_3', 'res_4', 'on_idle'],
-        ['on_busy_1', 'res_3', 'res_4', 'on_idle'],
-        ['on_busy_1', 'res_3', 'res_4', 'on_idle'],
+        ['on_busy'],
+        ['on_busy', 'res_3', 'res_4', 'on_idle'],
+        ['on_busy', 'res_3', 'res_4', 'on_idle'],
+        ['on_busy', 'res_3', 'res_4', 'on_idle'],
+        ['on_busy', 'res_3', 'res_4', 'on_idle'],
       ])
     })
 
     it('throttleEager', () => {
       return test.testInput('throttleEager', [
-        ['on_busy_1', 'res_1', 'res_2'],
-        ['on_busy_1', 'res_1', 'res_2', 'res_3', 'res_4'],
-        ['on_busy_1', 'res_1', 'res_2', 'res_3', 'res_4', 'on_idle'],
-        ['on_busy_1', 'res_1', 'res_2', 'res_3', 'res_4', 'on_idle'],
-        ['on_busy_1', 'res_1', 'res_2', 'res_3', 'res_4', 'on_idle'],
+        ['on_busy', 'res_1', 'res_2'],
+        ['on_busy', 'res_1', 'res_2', 'res_3', 'res_4'],
+        ['on_busy', 'res_1', 'res_2', 'res_3', 'res_4', 'on_idle'],
+        ['on_busy', 'res_1', 'res_2', 'res_3', 'res_4', 'on_idle'],
+        ['on_busy', 'res_1', 'res_2', 'res_3', 'res_4', 'on_idle'],
       ])
     })
 
     it('throttleLazy', () => {
       return test.testInput('throttleLazy', [
-        ['on_busy_1'],
-        ['on_busy_1', 'res_3', 'res_4', 'on_idle'],
-        ['on_busy_1', 'res_3', 'res_4', 'on_idle'],
-        ['on_busy_1', 'res_3', 'res_4', 'on_idle'],
-        ['on_busy_1', 'res_3', 'res_4', 'on_idle'],
+        ['on_busy'],
+        ['on_busy', 'res_3', 'res_4', 'on_idle'],
+        ['on_busy', 'res_3', 'res_4', 'on_idle'],
+        ['on_busy', 'res_3', 'res_4', 'on_idle'],
+        ['on_busy', 'res_3', 'res_4', 'on_idle'],
       ])
     })
 
     it('skipEager', () => {
       return test.testInput('skipEager', [
-        ['on_busy_1', 'res_1', 'res_2'],
-        ['on_busy_1', 'res_1', 'res_2', 'on_idle'],
-        ['on_busy_1', 'res_1', 'res_2', 'on_idle'],
-        ['on_busy_1', 'res_1', 'res_2', 'on_idle'],
-        ['on_busy_1', 'res_1', 'res_2', 'on_idle'],
+        ['on_busy', 'res_1', 'res_2'],
+        ['on_busy', 'res_1', 'res_2', 'on_idle'],
+        ['on_busy', 'res_1', 'res_2', 'on_idle'],
+        ['on_busy', 'res_1', 'res_2', 'on_idle'],
+        ['on_busy', 'res_1', 'res_2', 'on_idle'],
       ])
     })
 
     it('skipLazy', () => {
       return test.testInput('skipLazy', [
-        ['on_busy_1'],
-        ['on_busy_1', 'res_1', 'res_2', 'on_idle'],
-        ['on_busy_1', 'res_1', 'res_2', 'on_idle'],
-        ['on_busy_1', 'res_1', 'res_2', 'on_idle'],
-        ['on_busy_1', 'res_1', 'res_2', 'on_idle'],
+        ['on_busy'],
+        ['on_busy', 'res_1', 'res_2', 'on_idle'],
+        ['on_busy', 'res_1', 'res_2', 'on_idle'],
+        ['on_busy', 'res_1', 'res_2', 'on_idle'],
+        ['on_busy', 'res_1', 'res_2', 'on_idle'],
       ])
     })
   })

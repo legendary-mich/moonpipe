@@ -30,28 +30,32 @@ describe('PromiseValves Sliced with an Error.', () => {
   describe('MoonPipe.sliceTap', () => {
     it('runs chunks of 5 elements when the sliceSize is 5', () => {
       return testInput('sliceTap', 5, [
-        'side_9,8,7,6,5',
-        'err_9,8,7,6,5100',
+        'side_9',
+        'err_9100',
+        'side_8,7,6,5',
+        'err_8,7,6,5100',
       ])
     })
 
     it('runs chunks of 3 when the sliceSize is 3', () => {
       return testInput('sliceTap', 3, [
-        'side_9,8,7',
-        'err_9,8,7100',
-        'side_6,5',
-        'err_6,5100',
+        'side_9',
+        'err_9100',
+        'side_8,7,6',
+        'err_8,7,6100',
+        'side_5',
+        'err_5100',
       ])
     })
 
     it('runs chunks of 2 when the sliceSize is 2', () => {
       return testInput('sliceTap', 2, [
-        'side_9,8',
-        'err_9,8100',
-        'side_7,6',
-        'err_7,6100',
-        'side_5',
-        'err_5100',
+        'side_9',
+        'err_9100',
+        'side_8,7',
+        'err_8,7100',
+        'side_6,5',
+        'err_6,5100',
       ])
     })
   })
@@ -59,28 +63,32 @@ describe('PromiseValves Sliced with an Error.', () => {
   describe('MoonPipe.sliceMap', () => {
     it('runs chunks of 5 elements when the sliceSize is 5', () => {
       return testInput('sliceMap', 5, [
-        'side_9,8,7,6,5',
-        'err_9,8,7,6,5100',
+        'side_9',
+        'err_9100',
+        'side_8,7,6,5',
+        'err_8,7,6,5100',
       ])
     })
 
     it('runs chunks of 3 when the sliceSize is 3', () => {
       return testInput('sliceMap', 3, [
-        'side_9,8,7',
-        'err_9,8,7100',
-        'side_6,5',
-        'err_6,5100',
+        'side_9',
+        'err_9100',
+        'side_8,7,6',
+        'err_8,7,6100',
+        'side_5',
+        'err_5100',
       ])
     })
 
     it('runs chunks of 2 when the sliceSize is 2', () => {
       return testInput('sliceMap', 2, [
-        'side_9,8',
-        'err_9,8100',
-        'side_7,6',
-        'err_7,6100',
-        'side_5',
-        'err_5100',
+        'side_9',
+        'err_9100',
+        'side_8,7',
+        'err_8,7100',
+        'side_6,5',
+        'err_6,5100',
       ])
     })
   })

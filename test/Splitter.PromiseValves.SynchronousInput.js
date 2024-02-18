@@ -15,7 +15,7 @@ class Test {
   async testInput(method, expected) {
     const results = []
     const mp = new MoonPipe()
-      .onBusyTap(value => results.push('on_busy_' + value))
+      .onBusy(() => results.push('on_busy'))
       .splitBy(this.poolSize, this.classify
       )[method](async value => value + 100)
       .join()
@@ -43,7 +43,7 @@ describe('Splitter.PromiseValves with Synchronous input.', () => {
 
     it('queueTap', async () => {
       await test.testInput('queueTap', [
-        'on_busy_1',
+        'on_busy',
         'res_1',
         'res_2',
         'res_3',
@@ -54,7 +54,7 @@ describe('Splitter.PromiseValves with Synchronous input.', () => {
 
     it('queueMap', async () => {
       await test.testInput('queueMap', [
-        'on_busy_1',
+        'on_busy',
         'res_101',
         'res_102',
         'res_103',
@@ -65,7 +65,7 @@ describe('Splitter.PromiseValves with Synchronous input.', () => {
 
     it('cancelTap', async () => {
       await test.testInput('cancelTap', [
-        'on_busy_1',
+        'on_busy',
         'res_4',
         'on_idle',
       ])
@@ -73,7 +73,7 @@ describe('Splitter.PromiseValves with Synchronous input.', () => {
 
     it('cancelMap', async () => {
       await test.testInput('cancelMap', [
-        'on_busy_1',
+        'on_busy',
         'res_104',
         'on_idle',
       ])
@@ -81,7 +81,8 @@ describe('Splitter.PromiseValves with Synchronous input.', () => {
 
     it('throttleTap', async () => {
       await test.testInput('throttleTap', [
-        'on_busy_1',
+        'on_busy',
+        'res_1',
         'res_4',
         'on_idle',
       ])
@@ -89,7 +90,8 @@ describe('Splitter.PromiseValves with Synchronous input.', () => {
 
     it('throttleMap', async () => {
       await test.testInput('throttleMap', [
-        'on_busy_1',
+        'on_busy',
+        'res_101',
         'res_104',
         'on_idle',
       ])
@@ -97,7 +99,7 @@ describe('Splitter.PromiseValves with Synchronous input.', () => {
 
     it('skipTap', async () => {
       await test.testInput('skipTap', [
-        'on_busy_1',
+        'on_busy',
         'res_1',
         'on_idle',
       ])
@@ -105,7 +107,7 @@ describe('Splitter.PromiseValves with Synchronous input.', () => {
 
     it('skipMap', async () => {
       await test.testInput('skipMap', [
-        'on_busy_1',
+        'on_busy',
         'res_101',
         'on_idle',
       ])
@@ -118,7 +120,7 @@ describe('Splitter.PromiseValves with Synchronous input.', () => {
 
     it('queueTap', async () => {
       await test.testInput('queueTap', [
-        'on_busy_1',
+        'on_busy',
         'res_1',
         'res_3',
         'res_2',
@@ -129,7 +131,7 @@ describe('Splitter.PromiseValves with Synchronous input.', () => {
 
     it('queueMap', async () => {
       await test.testInput('queueMap', [
-        'on_busy_1',
+        'on_busy',
         'res_101',
         'res_103',
         'res_102',
@@ -140,7 +142,7 @@ describe('Splitter.PromiseValves with Synchronous input.', () => {
 
     it('cancelTap', async () => {
       await test.testInput('cancelTap', [
-        'on_busy_1',
+        'on_busy',
         'res_3',
         'res_4',
         'on_idle',
@@ -149,7 +151,7 @@ describe('Splitter.PromiseValves with Synchronous input.', () => {
 
     it('cancelMap', async () => {
       await test.testInput('cancelMap', [
-        'on_busy_1',
+        'on_busy',
         'res_103',
         'res_104',
         'on_idle',
@@ -158,8 +160,10 @@ describe('Splitter.PromiseValves with Synchronous input.', () => {
 
     it('throttleTap', async () => {
       await test.testInput('throttleTap', [
-        'on_busy_1',
+        'on_busy',
+        'res_1',
         'res_3',
+        'res_2',
         'res_4',
         'on_idle',
       ])
@@ -167,8 +171,10 @@ describe('Splitter.PromiseValves with Synchronous input.', () => {
 
     it('throttleMap', async () => {
       await test.testInput('throttleMap', [
-        'on_busy_1',
+        'on_busy',
+        'res_101',
         'res_103',
+        'res_102',
         'res_104',
         'on_idle',
       ])
@@ -176,7 +182,7 @@ describe('Splitter.PromiseValves with Synchronous input.', () => {
 
     it('skipTap', async () => {
       await test.testInput('skipTap', [
-        'on_busy_1',
+        'on_busy',
         'res_1',
         'res_2',
         'on_idle',
@@ -185,7 +191,7 @@ describe('Splitter.PromiseValves with Synchronous input.', () => {
 
     it('skipMap', async () => {
       await test.testInput('skipMap', [
-        'on_busy_1',
+        'on_busy',
         'res_101',
         'res_102',
         'on_idle',
@@ -199,7 +205,7 @@ describe('Splitter.PromiseValves with Synchronous input.', () => {
 
     it('queueTap', async () => {
       await test.testInput('queueTap', [
-        'on_busy_1',
+        'on_busy',
         'res_1',
         'res_2',
         'res_3',
@@ -210,7 +216,7 @@ describe('Splitter.PromiseValves with Synchronous input.', () => {
 
     it('queueMap', async () => {
       await test.testInput('queueMap', [
-        'on_busy_1',
+        'on_busy',
         'res_101',
         'res_102',
         'res_103',
@@ -221,7 +227,7 @@ describe('Splitter.PromiseValves with Synchronous input.', () => {
 
     it('cancelTap', async () => {
       await test.testInput('cancelTap', [
-        'on_busy_1',
+        'on_busy',
         'res_4',
         'on_idle',
       ])
@@ -229,7 +235,7 @@ describe('Splitter.PromiseValves with Synchronous input.', () => {
 
     it('cancelMap', async () => {
       await test.testInput('cancelMap', [
-        'on_busy_1',
+        'on_busy',
         'res_104',
         'on_idle',
       ])
@@ -237,7 +243,8 @@ describe('Splitter.PromiseValves with Synchronous input.', () => {
 
     it('throttleTap', async () => {
       await test.testInput('throttleTap', [
-        'on_busy_1',
+        'on_busy',
+        'res_1',
         'res_4',
         'on_idle',
       ])
@@ -245,7 +252,8 @@ describe('Splitter.PromiseValves with Synchronous input.', () => {
 
     it('throttleMap', async () => {
       await test.testInput('throttleMap', [
-        'on_busy_1',
+        'on_busy',
+        'res_101',
         'res_104',
         'on_idle',
       ])
@@ -253,7 +261,7 @@ describe('Splitter.PromiseValves with Synchronous input.', () => {
 
     it('skipTap', async () => {
       await test.testInput('skipTap', [
-        'on_busy_1',
+        'on_busy',
         'res_1',
         'on_idle',
       ])
@@ -261,7 +269,7 @@ describe('Splitter.PromiseValves with Synchronous input.', () => {
 
     it('skipMap', async () => {
       await test.testInput('skipMap', [
-        'on_busy_1',
+        'on_busy',
         'res_101',
         'on_idle',
       ])
@@ -274,7 +282,7 @@ describe('Splitter.PromiseValves with Synchronous input.', () => {
 
     it('queueTap', async () => {
       await test.testInput('queueTap', [
-        'on_busy_1',
+        'on_busy',
         'res_1',
         'res_2',
         'res_3',
@@ -285,7 +293,7 @@ describe('Splitter.PromiseValves with Synchronous input.', () => {
 
     it('queueMap', async () => {
       await test.testInput('queueMap', [
-        'on_busy_1',
+        'on_busy',
         'res_101',
         'res_102',
         'res_103',
@@ -296,7 +304,7 @@ describe('Splitter.PromiseValves with Synchronous input.', () => {
 
     it('cancelTap', async () => {
       await test.testInput('cancelTap', [
-        'on_busy_1',
+        'on_busy',
         'res_3',
         'res_4',
         'on_idle',
@@ -305,7 +313,7 @@ describe('Splitter.PromiseValves with Synchronous input.', () => {
 
     it('cancelMap', async () => {
       await test.testInput('cancelMap', [
-        'on_busy_1',
+        'on_busy',
         'res_103',
         'res_104',
         'on_idle',
@@ -314,7 +322,9 @@ describe('Splitter.PromiseValves with Synchronous input.', () => {
 
     it('throttleTap', async () => {
       await test.testInput('throttleTap', [
-        'on_busy_1',
+        'on_busy',
+        'res_1',
+        'res_2',
         'res_3',
         'res_4',
         'on_idle',
@@ -323,7 +333,9 @@ describe('Splitter.PromiseValves with Synchronous input.', () => {
 
     it('throttleMap', async () => {
       await test.testInput('throttleMap', [
-        'on_busy_1',
+        'on_busy',
+        'res_101',
+        'res_102',
         'res_103',
         'res_104',
         'on_idle',
@@ -332,7 +344,7 @@ describe('Splitter.PromiseValves with Synchronous input.', () => {
 
     it('skipTap', async () => {
       await test.testInput('skipTap', [
-        'on_busy_1',
+        'on_busy',
         'res_1',
         'res_2',
         'on_idle',
@@ -341,7 +353,7 @@ describe('Splitter.PromiseValves with Synchronous input.', () => {
 
     it('skipMap', async () => {
       await test.testInput('skipMap', [
-        'on_busy_1',
+        'on_busy',
         'res_101',
         'res_102',
         'on_idle',

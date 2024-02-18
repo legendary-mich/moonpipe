@@ -29,11 +29,11 @@ async function testInput(method, expected) {
       await delayPromise(2)
       results.push('err_' + err.message)
     })
-    .onBusyTap(async (value) => {
-      results.push('on_busy_' + value)
+    .onBusy(() => {
+      results.push('on_busy')
     })
-    .onIdle(async (value) => {
-      results.push('on_idle_' + value)
+    .onIdle(() => {
+      results.push('on_idle')
     })
 
   pipe.pump(1)
@@ -48,7 +48,7 @@ describe('PromiseValves Repeat on Error - Eventual Success,', () => {
   describe('MoonPipe.queueTap', () => {
     it('eventually succeeds', () => {
       return testInput('queueTap', [
-        'on_busy_1',
+        'on_busy',
         'side_1',
         'side_1',
         'side_1',
@@ -57,7 +57,7 @@ describe('PromiseValves Repeat on Error - Eventual Success,', () => {
         'side_2',
         'side_2',
         'res_2',
-        'on_idle_undefined',
+        'on_idle',
       ])
     })
   })
@@ -65,7 +65,7 @@ describe('PromiseValves Repeat on Error - Eventual Success,', () => {
   describe('MoonPipe.queueMap', () => {
     it('eventually succeeds', () => {
       return testInput('queueMap', [
-        'on_busy_1',
+        'on_busy',
         'side_1',
         'side_1',
         'side_1',
@@ -74,7 +74,7 @@ describe('PromiseValves Repeat on Error - Eventual Success,', () => {
         'side_2',
         'side_2',
         'res_102',
-        'on_idle_undefined',
+        'on_idle',
       ])
     })
   })
@@ -82,12 +82,12 @@ describe('PromiseValves Repeat on Error - Eventual Success,', () => {
   describe('MoonPipe.cancelTap', () => {
     it('eventually succeeds', () => {
       return testInput('cancelTap', [
-        'on_busy_1',
+        'on_busy',
         'side_1',
         'side_2',
         'side_2',
         'res_2',
-        'on_idle_undefined',
+        'on_idle',
       ])
     })
   })
@@ -95,12 +95,12 @@ describe('PromiseValves Repeat on Error - Eventual Success,', () => {
   describe('MoonPipe.cancelMap', () => {
     it('eventually succeeds', () => {
       return testInput('cancelMap', [
-        'on_busy_1',
+        'on_busy',
         'side_1',
         'side_2',
         'side_2',
         'res_102',
-        'on_idle_undefined',
+        'on_idle',
       ])
     })
   })
@@ -108,7 +108,7 @@ describe('PromiseValves Repeat on Error - Eventual Success,', () => {
   describe('MoonPipe.throttleTap', () => {
     it('eventually succeeds', () => {
       return testInput('throttleTap', [
-        'on_busy_1',
+        'on_busy',
         'side_1',
         'side_1',
         'side_1',
@@ -117,7 +117,7 @@ describe('PromiseValves Repeat on Error - Eventual Success,', () => {
         'side_2',
         'side_2',
         'res_2',
-        'on_idle_undefined',
+        'on_idle',
       ])
     })
   })
@@ -125,7 +125,7 @@ describe('PromiseValves Repeat on Error - Eventual Success,', () => {
   describe('MoonPipe.throttleMap', () => {
     it('eventually succeeds', () => {
       return testInput('throttleMap', [
-        'on_busy_1',
+        'on_busy',
         'side_1',
         'side_1',
         'side_1',
@@ -134,7 +134,7 @@ describe('PromiseValves Repeat on Error - Eventual Success,', () => {
         'side_2',
         'side_2',
         'res_102',
-        'on_idle_undefined',
+        'on_idle',
       ])
     })
   })
@@ -142,12 +142,12 @@ describe('PromiseValves Repeat on Error - Eventual Success,', () => {
   describe('MoonPipe.skipTap', () => {
     it('whatever', () => {
       return testInput('skipTap', [
-        'on_busy_1',
+        'on_busy',
         'side_1',
         'side_1',
         'side_1',
         'res_1',
-        'on_idle_undefined',
+        'on_idle',
       ])
     })
   })
@@ -155,12 +155,12 @@ describe('PromiseValves Repeat on Error - Eventual Success,', () => {
   describe('MoonPipe.skipMap', () => {
     it('whatever', () => {
       return testInput('skipMap', [
-        'on_busy_1',
+        'on_busy',
         'side_1',
         'side_1',
         'side_1',
         'res_101',
-        'on_idle_undefined',
+        'on_idle',
       ])
     })
   })

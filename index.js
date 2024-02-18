@@ -28,6 +28,11 @@ const {
   SynchronousPresets,
 } = require('./lib/SynchronousValves.js')
 
+const {
+  ConstantBackoff,
+  LinearBackoff,
+} = require('./lib/Backoff.js')
+
 const { Splitter } = require('./lib/Splitter.js')
 
 const { delayPromise } = require('./lib/utils.js')
@@ -51,6 +56,8 @@ module.exports = {
   MapValve,
   FilterValve,
   SynchronousPresets,
+  ConstantBackoff,
+  LinearBackoff,
   Splitter,
   delayPromise,
 }

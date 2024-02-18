@@ -6,7 +6,8 @@ const { delayPromise } = require('./utils.js')
 
 async function testInput(method, expected) {
   const results = []
-  const pipe = new MoonPipe()[method](async (value) => {
+  const pipe = new MoonPipe()[method](async (value, promiseContext) => {
+    promiseContext.onCancel = () => results.push('cancelled_' + value)
     results.push('side_' + value)
     await delayPromise(100)
     return value + 100
@@ -37,12 +38,18 @@ describe('PromiseValves Repeat on Error with Timeout - All Failures,', () => {
     it('emits an Error', () => {
       return testInput('queueTap', [
         'side_1',
+        'cancelled_1',
         'side_1',
+        'cancelled_1',
         'side_1',
+        'cancelled_1',
         'err_TimeoutError',
         'side_2',
+        'cancelled_2',
         'side_2',
+        'cancelled_2',
         'side_2',
+        'cancelled_2',
         'err_TimeoutError',
       ])
     })
@@ -52,12 +59,18 @@ describe('PromiseValves Repeat on Error with Timeout - All Failures,', () => {
     it('emits an Error', () => {
       return testInput('queueMap', [
         'side_1',
+        'cancelled_1',
         'side_1',
+        'cancelled_1',
         'side_1',
+        'cancelled_1',
         'err_TimeoutError',
         'side_2',
+        'cancelled_2',
         'side_2',
+        'cancelled_2',
         'side_2',
+        'cancelled_2',
         'err_TimeoutError',
       ])
     })
@@ -67,9 +80,13 @@ describe('PromiseValves Repeat on Error with Timeout - All Failures,', () => {
     it('emits an Error', () => {
       return testInput('cancelTap', [
         'side_1',
+        'cancelled_1',
         'side_2',
+        'cancelled_2',
         'side_2',
+        'cancelled_2',
         'side_2',
+        'cancelled_2',
         'err_TimeoutError',
       ])
     })
@@ -79,9 +96,13 @@ describe('PromiseValves Repeat on Error with Timeout - All Failures,', () => {
     it('emits an Error', () => {
       return testInput('cancelMap', [
         'side_1',
+        'cancelled_1',
         'side_2',
+        'cancelled_2',
         'side_2',
+        'cancelled_2',
         'side_2',
+        'cancelled_2',
         'err_TimeoutError',
       ])
     })
@@ -91,12 +112,18 @@ describe('PromiseValves Repeat on Error with Timeout - All Failures,', () => {
     it('emits an Error', () => {
       return testInput('throttleTap', [
         'side_1',
+        'cancelled_1',
         'side_1',
+        'cancelled_1',
         'side_1',
+        'cancelled_1',
         'err_TimeoutError',
         'side_2',
+        'cancelled_2',
         'side_2',
+        'cancelled_2',
         'side_2',
+        'cancelled_2',
         'err_TimeoutError',
       ])
     })
@@ -106,12 +133,18 @@ describe('PromiseValves Repeat on Error with Timeout - All Failures,', () => {
     it('emits an Error', () => {
       return testInput('throttleMap', [
         'side_1',
+        'cancelled_1',
         'side_1',
+        'cancelled_1',
         'side_1',
+        'cancelled_1',
         'err_TimeoutError',
         'side_2',
+        'cancelled_2',
         'side_2',
+        'cancelled_2',
         'side_2',
+        'cancelled_2',
         'err_TimeoutError',
       ])
     })
@@ -121,8 +154,11 @@ describe('PromiseValves Repeat on Error with Timeout - All Failures,', () => {
     it('whatever', () => {
       return testInput('skipTap', [
         'side_1',
+        'cancelled_1',
         'side_1',
+        'cancelled_1',
         'side_1',
+        'cancelled_1',
         'err_TimeoutError',
       ])
     })
@@ -132,8 +168,11 @@ describe('PromiseValves Repeat on Error with Timeout - All Failures,', () => {
     it('whatever', () => {
       return testInput('skipMap', [
         'side_1',
+        'cancelled_1',
         'side_1',
+        'cancelled_1',
         'side_1',
+        'cancelled_1',
         'err_TimeoutError',
       ])
     })

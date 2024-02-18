@@ -73,7 +73,7 @@ describe('Custom Valves,', () => {
       pipe.pump(5)
 
       await delayPromise(60)
-      expect(results).to.eql([103, 104, 105])
+      expect(results).to.eql([101, 104, 105])
     })
   })
 })

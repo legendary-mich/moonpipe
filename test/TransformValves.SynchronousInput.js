@@ -13,11 +13,11 @@ async function testInput(method, param, input, expected) {
     .queueError(async (err) => {
       results.push('err_' + err.message)
     })
-    .onBusyTap(async (value) => {
-      results.push('on_busy_' + value)
+    .onBusy(() => {
+      results.push('on_busy')
     })
-    .onIdle(async (value) => {
-      results.push('on_idle_' + value)
+    .onIdle(() => {
+      results.push('on_idle')
     })
 
   for (const val of input) {
@@ -36,14 +36,14 @@ describe('TransformValves with Synchronous input.', () => {
         [1, 2, 3],
         [10, 20, 30],
       ], [
-        'on_busy_1,2,3',
+        'on_busy',
         'res_1',
         'res_2',
         'res_3',
         'res_10',
         'res_20',
         'res_30',
-        'on_idle_undefined',
+        'on_idle',
       ])
     })
 
@@ -52,12 +52,12 @@ describe('TransformValves with Synchronous input.', () => {
         1,
         [10, 20, 30],
       ], [
-        'on_busy_1',
+        'on_busy',
         'err_Expected an array; found: number',
         'res_10',
         'res_20',
         'res_30',
-        'on_idle_undefined',
+        'on_idle',
       ])
     })
   })
@@ -69,11 +69,11 @@ describe('TransformValves with Synchronous input.', () => {
         2,
         3,
       ], [
-        'on_busy_1',
+        'on_busy',
         'res_2',
         'res_4',
         'res_6',
-        'on_idle_undefined',
+        'on_idle',
       ])
     })
 
@@ -83,11 +83,11 @@ describe('TransformValves with Synchronous input.', () => {
         2,
         3,
       ], [
-        'on_busy_1',
+        'on_busy',
         'err_wrong',
         'err_wrong',
         'err_wrong',
-        'on_idle_undefined',
+        'on_idle',
       ])
     })
   })
@@ -99,10 +99,10 @@ describe('TransformValves with Synchronous input.', () => {
         2,
         3,
       ], [
-        'on_busy_1',
+        'on_busy',
         'res_1',
         'res_3',
-        'on_idle_undefined',
+        'on_idle',
       ])
     })
 
@@ -112,11 +112,11 @@ describe('TransformValves with Synchronous input.', () => {
         2,
         3,
       ], [
-        'on_busy_1',
+        'on_busy',
         'err_zonk',
         'err_zonk',
         'err_zonk',
-        'on_idle_undefined',
+        'on_idle',
       ])
     })
   })
@@ -128,11 +128,11 @@ describe('TransformValves with Synchronous input.', () => {
         2,
         3,
       ], [
-        'on_busy_1',
+        'on_busy',
         'res_1',
         'res_2',
         'res_3',
-        'on_idle_undefined',
+        'on_idle',
       ])
     })
 
@@ -142,11 +142,11 @@ describe('TransformValves with Synchronous input.', () => {
         2,
         3,
       ], [
-        'on_busy_1',
+        'on_busy',
         'res_1',
         'res_2',
         'res_3',
-        'on_idle_undefined',
+        'on_idle',
       ])
     })
   })
@@ -158,8 +158,8 @@ describe('TransformValves with Synchronous input.', () => {
         .map((value) => {
           results.push('res_' + value)
         })
-        .onIdle(async (value) => {
-          results.push('on_idle_' + value)
+        .onIdle(() => {
+          results.push('on_idle')
         })
 
       pipe.pump(1)
@@ -167,7 +167,7 @@ describe('TransformValves with Synchronous input.', () => {
       await delayPromise(5)
       const expected = [
         'res_1',
-        'on_idle_undefined',
+        'on_idle',
       ]
       expect(results).to.eql(expected)
     })
@@ -179,8 +179,8 @@ describe('TransformValves with Synchronous input.', () => {
     async function testErrorInput(predicate, expected) {
       const results = []
       const pipe = new MoonPipe()
-        .onBusyTap(async (value) => {
-          results.push('on_busy_' + value)
+        .onBusy(() => {
+          results.push('on_busy')
         })
         .queueTap(async (value) => {
           throw new Error('bobo-' + value)
@@ -192,7 +192,7 @@ describe('TransformValves with Synchronous input.', () => {
         .queueError(async (err) => {
           results.push('err_' + err.message)
         })
-        .onIdle(async () => {
+        .onIdle(() => {
           results.push('on_idle')
         })
 
@@ -206,7 +206,7 @@ describe('TransformValves with Synchronous input.', () => {
 
     it('emits filtered errors to the ERROR channel', async () => {
       return testErrorInput(err => err.message !== 'bobo-2', [
-        'on_busy_1',
+        'on_busy',
         'err_bobo-1',
         'err_bobo-3',
         'on_idle',
@@ -216,7 +216,7 @@ describe('TransformValves with Synchronous input.', () => {
     it('emits errors thrown wile filtering', async () => {
       err => {throw new Error(err.message + '_new')}
       return testErrorInput(err => {throw new Error(err.message + '_new')}, [
-        'on_busy_1',
+        'on_busy',
         'err_bobo-1_new',
         'err_bobo-2_new',
         'err_bobo-3_new',

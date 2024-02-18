@@ -4,14 +4,17 @@ const { expect } = require('chai')
 const { MoonPipe } = require('../index.js')
 const { delayPromise } = require('./utils.js')
 
-async function testInput(method, expected) {
+async function testInput(expected) {
   const results = []
   const pipe = new MoonPipe()
     .onBusyTap((value) => {
-      results.push('on_busy_' + value)
+      results.push('on_busy_tap_' + value)
     })
-    .onIdle((value) => {
-      results.push('on_idle_' + value)
+    .onBusy(() => {
+      results.push('on_busy')
+    })
+    .onIdle(() => {
+      results.push('on_idle')
     })
 
   pipe.pump(1)
@@ -26,13 +29,16 @@ describe('Hooks.NoValves with Synchronous input.', () => {
 
   describe('When there are no valves attached', () => {
     it('the onIdle callback still gets called', () => {
-      return testInput('onBusyTap', [
-        'on_busy_1',
-        'on_idle_undefined',
-        'on_busy_2',
-        'on_idle_undefined',
-        'on_busy_3',
-        'on_idle_undefined',
+      return testInput([
+        'on_busy_tap_1',
+        'on_busy',
+        'on_idle',
+        'on_busy_tap_2',
+        'on_busy',
+        'on_idle',
+        'on_busy_tap_3',
+        'on_busy',
+        'on_idle',
       ])
     })
   })
