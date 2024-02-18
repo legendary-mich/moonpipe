@@ -6,7 +6,8 @@ const { delayPromise } = require('./utils.js')
 
 async function testInput(method, expected) {
   const results = []
-  const pipe = new MoonPipe()[method](async (value) => {
+  const pipe = new MoonPipe()[method](async (value, promiseContext) => {
+    promiseContext.onCancel = () => results.push('cancelled_' + value)
     results.push('side_' + value)
     await delayPromise(100)
     return value + 100

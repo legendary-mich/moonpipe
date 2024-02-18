@@ -404,7 +404,7 @@ mp.pump('a')
 ```
 
 #### Timeout in PromiseValves
-Use the `timeoutMs` param for PromiseValves that are not supposed to live too long. If the promise is not settled within the provided number of milliseconds, it will be rejected with a `TimeoutError`.
+Use the `timeoutMs` param for PromiseValves that are not supposed to live too long. If the promise is not settled within the provided number of milliseconds, it will be rejected with a `TimeoutError` and the [onCancel callback](#oncancel-callback-in-promisevalves) will be called.
 ```javascript
 const { MoonPipe } = require('moonpipe')
 const { delayPromise } = require('../test/utils.js')
@@ -468,7 +468,7 @@ mp.pump('c')
 ```
 
 #### onCancel callback in PromiseValves
-Sometimes you may want to do some cleanup when a promise is being canceled. To facilitate custom logic on promise cancellation a `promiseContext` is provided to the promise factory function as the second argument. The `onCancel` callback can be attached to the `promiseContext`; it will be called when the promise is being canceled. **If it throws** an error, the error will be **silently ignored**. What follows is an example of how to clear a timeout from within one of the `cancel` PromiseValves. *(Note that the sole purpose of this example is to show how to use the `onCancel` callback. Normally, for anything related to timeouts, you are better off using TimeValves like e.g. cancelLazy)*
+Sometimes you may want to do some cleanup when a promise is being **canceled**, or when it [times out](#timeout-in-promisevalves). To facilitate custom logic on promise cancellation a `promiseContext` is provided to the promise factory function as the second argument. The `onCancel` callback can be attached to the `promiseContext`; it will be called when the promise is being **canceled**, or when it [times out](#timeout-in-promisevalves). If the **callback throws** an error, the error will be **silently ignored**. What follows is an example of how to clear a timeout from within one of the `cancel` PromiseValves. *(Note that the sole purpose of this example is to show how to use the `onCancel` callback. Normally, for anything related to timeouts, you are better off using TimeValves like e.g. cancelLazy)*
 
 ```javascript
 const { MoonPipe } = require('moonpipe')

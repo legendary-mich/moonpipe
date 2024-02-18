@@ -12,7 +12,7 @@ describe('PromiseValves.Buffers.Clear.One.js', () => {
       const results = []
       const pipe = new MoonPipe()[method](async (value) => {
         results.push('a_' + value)
-        await delayPromise(2)
+        await delayPromise(3)
         return value + '_mapped'
       }, { name: '0th' })
         .queueTap(async (value) => {
@@ -74,7 +74,7 @@ describe('PromiseValves.Buffers.Clear.One.js', () => {
       const results = []
       const pipe = new MoonPipe()[method](async (value) => {
         results.push('a_' + value)
-        await delayPromise(2)
+        await delayPromise(3)
         return value + '_mapped'
       }, { name: '0th' })
         .queueTap(async (value) => {
@@ -134,7 +134,7 @@ describe('PromiseValves.Buffers.Clear.One.js', () => {
       const results = []
       const pipe = new MoonPipe()[method](async (value) => {
         results.push('a_' + value)
-        await delayPromise(2)
+        await delayPromise(3)
         return value + '_mapped'
       }, { name: '0th' })
         .queueTap(async (value) => {
@@ -194,7 +194,7 @@ describe('PromiseValves.Buffers.Clear.One.js', () => {
       const results = []
       const pipe = new MoonPipe()[method](async (value) => {
         results.push('a_' + value)
-        await delayPromise(2)
+        await delayPromise(3)
         return value + '_mapped'
       }, { name: '0th' })
         .queueTap(async (value) => {
@@ -257,7 +257,7 @@ describe('PromiseValves.Buffers.Clear.One.js', () => {
           throw new Error('hoho') // <---- should be silently ignored
         }
         results.push('a_' + value)
-        await delayPromise(2)
+        await delayPromise(3)
         return value + '_mapped'
       }, { name: '0th' })
         .queueTap(async (value) => {
