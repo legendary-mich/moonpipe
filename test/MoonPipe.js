@@ -5,6 +5,7 @@ const {
   MoonPipe,
   BaseValve,
   BasePresets,
+  CHANNEL_TYPE,
 } = require('../index.js')
 const { delayPromise } = require('./utils.js')
 
@@ -33,14 +34,25 @@ describe('MoonPipe', () => {
       }
     })
 
-    it('throws for a channel which is outside of the enum range', () => {
+    it('throws for an inputChannel which is outside of the enum range', () => {
       const moonPipe = new MoonPipe()
       try {
         moonPipe.pipe(new BaseValve(BasePresets.queue), 'haha')
         throw new Error('should have thrown')
       }
       catch (err) {
-        expect(err).to.have.property('message', "Unexpected 'channel' name: haha")
+        expect(err).to.have.property('message', "Unexpected 'inputChannel' name: haha")
+      }
+    })
+
+    it('throws for an outputChannel which is outside of the enum range', () => {
+      const moonPipe = new MoonPipe()
+      try {
+        moonPipe.pipe(new BaseValve(BasePresets.queue), CHANNEL_TYPE.DATA, 'hoho')
+        throw new Error('should have thrown')
+      }
+      catch (err) {
+        expect(err).to.have.property('message', "Unexpected 'outputChannel' name: hoho")
       }
     })
 
