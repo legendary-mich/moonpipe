@@ -1,8 +1,6 @@
 # moonpipe
 Throttle streams of data while passing them through promises and timers. Use various valves to discard redundant data points.
 
-The package follows **Semantic Versioning**
-
 - [TL;DR](#tldr)
 - [Predefined valves](#predefined-valves)
   - [Overriding predefined valves](#overriding-predefined-valves)
