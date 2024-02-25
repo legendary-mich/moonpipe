@@ -44,7 +44,7 @@ async function testInput(method, expected) {
   pipe.pump(2)
   pipe.pump(1)
 
-  await delayPromise(20)
+  await delayPromise(22)
   expect(results).to.eql(expected)
 }
 
@@ -59,8 +59,11 @@ describe('PromiseValves.ErrorHandler.InBetween.AllErrorTypes.js', () => {
         // The following results get queued while the
         // CHANNEL_TYPE.ERROR is the active channel. They are
         // processed only after the active channel switches back to
-        // the CHANNEL_TYPE.DATA. That's why you see them coming after
-        // err_101, err_102, err_103.
+        // the CHANNEL_TYPE.DATA. So even though some of the errors
+        // are handled before the other errors arrive to the error
+        // handler, the results are waiting in the queueTap valve
+        // until the active channel is switched back to the
+        // CHANNEL_TYPE.DATA.
         'err_handled_303',
         'err_handled_202',
         'err_handled_101',

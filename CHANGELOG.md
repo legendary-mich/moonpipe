@@ -1,5 +1,8 @@
 # Changelog
 
+### 2.3.0
+- Move the `outputChannel` param from `presets` to the `.pipe` method
+
 ### 2.2.0
 - Add the `onBusy` hook. Deprecate the `onBusyTap` hook
 - Add the `repeatBackoffFactory`, `ConstantBackoff`, and `LinearBackoff`

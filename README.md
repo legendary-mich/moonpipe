@@ -1,6 +1,8 @@
 # moonpipe
 Throttle streams of data while passing them through promises and timers. Use various valves to discard redundant data points.
 
+The package follows **Semantic Versioning**
+
 - [TL;DR](#tldr)
 - [Predefined valves](#predefined-valves)
   - [Overriding predefined valves](#overriding-predefined-valves)
@@ -31,6 +33,7 @@ Throttle streams of data while passing them through promises and timers. Use var
   - [TimeValve Preset Params](#timevalve-preset-params)
   - [PromiseValve Preset Params](#promisevalve-preset-params)
 - [Utilities](#utilities)
+- [Versioning](#versioning)
 - [Contributing](#contributing)
 
 ### TL;DR
@@ -59,6 +62,7 @@ mp.pump('d')
 // output: initial_d
 // done
 ```
+
 ### Predefined valves
 ```
 queueTap    queueMap    queueEager    queueLazy    queueError
@@ -198,9 +202,10 @@ the pipe will generate the following outputs, where the `time` label is the numb
 
 #### Custom TimeValves
 
-Predefined TimeValves internally run an instance of the `TimeValve` class. It is possible to create your own TimeValve flavors and connect them to the pipe with the `.pipe` method. The `.pipe` method accepts a `CHANNEL_TYPE` as the second argument. By default it is set to `CHANNEL_TYPE.DATA`, so you don't have to worry about it. If you however want to use your valve as an error handler, set the `CHANNEL_TYPE` to the `ERROR` value.
+Predefined TimeValves internally run an instance of the `TimeValve` class. It is possible to create your own TimeValve flavors and connect them to a pipe with the `.pipe` method. The `.pipe` method accepts a `valve` as the first argument, and optionally two `CHANNEL_TYPE` params as the second and third arguments. By default channels are set to the `CHANNEL_TYPE.DATA`, so you don't have to worry about them. If you, however, want to use your valve as an error handler, set the `inputChannel` to the `CHANNEL_TYPE.ERROR` and the `outputChannel` to either `CHANNEL_TYPE.ERROR` or `CHANNEL_TYPE.DATA`.
 ```javascript
-mp.pipe(valve, CHANNEL_TYPE.ERROR)
+//             inputChannel        outputChannel
+mp.pipe(valve, CHANNEL_TYPE.ERROR, CHANNEL_TYPE.DATA)
 ```
 
 Here I will show you an example of a TimeValve which is similar to the `throttleLazy` valve, but has a bigger `maxBufferSize`. For the complete info about presets look at the [Presets explained](#presets-explained) section.
@@ -537,9 +542,10 @@ const mp = new MoonPipe()
 
 #### Custom PromiseValves
 
-Predefined PromiseValves internally run an instance of the `PromiseValve` class. It is possible to create your own PromiseValve flavors and connect them to the pipe with the `.pipe` method. The `.pipe` method accepts a `CHANNEL_TYPE` as the second argument. By default it is set to `CHANNEL_TYPE.DATA`, so you don't have to worry about it. If you however want to use your valve as an error handler, set the `CHANNEL_TYPE` to the `ERROR` value.
+Predefined PromiseValves internally run an instance of the `PromiseValve` class. It is possible to create your own PromiseValve flavors and connect them to a pipe with the `.pipe` method. The `.pipe` method accepts a `valve` as the first argument, and optionally two `CHANNEL_TYPE` params as the second and third arguments. By default channels are set to the `CHANNEL_TYPE.DATA`, so you don't have to worry about them. If you, however, want to use your valve as an error handler, set the `inputChannel` to the `CHANNEL_TYPE.ERROR` and the `outputChannel` to either `CHANNEL_TYPE.ERROR` or `CHANNEL_TYPE.DATA`.
 ```javascript
-mp.pipe(valve, CHANNEL_TYPE.ERROR)
+//             inputChannel        outputChannel
+mp.pipe(valve, CHANNEL_TYPE.ERROR, CHANNEL_TYPE.DATA)
 ```
 
 Here I will show you an example of a PromiseValve which is similar to the `throttleMap` valve, but has a bigger `maxBufferSize`. For the complete info about presets look at the [Presets explained](#presets-explained) section.
@@ -549,18 +555,16 @@ const {
   MoonPipe,
   PromiseValve,
   PROMISE_RESOLVE_TYPE,
-  CHANNEL_TYPE,
   BUFFER_TYPE,
   OVERFLOW_ACTION,
   ConstantBackoff,
-} = require('../index.js')
+} = require('moonpipe')
 
 const preset = {
   name: null,
   maxBufferSize: 3,
   bufferType: BUFFER_TYPE.QUEUE,
   overflowAction: OVERFLOW_ACTION.SHIFT,
-  outputChannel: CHANNEL_TYPE.DATA,
   resolveType: PROMISE_RESOLVE_TYPE.MAP,
   cancelOnPump: false,
   timeoutMs: 0,
@@ -802,7 +806,7 @@ Also note that inner pipes behave a lot like regular valves. This means that err
   - `SHIFT` - the first value from the buffer is removed
   - `SKIP` - new values are skipped (not added to the buffer and so never processed)
   - `SLICE` - In the SLICE mode values are packed into an array which is later processed as a whole. When the array is full, a new array is created.
-- `outputChannel` - the channel that regular data will be emitted to. Unexpected errors are always emitted to the `ERROR` channel. Data can be emitted to either `DATA` or `ERROR`
+- `outputChannel` (**DEPRECATED**) - the channel that regular data will be emitted to. Unexpected errors are always emitted to the `ERROR` channel. Data can be emitted to either `DATA` or `ERROR`
   - `DATA` - data is emitted to the `DATA` channel, unexpected errors are emitted to the `ERROR` channel
   - `ERROR` - both data and errors are emitted to the `ERROR` channel
 
@@ -835,6 +839,12 @@ async function run() {
   await delayPromise(2000)
 }
 ```
+
+## Versioning
+The package follows **Semantic Versioning**, which means that given a version number `MAJOR.MINOR.PATCH`, the components will be incremented as follows:
+1. `MAJOR` version when making incompatible API changes
+2. `MINOR` version when adding functionality in a backward compatible manner
+3. `PATCH` version when making backward compatible bug fixes
 
 ## Contributing
 By contributing your code to this project, you agree to license your contribution under the MIT license.

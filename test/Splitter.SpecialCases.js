@@ -458,7 +458,7 @@ describe('Splitter.SpecialCases', () => {
     })
   })
 
-  describe('error valve in a splitter', () => {
+  describe('error valve (ERROR IN, DATA OUT) in a splitter', () => {
     it('emits data', async () => {
       const results = []
       const mp = new MoonPipe()
@@ -477,6 +477,33 @@ describe('Splitter.SpecialCases', () => {
       expect(results).to.eql([
         'on_busy',
         'err_101',
+        'err_102',
+        'on_idle',
+      ])
+    })
+  })
+
+  describe('filterError valve (ERROR IN, ERROR OUT) in a splitter', () => {
+    it('emits data', async () => {
+      const results = []
+      const mp = new MoonPipe()
+        .onBusy(() => results.push('on_busy'))
+        .splitBy(1, value => value % 1)
+        .queueMap(value => { throw new Error(value + 100) })
+        // .filterError(err => true)
+        .filterError(err => err.message === '102')
+        .queueError(err => {
+          results.push('err_' + err.message)
+        })
+        .join()
+        .onIdle(() => results.push('on_idle'))
+
+      mp.pump(1)
+      mp.pump(2)
+      await delayPromise(2)
+      expect(results).to.eql([
+        'on_busy',
+        // 'err_101',
         'err_102',
         'on_idle',
       ])
