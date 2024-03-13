@@ -1,5 +1,9 @@
 # Changelog
 
+### 2.4.0
+- Add a `cacheClearByResult` and `cacheUpdateByResult` methods
+- Catch errors thrown by the `hashFunction`
+
 ### 2.3.0
 - Move the `outputChannel` param from `presets` to the `.pipe` method
 
