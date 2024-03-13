@@ -3,9 +3,9 @@
 const unhandledCallback = (reason) => { throw reason }
 
 before(() => {
-  process.on('unhandledRejection', unhandledCallback);
+  process.on('unhandledRejection', unhandledCallback)
 })
 
 after(() => {
-  process.off('unhandledRejection', unhandledCallback);
+  process.off('unhandledRejection', unhandledCallback)
 })

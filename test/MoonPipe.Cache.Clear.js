@@ -220,7 +220,7 @@ describe('MoonPipe.Cache with Splitter', () => {
       }, { cache: true, name: 's-1st' })
       .queueTap(async (value) => {
         side_2.push(value)
-      }, { cache: true, name: 's-2nd' })
+      }, { cache: true, name: 's-2nd', hashFunction: (val) => 'derived_' +  val })
       .join()
       .queueTap(async (value) => {
         side_3.push(value)
@@ -324,6 +324,40 @@ describe('MoonPipe.Cache with Splitter', () => {
       return testInput(mp => mp.cacheClearOne('splitter', 20, 40), [
         [10, 20, 30, 40, null, undefined],
         [10, 20, 30, 40, null, undefined],
+        [],
+        [10, 20, 30, 40, null, undefined],
+      ])
+    })
+
+    it('throws for the cacheClearByResult', () => {
+      return testInput(mp => {
+        try {
+          mp.cacheClearByResult('splitter', (value, key) => true)
+          throw new Error('should have thrown')
+        }
+        catch (err) {
+          expect(err).to.have.property('message', 'cacheClearByResult is not supported on Splitters')
+        }
+      }, [
+        [],
+        [],
+        [],
+        [10, 20, 30, 40, null, undefined],
+      ])
+    })
+
+    it('throws for the cacheUpdateByResult', () => {
+      return testInput(mp => {
+        try {
+          mp.cacheUpdateByResult('splitter', (value, key) => null)
+          throw new Error('should have thrown')
+        }
+        catch (err) {
+          expect(err).to.have.property('message', 'cacheUpdateByResult is not supported on Splitters')
+        }
+      }, [
+        [],
+        [],
         [],
         [10, 20, 30, 40, null, undefined],
       ])
@@ -496,6 +530,118 @@ describe('MoonPipe.Cache with Splitter', () => {
         [10, 20, 30, 40, null, undefined],
         [10, 20, 30, 40, null, undefined],
         [10, 20, 30, 40, null, undefined],
+      ])
+    })
+  })
+
+  describe('ClearByResult at 2', () => {
+    it('clears out the cache in the second valve', async () => {
+      return testInput(mp => mp.cacheClearByResult('s-2nd', (res, key) => true), [
+        [],
+        [10, 20, 30, 40, null, undefined],
+        [],
+        [10, 20, 30, 40, null, undefined],
+      ])
+    })
+
+    it('clears out the cache in the second valve at key derived_20', async () => {
+      return testInput(mp => mp.cacheClearByResult('s-2nd', (res, key) => key === 'derived_20'), [
+        [],
+        [20],
+        [],
+        [10, 20, 30, 40, null, undefined],
+      ])
+    })
+
+    it('clears out the cache in the second valve at result 20', async () => {
+      return testInput(mp => mp.cacheClearByResult('s-2nd', (res, key) => res === 20), [
+        [],
+        [20],
+        [],
+        [10, 20, 30, 40, null, undefined],
+      ])
+    })
+
+    it('clears out the cache in the second valve at result 40', async () => {
+      return testInput(mp => mp.cacheClearByResult('s-2nd', (res, key) => res === 40), [
+        [],
+        [40],
+        [],
+        [10, 20, 30, 40, null, undefined],
+      ])
+    })
+
+    it('clears out the cache in the second valve at result null', async () => {
+      return testInput(mp => mp.cacheClearByResult('s-2nd', (res, key) => res === null), [
+        [],
+        [null],
+        [],
+        [10, 20, 30, 40, null, undefined],
+      ])
+    })
+
+    it('clears out the cache in the second valve at result undefined', async () => {
+      return testInput(mp => mp.cacheClearByResult('s-2nd', (res, key) => res === undefined), [
+        [],
+        [undefined],
+        [],
+        [10, 20, 30, 40, null, undefined],
+      ])
+    })
+  })
+
+  describe('UpdateByResult at 2', () => {
+    it('updates the cache in the second valve', async () => {
+      return testInput(mp => mp.cacheUpdateByResult('s-2nd', (res, key) => res), [
+        [],
+        [],
+        [],
+        [10, 20, 30, 40, null, undefined],
+      ])
+    })
+
+    it('updates the cache in the second valve at key derived_20', async () => {
+      return testInput(mp => mp.cacheUpdateByResult('s-2nd', (res, key) => key === 'derived_20' ? 200 : res), [
+        [],
+        [],
+        [200],
+        [10, 200, 30, 40, null, undefined],
+      ])
+    })
+
+    it('updates the cache in the second valve at result 20', async () => {
+      return testInput(mp => mp.cacheUpdateByResult('s-2nd', (res, key) => res === 20 ? 200 : res), [
+        [],
+        [],
+        [200],
+        [10, 200, 30, 40, null, undefined],
+      ])
+    })
+
+    it('updates the cache in the second valve at result 40', async () => {
+      return testInput(mp => mp.cacheUpdateByResult('s-2nd', (res, key) => res === 40 ? 400 : res), [
+        [],
+        [],
+        [400],
+        [10, 20, 30, 400, null, undefined],
+      ])
+    })
+
+    it('updates the cache in the second valve at result null', async () => {
+      return testInput(mp => mp.cacheUpdateByResult('s-2nd', (res, key) => res === null  ? 'hobo' : res), [
+        [],
+        [],
+        ['hobo'],
+        [10, 20, 30, 40, 'hobo', undefined],
+      ])
+    })
+
+    it('updates the cache in the second valve at result undefined', async () => {
+      return testInput(mp => mp.cacheUpdateByResult('s-2nd', (res, key) => res === undefined ? 'lobo': res), [
+        [],
+        [],
+        ['lobo'],
+        [10, 20, 30, 40, null, 'lobo'],
       ])
     })
   })

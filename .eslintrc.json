@@ -29,6 +29,7 @@
     "no-async-promise-executor": 1,
     "no-console": 2,
     "no-unused-vars": 1,
-    "no-use-before-define": ["error", "nofunc"]
+    "no-use-before-define": ["error", "nofunc"],
+    "semi": ["error", "never"]
   }
 }
