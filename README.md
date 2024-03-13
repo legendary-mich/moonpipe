@@ -10,6 +10,8 @@ Throttle streams of data while passing them through promises and timers. Use var
 - [PromiseValves](#promisevalves)
   - [Predefined PromiseValves](#predefined-promisevalves)
   - [Cache](#cache-in-promisevalves)
+    - [Cache invalidation](#cache-invalidation)
+    - [Custom hashFunction](#custom-hashfunction)
   - [Timeout](#timeout-in-promisevalves)
   - [Repeating on Error](#repeating-on-error-in-promisevalves)
   - [onCancel callback](#oncancel-callback-in-promisevalves)
@@ -349,7 +351,7 @@ the pipe will generate the following outputs, where the `side` label is the valu
 
 
 #### Cache in PromiseValves
-The result of a promise can be cached with the `cache: true` param provided to the options. Results are cached in a hash map, where by default the pumped value is used as the key. The way the keys are derived can be customized with a custom hash function (see down below).
+The `result` of a Promise can be cached with the `cache: true` param provided to the options. Results are cached in a hash map, where by default the pumped `value` is used as the `key`. The way the keys are derived can be customized with a custom hash function (see down below).
 ```javascript
 const { MoonPipe } = require('moonpipe')
 const mp = new MoonPipe()
@@ -374,16 +376,22 @@ mp.pump('a')
 // output: mapped_b
 // output: mapped_a <-- no side effect, because the value comes directly from the cache
 ```
-The cache can be invalidated later with one of the following:
+##### Cache invalidation
+The cache can be invalidated later with one of the following.
 ```javascript
 mp.cacheClearAll() // clears the entire cache in all valves.
 mp.cacheClearOne('bigJohn') // clears the entire cache in the valve named bigJohn.
 mp.cacheClearOne('littleJohn', 'a') // clears only the entry at the key derived from the value 'a' in the valve named littleJohn.
-mp.cacheClearOne('oldJohn', 'a', 'b') // clears entries at keys derived from values 'a' and 'b' in the valve at the valve named oldJohn.
+mp.cacheClearOne('oldJohn', 'a', 'b') // clears entries at keys derived from values 'a' and 'b' in the valve named oldJohn.
+mp.cacheClearByResult('JohnWayne', (result, key) => boolean) // clears results for which the predicate function returns true.
+mp.cacheUpdateByResult('DirtyHarry', (oldResult, key) => newResult) // swaps old results for new results in the DirtyHarry valve.
 ```
+Note the difference between the `value`, the `key`, and the `result`. The `value` is what goes into the Promise. The `result` is what comes out of the Promise. The `key` is a label for the `result` in the hash map; it is derived from the `value`.
+
 *If you are curious how running a method by a valve name acts on the `splitBy` valve, look at the [Clearing out buffers](#clearing-out-buffers) section.*
 
-You can also use a custom hash function to generate custom keys at which the values will be stored in cache.
+##### Custom hashFunction
+A Custom hash function can be used to generate custom `keys` at which promise `results` will be stored in the cache. Hash functions are useful when pumping arrays or objects, in which case the array/object reference would be used by default for the key. Hash functions can also be useful when doing a case-insensitive search.
 ```javascript
 const { MoonPipe } = require('moonpipe')
 const mp = new MoonPipe()
@@ -392,7 +400,7 @@ const mp = new MoonPipe()
     return 'mapped_' + val
   }, {
     cache: true,
-    hashFunction: (val) => val.toLowerCase(), // <--- HERE
+    hashFunction: (val) => val.toLowerCase(), // results will be stored at val.toLowerCase()
   })
   .queueTap(async (val) => {
     console.log('output:', val)
@@ -403,7 +411,7 @@ mp.pump('a')
 
 // ...side effect
 // output: mapped_A
-// output: mapped_A <-- a value from the cache at the key 'a'
+// output: mapped_A <-- a result from the cache at the key 'a'
 ```
 
 #### Timeout in PromiseValves
