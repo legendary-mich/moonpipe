@@ -26,6 +26,7 @@ Throttle streams of data while passing them through promises and timers. Use var
   - [onBusyTap (DEPRECATED)](#onbusytap-deprecated)
   - [onBusy](#onbusy)
   - [onIdle](#onidle)
+- [History](#history)
 - [Clearing out buffers](#clearing-out-buffers)
 - [SplitBy/Join](#splitbyjoin)
 - [Presets explained](#presets-explained)
@@ -739,6 +740,17 @@ mp.pump(2)
 // output: 1
 // output: 2
 // is NOT loading anymore
+```
+### History
+The most recently pumped value is kept in the history buffer. It can be pumped again with the `rePumpLast` method. The method is useful when you, for example, manually [update the cache](#cache-invalidation) and want to push the new value through afterwards.
+```javascript
+const mp = new MoonPipe()
+  .queueTap(val => console.log('// out: ', val))
+
+mp.pump('echo')
+mp.rePumpLast() // <--- HERE
+// out:  echo
+// out:  echo
 ```
 
 ### Clearing out buffers

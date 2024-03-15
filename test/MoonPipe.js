@@ -656,4 +656,74 @@ describe('MoonPipe', () => {
       }
     })
   })
+
+  describe('rePumpLast', () => {
+    it('throws when the history is empty', () => {
+      const mp = new MoonPipe()
+      try {
+        mp.rePumpLast()
+        throw new Error('should have thrown')
+      }
+      catch (err) {
+        expect(err).to.have.property('message', "The history buffer is empty")
+      }
+    })
+
+    it('re-pumps the 1st value', async () => {
+      const results = []
+      const mp = new MoonPipe()
+        .onBusy(() => results.push('busy'))
+        .onIdle(() => results.push('idle'))
+        .queueTap(val => results.push(val))
+
+      mp.pump(1)
+      mp.rePumpLast()
+      await delayPromise(2)
+      expect(results).to.eql(['busy', 1, 1, 'idle'])
+    })
+
+    it('re-pumps the 1st value twice', async () => {
+      const results = []
+      const mp = new MoonPipe()
+        .onBusy(() => results.push('busy'))
+        .onIdle(() => results.push('idle'))
+        .queueTap(val => results.push(val))
+
+      mp.pump(30)
+      mp.rePumpLast()
+      mp.rePumpLast()
+      await delayPromise(2)
+      expect(results).to.eql(['busy', 30, 30, 30, 'idle'])
+    })
+
+    it('re-pumps the 2nd value twice', async () => {
+      const results = []
+      const mp = new MoonPipe()
+        .onBusy(() => results.push('busy'))
+        .onIdle(() => results.push('idle'))
+        .queueTap(val => results.push(val))
+
+      mp.pump('c')
+      mp.pump('d')
+      mp.rePumpLast()
+      mp.rePumpLast()
+      await delayPromise(2)
+      expect(results).to.eql(['busy', 'c', 'd', 'd', 'd', 'idle'])
+    })
+
+    it('re-pumps the 1st and the 2nd value', async () => {
+      const results = []
+      const mp = new MoonPipe()
+        .onBusy(() => results.push('busy'))
+        .onIdle(() => results.push('idle'))
+        .queueTap(val => results.push(val))
+
+      mp.pump('hey')
+      mp.rePumpLast()
+      mp.pump('echo')
+      mp.rePumpLast()
+      await delayPromise(2)
+      expect(results).to.eql(['busy', 'hey', 'hey', 'echo', 'echo', 'idle'])
+    })
+  })
 })
