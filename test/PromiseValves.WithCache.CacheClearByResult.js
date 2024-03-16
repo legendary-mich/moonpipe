@@ -37,9 +37,57 @@ async function testInput(method, predicateFunc, expected) {
 
 describe('PromiseValves.WithCache.CacheClearByResult.js', () => {
 
+  describe('MoonPipe.queueMap', () => {
+    it('clears the cache by the VALUE', () => {
+      return testInput('queueMap', (val, key) => val === 101, [
+        'side_1',
+        'res_101',
+        'side_2',
+        'res_102',
+        'side_1',
+        'res_101',
+        'res_102',
+      ])
+    })
+
+    it('clears the cache by the KEY', () => {
+      return testInput('queueMap', (val, key) => key === 'derived_1', [
+        'side_1',
+        'res_101',
+        'side_2',
+        'res_102',
+        'side_1',
+        'res_101',
+        'res_102',
+      ])
+    })
+
+    it('does NOT clear the cache by the VALUE', () => {
+      return testInput('queueMap', (val, key) => val === 1, [
+        'side_1',
+        'res_101',
+        'side_2',
+        'res_102',
+        'res_101',
+        'res_102',
+      ])
+    })
+
+    it('does NOT clear the cache by the KEY', () => {
+      return testInput('queueMap', (val, key) => key === 'derived_101', [
+        'side_1',
+        'res_101',
+        'side_2',
+        'res_102',
+        'res_101',
+        'res_102',
+      ])
+    })
+  })
+
   describe('MoonPipe.queueTap', () => {
     it('clears the cache by the VALUE', () => {
-      return testInput('queueTap', (val, key) => val === 1, [
+      return testInput('queueTap', (val, key) => val === 101, [
         'side_1',
         'res_1',
         'side_2',
@@ -63,7 +111,7 @@ describe('PromiseValves.WithCache.CacheClearByResult.js', () => {
     })
 
     it('does NOT clear the cache by the VALUE', () => {
-      return testInput('queueTap', (val, key) => val === 14000, [
+      return testInput('queueTap', (val, key) => val === 1, [
         'side_1',
         'res_1',
         'side_2',
@@ -74,7 +122,7 @@ describe('PromiseValves.WithCache.CacheClearByResult.js', () => {
     })
 
     it('does NOT clear the cache by the KEY', () => {
-      return testInput('queueTap', (val, key) => key === 'derived_14000', [
+      return testInput('queueTap', (val, key) => key === 'derived_101', [
         'side_1',
         'res_1',
         'side_2',

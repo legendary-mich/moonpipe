@@ -377,7 +377,9 @@ mp.pump('a')
 // output: mapped_b
 // output: mapped_a <-- no side effect, because the value comes directly from the cache
 ```
-##### Cache invalidation
+In **Tap** valves, when cache is enabled, `results` returned from Promises are cached (not the pumped `values`). However, Tap valves always emit pumped `values` regardless of what is in the cache. The corollary is that the `cacheUpdateByResult` method makes no difference for **Tap** valves, both the `cacheUpdateByResult` and `cacheClearByResult` methods are always fed with the `results` returned from Promises.
+
+#### Cache invalidation
 The cache can be invalidated later with one of the following.
 ```javascript
 mp.cacheClearAll() // clears the entire cache in all valves.
@@ -391,7 +393,7 @@ Note the difference between the `value`, the `key`, and the `result`. The `value
 
 *If you are curious how running a method by a valve name acts on the `splitBy` valve, look at the [Clearing out buffers](#clearing-out-buffers) section.*
 
-##### Custom hashFunction
+#### Custom hashFunction
 A Custom hash function can be used to generate custom `keys` at which promise `results` will be stored in the cache. Hash functions are useful when pumping arrays or objects, in which case the array/object reference would be used by default for the key. Hash functions can also be useful when doing a case-insensitive search.
 ```javascript
 const { MoonPipe } = require('moonpipe')
