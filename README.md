@@ -380,7 +380,7 @@ mp.pump('a')
 In **Tap** valves, when cache is enabled, `results` returned from Promises are cached (not the pumped `values`). However, Tap valves always emit pumped `values` regardless of what is in the cache. The corollary is that the `cacheUpdateByResult` method makes no difference for **Tap** valves, both the `cacheUpdateByResult` and `cacheClearByResult` methods are always fed with the `results` returned from Promises.
 
 #### Cache invalidation
-The cache can be invalidated later with one of the following.
+The cache can be invalidated with one of the following.
 ```javascript
 mp.cacheClearAll() // clears the entire cache in all valves.
 mp.cacheClearOne('bigJohn') // clears the entire cache in the valve named bigJohn.
@@ -390,6 +390,10 @@ mp.cacheClearByResult('JohnWayne', (result, key) => boolean) // clears results f
 mp.cacheUpdateByResult('DirtyHarry', (oldResult, key) => newResult) // swaps old results for new results in the DirtyHarry valve.
 ```
 Note the difference between the `value`, the `key`, and the `result`. The `value` is what goes into the Promise. The `result` is what comes out of the Promise. The `key` is a label for the `result` in the hash map; it is derived from the `value`.
+
+In order to avoid race conditions the cache is invalidated in predictable moments. One such a moment is just before a Promise is created. There's nothing going on in that moment; the previous Promise has settled already, and a new one hasn't started yet, which makes it a perfect choice for cache invalidation. This means that the cache is invalidated **lazily**. When you call one of the `cacheClear` methods, you will see the effect only after the currently running Promise has settled, and just before a new Promise is created.
+
+In case of promise pools, the cache is invalidated only after all Promises in the pool have settled. This means that after calling one of the `cacheClear` methods, new Promises will not be created until all the currently running ones settle. Once all of them have settled, the cache is invalidated, and the pool is filled with a new set of Promises.
 
 *If you are curious how running a method by a valve name acts on the `splitBy` valve, look at the [Clearing out buffers](#clearing-out-buffers) section.*
 
