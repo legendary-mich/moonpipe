@@ -1,5 +1,13 @@
 # Changelog
 
+### 2.5.0
+- Add a `rePumpLast` method
+- From **Tap** valves always emit pumped `values`, regardless of what is in the **cache**
+- In **Tap** valves, when the **cache** is enabled, cache `results` returned from promises (previously the pumped `values` were cached)
+- Add some asynchronicity to results emitted from the **cache**
+- Clear the **cache** lazily in order to avoid race conditions
+- Bugfix: After the pipe recovers from an error, **pool** valves should resume at their full capacities
+
 ### 2.4.0
 - Add a `cacheClearByResult` and `cacheUpdateByResult` methods
 - Catch errors thrown by the `hashFunction`

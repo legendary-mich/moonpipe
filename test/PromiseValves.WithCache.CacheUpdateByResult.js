@@ -37,21 +37,75 @@ async function testInput(method, transformFunc, expected) {
 
 describe('PromiseValves.WithCache.CacheUpdateByResult.js', () => {
 
-  describe('MoonPipe.queueTap', () => {
+  describe('MoonPipe.queueMap', () => {
     it('updates the cache by the VALUE', () => {
-      return testInput('queueTap',
+      return testInput('queueMap',
+        (val, key) => val === 101 ? 'transformed_101' : val,
+        [
+          'side_1',
+          'res_101',
+          'side_2',
+          'res_102',
+          'res_transformed_101',
+          'res_102',
+        ])
+    })
+
+    it('updates the cache by the KEY', () => {
+      return testInput('queueMap',
+        (val, key) => key === 'derived_1' ? 'transformed_101' : val,
+        [
+          'side_1',
+          'res_101',
+          'side_2',
+          'res_102',
+          'res_transformed_101',
+          'res_102',
+        ])
+    })
+
+    it('does NOT update the cache by the VALUE', () => {
+      return testInput('queueMap',
         (val, key) => val === 1 ? 'transformed_1' : val,
+        [
+          'side_1',
+          'res_101',
+          'side_2',
+          'res_102',
+          'res_101',
+          'res_102',
+        ])
+    })
+
+    it('does NOT update the cache by the KEY', () => {
+      return testInput('queueMap',
+        (val, key) => key === 'derived_101' ? 'transformed_101' : val,
+        [
+          'side_1',
+          'res_101',
+          'side_2',
+          'res_102',
+          'res_101',
+          'res_102',
+        ])
+    })
+  })
+
+  describe('MoonPipe.queueTap', () => {
+    it('responds with the pumped value. The state of the cache is unknown', () => {
+      return testInput('queueTap',
+        (val, key) => val === 101 ? 'transformed_1' : val,
         [
           'side_1',
           'res_1',
           'side_2',
           'res_2',
-          'res_transformed_1',
+          'res_1',
           'res_2',
         ])
     })
 
-    it('updates the cache by the KEY', () => {
+    it('responds with the pumped value. The state of the cache is unknown', () => {
       return testInput('queueTap',
         (val, key) => key === 'derived_1' ? 'transformed_1' : val,
         [
@@ -59,14 +113,14 @@ describe('PromiseValves.WithCache.CacheUpdateByResult.js', () => {
           'res_1',
           'side_2',
           'res_2',
-          'res_transformed_1',
+          'res_1',
           'res_2',
         ])
     })
 
-    it('does NOT update the cache by the VALUE', () => {
+    it('responds with the pumped value. The state of the cache is unknown', () => {
       return testInput('queueTap',
-        (val, key) => val === 14000 ? 'transformed_14000' : val,
+        (val, key) => val === 1 ? 'transformed_101' : val,
         [
           'side_1',
           'res_1',
@@ -77,9 +131,9 @@ describe('PromiseValves.WithCache.CacheUpdateByResult.js', () => {
         ])
     })
 
-    it('does NOT update the cache by the KEY', () => {
+    it('responds with the pumped value. The state of the cache is unknown', () => {
       return testInput('queueTap',
-        (val, key) => key === 'derived_14000' ? 'transformed_14000' : val,
+        (val, key) => key === 'derived_101' ? 'transformed_101' : val,
         [
           'side_1',
           'res_1',
@@ -95,7 +149,7 @@ describe('PromiseValves.WithCache.CacheUpdateByResult.js', () => {
     it('throws an error', async () => {
       const results = []
       const pipe = new MoonPipe()
-        .queueTap(async val => val, {
+        .queueMap(async val => val, {
           name: 'first valve',
           cache: true,
         })

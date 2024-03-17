@@ -16,7 +16,7 @@ async function testInput(method, poolSize, expected) {
     },
   })
     .queueTap(async (value) => {
-      results.push('err_' + value)
+      results.push('res_' + value)
     })
     .queueError(async (err) => {
       await delayPromise(2)

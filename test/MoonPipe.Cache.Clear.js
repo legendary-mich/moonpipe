@@ -152,8 +152,9 @@ describe('MoonPipe.Cache', () => {
       let side_2 = []
       let result = []
       const mp = new MoonPipe()
-        .queueTap(async (value) => {
+        .queueMap(async (value) => {
           side_1.push(value)
+          return value
         }, {
           name: '1st',
           cache: true,
@@ -215,16 +216,19 @@ describe('MoonPipe.Cache with Splitter', () => {
     let result = []
     const mp = new MoonPipe()
       .splitBy(1, () => 'wahtever', { name: 'splitter' })
-      .queueTap(async (value) => {
+      .queueMap(async (value) => {
         side_1.push(value)
+        return value
       }, { cache: true, name: 's-1st' })
-      .queueTap(async (value) => {
+      .queueMap(async (value) => {
         side_2.push(value)
+        return value
       }, { cache: true, name: 's-2nd', hashFunction: (val) => 'derived_' +  val })
       .join()
-      .queueTap(async (value) => {
+      .queueMap(async (value) => {
         side_3.push(value)
-      }, { cache: true, name: 'tap-1st' })
+        return value
+      }, { cache: true, name: 'map-1st' })
       .queueTap(async (value) => {
         result.push(value)
       })
@@ -496,7 +500,7 @@ describe('MoonPipe.Cache with Splitter', () => {
 
   describe('ClearOne at 3', () => {
     it('clears out the cache in the third valve', async () => {
-      return testInput(mp => mp.cacheClearOne('tap-1st'), [
+      return testInput(mp => mp.cacheClearOne('map-1st'), [
         [],
         [],
         [10, 20, 30, 40, null, undefined],
@@ -505,7 +509,7 @@ describe('MoonPipe.Cache with Splitter', () => {
     })
 
     it('clears out the cache in the third valve at key 20', async () => {
-      return testInput(mp => mp.cacheClearOne('tap-1st', 20), [
+      return testInput(mp => mp.cacheClearOne('map-1st', 20), [
         [],
         [],
         [20],
@@ -514,7 +518,7 @@ describe('MoonPipe.Cache with Splitter', () => {
     })
 
     it('clears out the cache in the third valve at key 40', async () => {
-      return testInput(mp => mp.cacheClearOne('tap-1st', 40), [
+      return testInput(mp => mp.cacheClearOne('map-1st', 40), [
         [],
         [],
         [40],
