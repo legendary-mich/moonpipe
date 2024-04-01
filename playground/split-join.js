@@ -7,12 +7,19 @@ const mp = new MoonPipe()
   .throttleMap(async value => value) //  ||
   .join()                            //  \/
   .queueTap(value => {
-    console.log('// queue   ', value)
+    console.log('//', value)
   })
 
-mp.pump({ id: 1, n: 'a' })
-mp.pump({ id: 1, n: 'b' })
-mp.pump({ id: 1, n: 'c' })
-mp.pump({ id: 2, n: 'e' })
-mp.pump({ id: 2, n: 'f' })
-mp.pump({ id: 2, n: 'g' })
+console.log('// output:')
+mp.pump({ id: 1, n: 'start' })
+mp.pump({ id: 1, n: 'middle' })
+mp.pump({ id: 1, n: 'end' })
+mp.pump({ id: 2, n: 'start' })
+mp.pump({ id: 2, n: 'middle' })
+mp.pump({ id: 2, n: 'end' })
+
+// output:
+// { id: 1, n: 'start' }
+// { id: 2, n: 'start' }
+// { id: 1, n: 'end' }
+// { id: 2, n: 'end' }

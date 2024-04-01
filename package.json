@@ -1,11 +1,13 @@
 {
   "name": "moonpipe",
-  "version": "2.5.0",
+  "version": "2.5.1",
   "description": "Throttle streams of data while passing them through promises an timers. Use various valves to discard redundant data points.",
   "license": "MIT",
   "author": "Michał Wojciechowski",
   "main": "index.js",
+  "types": "./types/index.d.ts",
   "scripts": {
+    "build": "tsc",
     "lint": "eslint lib test",
     "test": "mocha -t 5000 -w -b test/**/*.js",
     "test-selected": "mocha -t 5000 -w -b",
@@ -17,7 +19,8 @@
     "eslint": "^8.52.0",
     "mocha": "^10.2.0",
     "nyc": "^15.1.0",
-    "sinon": "^17.0.0"
+    "sinon": "^17.0.0",
+    "typescript": "^5.4.3"
   },
   "homepage": "https://github.com/legendary-mich/moonpipe",
   "repository": {

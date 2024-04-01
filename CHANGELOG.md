@@ -1,5 +1,9 @@
 # Changelog
 
+### 2.5.1
+- Add JSDoc comments
+- Generate TypeScript declaration files
+
 ### 2.5.0
 - Add a `rePumpLast` method
 - From **Tap** valves always emit pumped `values`, regardless of what is in the **cache**

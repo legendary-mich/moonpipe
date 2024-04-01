@@ -34,6 +34,8 @@ Throttle streams of data while passing them through promises and timers. Use var
   - [TimeValve Preset Params](#timevalve-preset-params)
   - [PromiseValve Preset Params](#promisevalve-preset-params)
 - [Utilities](#utilities)
+- [TypeScript](#typescript)
+  - [Type system limitations](#type-system-limitations)
 - [Versioning](#versioning)
 - [Contributing](#contributing)
 
@@ -65,6 +67,9 @@ mp.pump('d')
 ```
 
 ## Predefined valves
+
+The easiest way to start with moonpipe is to understand the naming convention behind predefined valves. Most of the predefined valves are descendants of either a **TimveValve**, or a **PromiseValve**. You will tell them apart by the suffix in the name. Predefined **PromiseValves** end with the **Tap**, **Map**, and **Error** suffixes, whereas predefined **TimeValves** end with the **Eager** and **Lazy** suffixes.
+
 ```
 queueTap    queueMap    queueEager    queueLazy    queueError
 cancelTap   cancelMap   cancelEager   cancelLazy   cancelError
@@ -76,16 +81,14 @@ splitBy     join
 flatten     map         filter        filterError
 ```
 
-Among the predefined valves there are 4 synchronous valves **(flatten, map, filter, filterError)**, and 20+4+2+2 asynchronous valves. The names of the asynchronous valves consist of a prefix and a suffix. There are 5 different prefixes **(queue, cancel, throttle, skip, slice, pool)**, and 5 different suffixes **(Map, Tap, Eager, Lazy, Error)**.
-
-The valves with the **Map**, **Tap**, and **Error** suffixes operate on **Promises**, whereas the valves with the **Eager** and **Lazy** suffixes operate on **Timeouts**.
+Prefixes, on the other hand, are common to both types of valves. They define how pumped values are treated internally.
 
 Prefixes:
 - **queue** - queues every pumped value, and processes one after another
 - **cancel** - cancels the running promise/timeout and replaces the current value with the new one
 - **throttle** - replaces the value next in line with the new one, and does not cancel the promise/timeout
 - **skip** - skips every new value until the promise/timeout finishes
-- **slice** - packs values into an array of the defined slice size
+- **slice** - packs values into arrays of the defined slice size, and processes one slice after another
 - **pool** - runs promises concurrently with the predefined pool size
 
 Suffixes:
@@ -150,7 +153,7 @@ What follows is a list of all the predefined TimeValves. Most of them take a num
 TimeValves are added to the pipe like this:
 ```javascript
 const mp = new MoonPipe()
-  .queueEager(1000) // <----------- HERE
+  .queueEager(1000)
   .queueTap(async (val) => console.log('// output:', val))
 ```
 
@@ -281,7 +284,7 @@ const factory2 = (val) => Promise.resolve(val.toUpperCase())
 PromiseValves are added to the pipe like this:
 ```javascript
 const mp = new MoonPipe()
-  .queueMap(async (val) => val.toUpperCase()) // <----------- HERE
+  .queueMap(async (val) => val.toUpperCase())
   .queueTap(async (val) => console.log('// output:', val))
 ```
 
@@ -791,19 +794,22 @@ const mp = new MoonPipe()
   .throttleMap(async value => value) //  ||
   .join()                            //  \/
   .queueTap(value => {
-    console.log('// queue   ', value)
+    console.log('//', value)
   })
 
-mp.pump({ id: 1, n: 'a' })
-mp.pump({ id: 1, n: 'b' })
-mp.pump({ id: 1, n: 'c' })
-mp.pump({ id: 2, n: 'e' })
-mp.pump({ id: 2, n: 'f' })
-mp.pump({ id: 2, n: 'g' })
+console.log('// output:')
+mp.pump({ id: 1, n: 'start' })
+mp.pump({ id: 1, n: 'middle' })
+mp.pump({ id: 1, n: 'end' })
+mp.pump({ id: 2, n: 'start' })
+mp.pump({ id: 2, n: 'middle' })
+mp.pump({ id: 2, n: 'end' })
 
 // output:
-// queue    { id: 1, n: 'c' }
-// queue    { id: 2, n: 'g' }
+// { id: 1, n: 'start' }
+// { id: 2, n: 'start' }
+// { id: 1, n: 'end' }
+// { id: 2, n: 'end' }
 ```
 
 Note that the `splitBy` valves can be nested. The following example creates 2 concurrent pipes, and for each of the 2 created pipes creates another 2, which gives you a fork with 4 teeth.
@@ -863,6 +869,38 @@ async function run() {
   await delayPromise(2000)
 }
 ```
+
+## TypeScript
+TypeScript is supported via declaration files, which are generated from JSDoc comments, and included in the `./types` folder. Proper types are defined only for the public part of the `MoonPipe` class, but they should cover all common use cases. The central point is the `MoonPipe<D_IN, D_OUT>` class. It takes 2 generic parameters `D_IN` and `D_OUT`. The first one is what you pump to the pipe: `mp.pump(value: D_IN)`, the second one is the input type of the next valve. You don't have to worry about the `D_OUT` param. The important thing is that when you declare your pipe, both `D_IN` and `D_OUT` params should be set to the same type.
+```typescript
+const m1: MoonPipe<number, number> = new MoonPipe()
+const m2: MoonPipe<string, string> = new MoonPipe()
+```
+Another important thing is that, if you want to get the types correctly, you must first instantiate the pipe, and start chaining only in the second step. Otherwise you will not be able to fully benefit from the type system.
+```typescript
+// correct:
+// instantiate first
+const m1: MoonPipe<number, number> = new MoonPipe()
+// start chaining later
+m1.queueMap(async val => true)
+  .queueMap(async val => 'a')
+
+// wrong:
+// instantiate and start chaining right away
+const m2: MoonPipe<unknown, string> = new MoonPipe()
+  .queueMap(async () => true)
+  .queueMap(async () => 'a')
+// The type of the pipe in this example is determined by the last call
+// to the queueMap method. The last queueMap changes the type of the
+// pipe to MoonPipe<D_IN, string>. D_IN was not known at the time when
+// m2 was instantiated, and so it will stay unknown forever.
+```
+
+### Type system limitations
+MoonPipe is a JavaScript library. JavaScript type system is more flexible than TypeScript. Because of that some of the types cannot be represented correctly. Here is a full list of things that are off:
+- The `pipe` method returns `MoonPipe<D_IN, any>`. It swallows the type information carried by the `D_OUT` param.
+- The `flatten` method returns `MoonPipe<D_IN, any>`. It swallows the type information carried by the `D_OUT` param.
+- The `flatten` method is not type safe. In a perfect world, you shouldn't be able to call it when the `D_OUT` param is not an `Array`. The current implementation always lets you do this, which means that it can emit an error if you are not careful.
 
 ## Versioning
 The package follows **Semantic Versioning**, which means that given a version number `MAJOR.MINOR.PATCH`, the components will be incremented as follows:
