@@ -10,6 +10,7 @@ export class MoonPipe<D_IN, D_OUT> {
         onBusyTap: any;
         onBusy: any;
         onIdle: any;
+        resolve: any;
         busyIdleLatch: Latch;
         onData: any;
         onError: any;
@@ -69,6 +70,10 @@ export class MoonPipe<D_IN, D_OUT> {
      * @returns {void}
      */
     rePumpLast(): void;
+    /**
+     * @returns {Promise<void>}
+     */
+    getOnIdlePromise(): Promise<void>;
     /**
      * For INTERNAL use only.
      * @private

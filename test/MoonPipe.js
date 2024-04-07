@@ -726,4 +726,92 @@ describe('MoonPipe', () => {
       expect(results).to.eql(['busy', 'hey', 'hey', 'echo', 'echo', 'idle'])
     })
   })
+
+  describe('getOnIdlePromise', () => {
+    it('throws when called twice', async () => {
+      try {
+        const mp = new MoonPipe().queueTap(() => {})
+        mp.pump(1)
+        mp.getOnIdlePromise()
+        mp.getOnIdlePromise()
+      }
+      catch (err) {
+        expect(err).to.have.property('message', 'Only one onIdlePromise allowed')
+      }
+    })
+
+    it('does not throw when called twice and the first call is awaited', async () => {
+      const mp = new MoonPipe().queueTap(() => {})
+      mp.pump(1)
+      await mp.getOnIdlePromise()
+      mp.getOnIdlePromise()
+    })
+
+    it('ensures a correct execution order of 2 pipes', async () => {
+      const results = []
+      const m1 = new MoonPipe().queueTap(async val => {
+        await delayPromise(1)
+        results.push('m1: ' + val)
+      }).onIdle(() => results.push('m1: idle'))
+
+      const m2 = new MoonPipe().queueTap(async val => {
+        await delayPromise(1)
+        results.push('m2: ' + val)
+      }).onIdle(() => results.push('m2: idle'))
+
+      m1.pump('a')
+      m1.pump('b')
+      await m1.getOnIdlePromise()
+      m2.pump('c')
+      m2.pump('d')
+      await m2.getOnIdlePromise()
+
+      expect(results).to.eql([
+        'm1: a',
+        'm1: b',
+        'm1: idle',
+        'm2: c',
+        'm2: d',
+        'm2: idle',
+      ])
+    })
+
+    it('resolves even if an error is thrown', async () => {
+      const results = []
+      const m1 = new MoonPipe().queueTap(async val => {
+        await delayPromise(1)
+        results.push('m1: ' + val)
+        throw new Error('hey')
+      }).onIdle(() => results.push('m1: idle'))
+
+      const m2 = new MoonPipe().queueTap(async val => {
+        await delayPromise(1)
+        results.push('m2: ' + val)
+        throw new Error(val + '_ho')
+      })
+        .queueError(async err => {
+          await delayPromise(1)
+          results.push('m2: ' + err.message)
+        })
+        .onIdle(() => results.push('m2: idle'))
+
+      m1.pump('a')
+      m1.pump('b')
+      await m1.getOnIdlePromise()
+      m2.pump('c')
+      m2.pump('d')
+      await m2.getOnIdlePromise()
+
+      expect(results).to.eql([
+        'm1: a',
+        'm1: b',
+        'm1: idle',
+        'm2: c',
+        'm2: c_ho',
+        'm2: d',
+        'm2: d_ho',
+        'm2: idle',
+      ])
+    })
+  })
 })
