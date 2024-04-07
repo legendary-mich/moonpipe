@@ -1,5 +1,8 @@
 # Changelog
 
+### 2.6.0
+Add a `getOnIdlePromise` method
+
 ### 2.5.1
 - Add JSDoc comments
 - Generate TypeScript declaration files

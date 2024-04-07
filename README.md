@@ -27,6 +27,7 @@ Throttle streams of data while passing them through promises and timers. Use var
   - [onBusy](#onbusy)
   - [onIdle](#onidle)
 - [History](#history)
+- [As Promise](#as-promise)
 - [Clearing out buffers](#clearing-out-buffers)
 - [SplitBy/Join](#splitbyjoin)
 - [Presets explained](#presets-explained)
@@ -761,6 +762,19 @@ mp.rePumpLast() // <--- HERE
 // out:  echo
 // out:  echo
 ```
+
+## As Promise
+An instance of MoonPipe can be `awaited` with the `getOnIdlePromise()` method.
+```javascript
+async function example() {
+  const mp = new MoonPipe().queueTap(() => {})
+  mp.pump(1)
+  await mp.getOnIdlePromise()
+}
+```
+The `getOnIdlePromise()` method returns a `Promise` that is resolved when the pipe has nothing more to do. The OnIdlePromise is meant only as a simple synchronization mechanism. It is never rejected, as errors do not propagate to the `onIdle` stage. It is resolved when the pipe turns `idle`.
+
+Beware that the pipe turns `idle` only if it first was `busy`. If you await a pipe that has never been `busy`, you will wait forever. A similar gotcha you will encounter when your pipe consists of only `synchronous` valves. In this case you will not be able to `await` the pipe, because the pipe turns `idle` even before you get to call the `getOnidlepromise()` method.
 
 ## Clearing out buffers
 Sometimes you may want to stop the pipe, or a valve, from what it's doing and remove every pumped value that waits for its turn. Methods that do that are `buffersClearAll()`, and `buffersClearOne(valveName)`. `buffersClearAll()` removes every value from the entire pipe, whereas `buffersClearOne(valveName)` removes every value from a single valve or a single splitter. In addition to clearing out buffers, the mentioned methods cancel `active promises` in `PromiseValves`, and `active timeouts` in `TimeValves`. Notice that the `splitBy` valve is special, as clearing buffers (or the cache) on it applies to everything that's between `splitBy` and `join`.
