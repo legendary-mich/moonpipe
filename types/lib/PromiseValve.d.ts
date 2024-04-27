@@ -30,12 +30,7 @@ export class PromiseValve extends PromiseValve_base {
     constructor(preset: any, promiseFactory: any);
     cancelOnPump: any;
     resolveType: any;
-    cache: {
-        enabled: any;
-        hashFunction: any;
-        results: Map<any, any>;
-    };
-    cleanupActions: any[];
+    cache: Cache;
     promiseFactory: any;
     promisePool: any[];
     poolSize: any;
@@ -169,6 +164,7 @@ declare namespace sliceMap {
     export function repeatBackoffFactory_4(): ConstantBackoff;
     export { repeatBackoffFactory_4 as repeatBackoffFactory };
 }
+import { Cache } from "./Cache.js";
 import { MAX_ARRAY_SIZE } from "./BaseValve.js";
 import { ConstantBackoff } from "./Backoff.js";
 export declare namespace PromisePresets {
