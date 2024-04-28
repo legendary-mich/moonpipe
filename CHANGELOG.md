@@ -1,5 +1,9 @@
 # Changelog
 
+### 2.7.0
+Add a `Cache` class and move the `cleanupActions` to it
+Add a `cachePopulate` method
+
 ### 2.6.0
 Add a `getOnIdlePromise` method
 
