@@ -171,6 +171,174 @@ describe('MoonPipe', () => {
     })
   })
 
+  describe('cacheClearByResult', () => {
+    it('throws for a missing valveName', () => {
+      const moonPipe = new MoonPipe()
+      try {
+        moonPipe.cacheClearByResult()
+        throw new Error('should have thrown')
+      }
+      catch (err) {
+        expect(err).to.have.property('message', "Expected valveName to be a 'string'; found: undefined")
+      }
+    })
+
+    it('throws for valveName not being a string', () => {
+      const moonPipe = new MoonPipe().queueLazy(1).queueLazy(1)
+      try {
+        moonPipe.cacheClearByResult(2)
+        throw new Error('should have thrown')
+      }
+      catch (err) {
+        expect(err).to.have.property('message', "Expected valveName to be a 'string'; found: 2")
+      }
+    })
+
+    it('throws if a valve with a given valveName is missing', () => {
+      const moonPipe = new MoonPipe().queueLazy(1).queueLazy(1)
+      try {
+        moonPipe.cacheClearByResult('valve-1')
+        throw new Error('should have thrown')
+      }
+      catch (err) {
+        expect(err).to.have.property('message', "A valve named: 'valve-1' does not exist")
+      }
+    })
+
+    it('throws if called on a timeValve', () => {
+      try {
+        const moonPipe = new MoonPipe().queueEager(1, { name: 'valve-1' })
+        moonPipe.cacheClearByResult('valve-1')
+        throw new Error('should have thrown')
+      }
+      catch (err) {
+        expect(err).to.have.property('message', 'cacheClearByResult is supported only on PromiseValves')
+      }
+    })
+
+    it('throws if called on a synchronousValve', () => {
+      try {
+        const moonPipe = new MoonPipe().map(() => 'zz', { name: 'valve-3' })
+        moonPipe.cacheClearByResult('valve-3')
+      }
+      catch (err) {
+        expect(err).to.have.property('message', 'cacheClearByResult is supported only on PromiseValves')
+      }
+    })
+  })
+
+  describe('cacheUpdateByResult', () => {
+    it('throws for a missing valveName', () => {
+      const moonPipe = new MoonPipe()
+      try {
+        moonPipe.cacheUpdateByResult()
+        throw new Error('should have thrown')
+      }
+      catch (err) {
+        expect(err).to.have.property('message', "Expected valveName to be a 'string'; found: undefined")
+      }
+    })
+
+    it('throws for valveName not being a string', () => {
+      const moonPipe = new MoonPipe().queueLazy(1).queueLazy(1)
+      try {
+        moonPipe.cacheUpdateByResult(2)
+        throw new Error('should have thrown')
+      }
+      catch (err) {
+        expect(err).to.have.property('message', "Expected valveName to be a 'string'; found: 2")
+      }
+    })
+
+    it('throws if a valve with a given valveName is missing', () => {
+      const moonPipe = new MoonPipe().queueLazy(1).queueLazy(1)
+      try {
+        moonPipe.cacheUpdateByResult('valve-1')
+        throw new Error('should have thrown')
+      }
+      catch (err) {
+        expect(err).to.have.property('message', "A valve named: 'valve-1' does not exist")
+      }
+    })
+
+    it('throws if called on a timeValve', () => {
+      try {
+        const moonPipe = new MoonPipe().queueEager(1, { name: 'valve-1' })
+        moonPipe.cacheUpdateByResult('valve-1')
+        throw new Error('should have thrown')
+      }
+      catch (err) {
+        expect(err).to.have.property('message', 'cacheUpdateByResult is supported only on PromiseValves')
+      }
+    })
+
+    it('throws if called on a synchronousValve', () => {
+      try {
+        const moonPipe = new MoonPipe().map(() => 'zz', { name: 'valve-3' })
+        moonPipe.cacheUpdateByResult('valve-3')
+      }
+      catch (err) {
+        expect(err).to.have.property('message', 'cacheUpdateByResult is supported only on PromiseValves')
+      }
+    })
+  })
+
+  describe('cachePopulate', () => {
+    it('throws for a missing valveName', () => {
+      const moonPipe = new MoonPipe()
+      try {
+        moonPipe.cachePopulate()
+        throw new Error('should have thrown')
+      }
+      catch (err) {
+        expect(err).to.have.property('message', "Expected valveName to be a 'string'; found: undefined")
+      }
+    })
+
+    it('throws for valveName not being a string', () => {
+      const moonPipe = new MoonPipe().queueLazy(1).queueLazy(1)
+      try {
+        moonPipe.cachePopulate(2)
+        throw new Error('should have thrown')
+      }
+      catch (err) {
+        expect(err).to.have.property('message', "Expected valveName to be a 'string'; found: 2")
+      }
+    })
+
+    it('throws if a valve with a given valveName is missing', () => {
+      const moonPipe = new MoonPipe().queueLazy(1).queueLazy(1)
+      try {
+        moonPipe.cachePopulate('valve-1')
+        throw new Error('should have thrown')
+      }
+      catch (err) {
+        expect(err).to.have.property('message', "A valve named: 'valve-1' does not exist")
+      }
+    })
+
+    it('throws if called on a timeValve', () => {
+      try {
+        const moonPipe = new MoonPipe().queueEager(1, { name: 'valve-1' })
+        moonPipe.cachePopulate('valve-1')
+        throw new Error('should have thrown')
+      }
+      catch (err) {
+        expect(err).to.have.property('message', 'cachePopulate is supported only on PromiseValves')
+      }
+    })
+
+    it('throws if called on a synchronousValve', () => {
+      try {
+        const moonPipe = new MoonPipe().map(() => 'zz', { name: 'valve-3' })
+        moonPipe.cachePopulate('valve-3')
+      }
+      catch (err) {
+        expect(err).to.have.property('message', 'cachePopulate is supported only on PromiseValves')
+      }
+    })
+  })
+
   describe('options in', () => {
     describe('promise valves', () => {
       function testCase(method) {

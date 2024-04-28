@@ -25,6 +25,7 @@ export class Splitter {
     cacheClearOne(valveName: any, ...values: any[]): void;
     cacheClearByResult(valveName: any, predicateFunc: any): void;
     cacheUpdateByResult(valveName: any, transformFunc: any): void;
+    cachePopulate(valveName: any, value: any, result: any): void;
 }
 import { MoonPipe } from "./MoonPipe.js";
 export declare namespace SplitterPresets {
