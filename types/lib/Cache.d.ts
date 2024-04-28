@@ -13,4 +13,5 @@ export class Cache {
     clear(): void;
     clearByResult(predicateFunc: any): void;
     updateByResult(transformFunc: any): void;
+    populate(value: any, result: any): void;
 }

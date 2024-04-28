@@ -37,6 +37,7 @@ export class PromiseValve extends PromiseValve_base {
     clone(): PromiseValve;
     cacheClearByResult(predicateFunc: any): void;
     cacheUpdateByResult(transformFunc: any): void;
+    cachePopulate(value: any, result: any): void;
     poolAdd(promise: any): void;
     poolRemove(promise: any): void;
     poolClear(): void;

@@ -11,6 +11,7 @@ Throttle streams of data while passing them through promises and timers. Use var
   - [Predefined PromiseValves](#predefined-promisevalves)
   - [Cache](#cache-in-promisevalves)
     - [Cache invalidation](#cache-invalidation)
+    - [Cache populate](#cache-populate)
     - [Custom hashFunction](#custom-hashfunction)
   - [Timeout](#timeout-in-promisevalves)
   - [Repeating on Error](#repeating-on-error-in-promisevalves)
@@ -400,6 +401,26 @@ In order to avoid race conditions the cache is invalidated in predictable moment
 In case of promise pools, the cache is invalidated only after all Promises in the pool have settled. This means that after calling one of the `cacheClear` methods, new Promises will not be created until all the currently running ones settle. Once all of them have settled, the cache is invalidated, and the pool is filled with a new set of Promises.
 
 *If you are curious how running a method by a valve name acts on the `splitBy` valve, look at the [Clearing out buffers](#clearing-out-buffers) section.*
+
+#### Cache populate
+The cache can be populated by hand. The `cachePopulate(valveName, value, result)` method takes 3 arguments: the name of the valve, a `value` for which the `result` will be cached, and the `result`. The `result` will be cached at a `key` derived from the `value` passed through the `hashFunction` the same way it is done in the regular flow.
+```javascript
+const mp = new MoonPipe()
+  .queueMap(async (val) => 'mapped_' + val, {
+    cache: true,
+    name: 'bigJohn',
+  })
+  .queueTap(async (val) => {
+    console.log('// output:', val)
+  })
+
+mp.cachePopulate('bigJohn', 'a', 'zzz')
+mp.pump('a')
+mp.pump('b')
+
+// output: zzz
+// output: mapped_b
+```
 
 #### Custom hashFunction
 A Custom hash function can be used to generate custom `keys` at which promise `results` will be stored in the cache. Hash functions are useful when pumping arrays or objects, in which case the array/object reference would be used by default for the key. Hash functions can also be useful when doing a case-insensitive search.

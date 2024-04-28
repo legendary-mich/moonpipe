@@ -103,6 +103,17 @@ describe('CacheClear.RaceConditions.js', () => {
     })
   })
 
+  describe('cachePopulate', () => {
+    it('populates the cache after the first promise settles', () => {
+      return testInput(mp => mp.cachePopulate('racer', 'c', 'zzz'), [
+        'side_c',
+        'clear',
+        'res_1',
+        'res_zzz',
+      ])
+    })
+  })
+
   describe('with a pool', () => {
 
     async function testInput(method, expected) {

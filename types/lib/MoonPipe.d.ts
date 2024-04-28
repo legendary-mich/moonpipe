@@ -190,6 +190,13 @@ export class MoonPipe<D_IN, D_OUT> {
      */
     cacheUpdateByResult(valveName: string, transformFunc: (arg0: any, arg1: any) => any): void;
     /**
+     * @param {string} valveName
+     * @param {*} value
+     * @param {*} result
+     * @returns {void}
+     */
+    cachePopulate(valveName: string, value: any, result: any): void;
+    /**
      * @deprecated
      * @param {function(D_IN): void} callback
      * @returns {MoonPipe<D_IN, D_OUT>}

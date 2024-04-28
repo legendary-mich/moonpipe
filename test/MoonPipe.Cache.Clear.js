@@ -366,6 +366,23 @@ describe('MoonPipe.Cache with Splitter', () => {
         [10, 20, 30, 40, null, undefined],
       ])
     })
+
+    it('throws for the cachePopulate', () => {
+      return testInput(mp => {
+        try {
+          mp.cachePopulate('splitter', 10, 20)
+          throw new Error('should have thrown')
+        }
+        catch (err) {
+          expect(err).to.have.property('message', 'cachePopulate is not supported on Splitters')
+        }
+      }, [
+        [],
+        [],
+        [],
+        [10, 20, 30, 40, null, undefined],
+      ])
+    })
   })
 
   describe('ClearOne at 1', () => {
@@ -642,6 +659,45 @@ describe('MoonPipe.Cache with Splitter', () => {
 
     it('updates the cache in the second valve at result undefined', async () => {
       return testInput(mp => mp.cacheUpdateByResult('s-2nd', (res, key) => res === undefined ? 'lobo': res), [
+        [],
+        [],
+        ['lobo'],
+        [10, 20, 30, 40, null, 'lobo'],
+      ])
+    })
+  })
+
+  describe('Populate at 2', () => {
+
+    it('populates the cache in the second valve at 10', async () => {
+      return testInput(mp => mp.cachePopulate('s-2nd', 10, 'zzz'), [
+        [],
+        [],
+        ['zzz'],
+        ['zzz', 20, 30, 40, null, undefined],
+      ])
+    })
+
+    it('populates the cache in the second valve at 20', async () => {
+      return testInput(mp => mp.cachePopulate('s-2nd', 20, 'lll'), [
+        [],
+        [],
+        ['lll'],
+        [10, 'lll', 30, 40, null, undefined],
+      ])
+    })
+
+    it('populates the cache in the second valve at null', async () => {
+      return testInput(mp => mp.cachePopulate('s-2nd', null, 'hobo'), [
+        [],
+        [],
+        ['hobo'],
+        [10, 20, 30, 40, 'hobo', undefined],
+      ])
+    })
+
+    it('populates the cache in the second valve at undefined', async () => {
+      return testInput(mp => mp.cachePopulate('s-2nd', undefined, 'lobo'), [
         [],
         [],
         ['lobo'],
