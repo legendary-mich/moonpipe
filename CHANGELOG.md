@@ -1,5 +1,10 @@
 # Changelog
 
+### 2.8.0
+Add `onBusyBy`/`onIdleBy` methods
+Use Maps for activePipes and dataBuckets in the Splitter
+Replace the shared cache with assignedPipes in the Splitter
+
 ### 2.7.0
 Add a `Cache` class and move the `cleanupActions` to it
 Add a `cachePopulate` method
