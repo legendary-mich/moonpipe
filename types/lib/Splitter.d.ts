@@ -12,6 +12,10 @@ export class Splitter {
     activePipes: Map<any, any>;
     assignedPipes: Map<any, any>;
     dataBuckets: Map<any, any>;
+    hooks: {
+        onBusyBy: any;
+        onIdleBy: any;
+    };
     clone(): Splitter;
     get hasName(): boolean;
     pipe(valve: any, inputChannel: any, outputChannel: any): this;
