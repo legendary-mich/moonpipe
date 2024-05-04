@@ -15,8 +15,13 @@ export class MoonPipe<D_IN, D_OUT> {
         onData: any;
         onError: any;
     };
-    splittersOnTheStack: number;
-    gatewaySplitter: any;
+    splittersStack: any[];
+    /**
+     * For INTERNAL use only.
+     * @returns {Splitter|null}
+     * @private
+     */
+    private get gatewaySplitter();
     /**
      * @param {string} [channelType]
      * @returns {boolean}
@@ -212,6 +217,16 @@ export class MoonPipe<D_IN, D_OUT> {
      * @returns {MoonPipe<D_IN, D_OUT>}
      */
     onIdle(callback: () => void): MoonPipe<D_IN, D_OUT>;
+    /**
+     * @param {function(*): void} callback
+     * @returns {MoonPipe<D_IN, D_OUT>}
+     */
+    onBusyBy(callback: (arg0: any) => void): MoonPipe<D_IN, D_OUT>;
+    /**
+     * @param {function(*): void} callback
+     * @returns {MoonPipe<D_IN, D_OUT>}
+     */
+    onIdleBy(callback: (arg0: any) => void): MoonPipe<D_IN, D_OUT>;
     /**
      * For INTERNAL use only.
      * Users should use the queueTap valve instead.

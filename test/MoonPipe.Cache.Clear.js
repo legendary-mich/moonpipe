@@ -270,11 +270,11 @@ describe('MoonPipe.Cache with Splitter', () => {
   }
 
   describe('Sibling PromiseValves', () => {
-    it('share the cache', async () => {
+    it('are assigned to the results of the classify function in order to REUSE the CACHE', async () => {
       const side = []
       const results = []
       const mp = new MoonPipe()
-        .splitBy(2, () => Math.random())
+        .splitBy(2, (val) => val%2)
         .queueTap((value) => {
           side.push(value)
         }, { cache:  true })
@@ -283,11 +283,12 @@ describe('MoonPipe.Cache with Splitter', () => {
           results.push(value)
         })
 
-      for (let i = 0; i < 10; ++i) {
-        mp.pump(0)
-        mp.pump(1)
-        mp.pump(2)
-        mp.pump(3)
+      mp.pump(0)
+      mp.pump(1)
+      mp.pump(2)
+      mp.pump(3)
+      for (let i = 0; i < 36; ++i) {
+        mp.pump(Math.floor(Math.random() * 4))
         await delayPromise(1)
       }
       await delayPromise(20)

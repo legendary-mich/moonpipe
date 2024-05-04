@@ -227,8 +227,8 @@ describe('Splitter.SpecialCases', () => {
 
       mp.splitBy(3, value => value % 1)
       expect(mp.gatewaySplitter).to.not.eql(null)
-      expect(mp.gatewaySplitter.mpPool).to.have.lengthOf(3)
-      for (const mp2 of mp.gatewaySplitter.mpPool) {
+      expect(mp.gatewaySplitter.idlePipes).to.have.lengthOf(3)
+      for (const mp2 of mp.gatewaySplitter.idlePipes) {
         expect(mp2.gatewaySplitter).to.eql(null)
       }
 
@@ -237,8 +237,8 @@ describe('Splitter.SpecialCases', () => {
 
       mp.splitBy(5, value => value % 1)
       expect(mp.gatewaySplitter).to.not.eql(null)
-      expect(mp.gatewaySplitter.mpPool).to.have.lengthOf(5)
-      for (const mp2 of mp.gatewaySplitter.mpPool) {
+      expect(mp.gatewaySplitter.idlePipes).to.have.lengthOf(5)
+      for (const mp2 of mp.gatewaySplitter.idlePipes) {
         expect(mp2.gatewaySplitter).to.eql(null)
       }
 
@@ -323,26 +323,26 @@ describe('Splitter.SpecialCases', () => {
 
       mp.splitBy(3, value => value % 1)
       expect(mp.gatewaySplitter).to.not.eql(null)
-      expect(mp.gatewaySplitter.mpPool).to.have.lengthOf(3)
-      for (const mp2 of mp.gatewaySplitter.mpPool) {
+      expect(mp.gatewaySplitter.idlePipes).to.have.lengthOf(3)
+      for (const mp2 of mp.gatewaySplitter.idlePipes) {
         expect(mp2.gatewaySplitter).to.eql(null)
       }
 
       mp.splitBy(4, value => value % 2)
       expect(mp.gatewaySplitter).to.not.eql(null)
-      expect(mp.gatewaySplitter.mpPool).to.have.lengthOf(3)
-      for (const mp2 of mp.gatewaySplitter.mpPool) {
+      expect(mp.gatewaySplitter.idlePipes).to.have.lengthOf(3)
+      for (const mp2 of mp.gatewaySplitter.idlePipes) {
         expect(mp2.gatewaySplitter).to.not.eql(null)
-        expect(mp2.gatewaySplitter.mpPool).to.have.lengthOf(4)
-        for (const mp3 of mp2.gatewaySplitter.mpPool) {
+        expect(mp2.gatewaySplitter.idlePipes).to.have.lengthOf(4)
+        for (const mp3 of mp2.gatewaySplitter.idlePipes) {
           expect(mp3.gatewaySplitter).to.eql(null)
         }
       }
 
       mp.join()
       expect(mp.gatewaySplitter).to.not.eql(null)
-      expect(mp.gatewaySplitter.mpPool).to.have.lengthOf(3)
-      for (const mp2 of mp.gatewaySplitter.mpPool) {
+      expect(mp.gatewaySplitter.idlePipes).to.have.lengthOf(3)
+      for (const mp2 of mp.gatewaySplitter.idlePipes) {
         expect(mp2.gatewaySplitter).to.eql(null)
       }
 
@@ -351,8 +351,8 @@ describe('Splitter.SpecialCases', () => {
 
       mp.splitBy(2, value => value % 1)
       expect(mp.gatewaySplitter).to.not.eql(null)
-      expect(mp.gatewaySplitter.mpPool).to.have.lengthOf(2)
-      for (const mp2 of mp.gatewaySplitter.mpPool) {
+      expect(mp.gatewaySplitter.idlePipes).to.have.lengthOf(2)
+      for (const mp2 of mp.gatewaySplitter.idlePipes) {
         expect(mp2.gatewaySplitter).to.eql(null)
       }
     })
@@ -510,40 +510,4 @@ describe('Splitter.SpecialCases', () => {
     })
   })
 
-  describe('piping to a busy splitter', () => {
-    it('throws an error', async () => {
-      const mp = new MoonPipe()
-        .splitBy(1, value => value % 1)
-        .queueTap(async () => {})
-
-      mp.pump(1)
-      try {
-        mp.queueTap(() => {})
-        throw new Error('should have thrown')
-      }
-      catch (err) {
-        expect(err).to.have.property('message', 'Piping to a busy Splitter is forbidden')
-      }
-      await delayPromise(20)
-    })
-  })
-
-  describe('joining a busy splitter', () => {
-    it('throws an error', async () => {
-      const mp = new MoonPipe()
-        .splitBy(1, value => value % 1)
-        .splitBy(1, value => value % 1)
-        .queueTap(async () => {})
-
-      mp.pump(1)
-      try {
-        mp.join()
-        throw new Error('should have thrown')
-      }
-      catch (err) {
-        expect(err).to.have.property('message', 'Joining a busy Splitter is forbidden')
-      }
-      await delayPromise(20)
-    })
-  })
 })

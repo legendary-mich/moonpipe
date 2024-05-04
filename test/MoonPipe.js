@@ -784,6 +784,95 @@ describe('MoonPipe', () => {
     })
   })
 
+  describe('splitter hooks', () => {
+    function testValidation(hookName) {
+      it('throws when there are no Splitters on the stack', () => {
+        const moonPipe = new MoonPipe()
+        try {
+          moonPipe[hookName](() => 's')
+          throw new Error('should have thrown')
+        }
+        catch (err) {
+          expect(err).to.have.property('message', "There are no Splitters on the stack")
+        }
+      })
+
+      it('throws when there are no Splitters on the stack after join()', () => {
+        const moonPipe = new MoonPipe()
+          .splitBy(1, () => 's')
+          .join()
+        try {
+          moonPipe[hookName](() => 's')
+          throw new Error('should have thrown')
+        }
+        catch (err) {
+          expect(err).to.have.property('message', "There are no Splitters on the stack")
+        }
+      })
+
+      it('throws when there are no Splitters on the stack after double join()', () => {
+        const moonPipe = new MoonPipe()
+          .splitBy(1, () => 's')
+          .splitBy(1, () => 's')
+          .join()
+          .join()
+        try {
+          moonPipe[hookName](() => 's')
+          throw new Error('should have thrown')
+        }
+        catch (err) {
+          expect(err).to.have.property('message', "There are no Splitters on the stack")
+        }
+      })
+
+      it('throws for a missing callback', () => {
+        const moonPipe = new MoonPipe()
+          .splitBy(1, () => 's')
+        try {
+          moonPipe[hookName]()
+          throw new Error('should have thrown')
+        }
+        catch (err) {
+          expect(err).to.have.property('message', "Unexpected 'callback': undefined")
+        }
+      })
+
+      it('throws for a wrong type callback', () => {
+        const moonPipe = new MoonPipe()
+          .splitBy(1, () => 's')
+        try {
+          moonPipe[hookName]('ss')
+          throw new Error('should have thrown')
+        }
+        catch (err) {
+          expect(err).to.have.property('message', "Unexpected 'callback': ss")
+        }
+      })
+
+      it('throws when a callback is added twice', () => {
+        const moonPipe = new MoonPipe()
+          .splitBy(1, () => 's')
+        try {
+          moonPipe[hookName](() => {})
+          moonPipe[hookName](() => {})
+          throw new Error('should have thrown')
+        }
+        catch (err) {
+          expect(err).to.have.property('message', "Only one callback allowed")
+        }
+      })
+    }
+
+    describe('onBusyBy', () => {
+      testValidation('onBusyBy')
+    })
+
+    describe('onIdleBy', () => {
+      testValidation('onIdleBy')
+    })
+
+  })
+
   describe('join', () => {
     it('throws if no spliiters have been added', () => {
       const moonPipe = new MoonPipe()

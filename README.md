@@ -27,6 +27,8 @@ Throttle streams of data while passing them through promises and timers. Use var
   - [onBusyTap (DEPRECATED)](#onbusytap-deprecated)
   - [onBusy](#onbusy)
   - [onIdle](#onidle)
+  - [onBusyBy](#onbusyby)
+  - [onIdleBy](#onidleby)
 - [History](#history)
 - [As Promise](#as-promise)
 - [Clearing out buffers](#clearing-out-buffers)
@@ -749,6 +751,26 @@ const mp = new MoonPipe()
     console.log('is NOT loading anymore')
   })
 ```
+
+### onBusyBy
+The `onBusyBy` hook is like the `onBusy` one but for Splitters. It can be added only after a call to the `splitBy` method and before the corresponding call to the `join` method. It will be called separately for every internal pipe created by the Splitter, every time the pipe goes from an `idle` state to a `busy` state. The callback provided by you is supposed to be `synchronous`. It takes one argument - the same one that is returned by the classification function provided to the `splitBy` method. There can be **only one** onBusyBy hook per Splitter.
+```javascript
+const mp = new MoonPipe()
+  .splitBy(2, value => value.color)
+  .onBusyBy(color => {
+    console.log('// onBusyBy', color)
+  })
+  .throttleMap(async value => value)
+  .onIdleBy(color => {
+    console.log('// onIdleBy', color)
+  })
+  .join()
+```
+
+### onIdleBy
+The `onIdleBy` hook is like the `onIdle` one but for Splitters. It is a partner in crime, and behaves much like the `onBusyBy` hook. See above.
+
+---
 
 One use case for the `onBusy/onIdle` hooks that I know is to show a spinner in the `onBusy` hook, and hide it in the `onIdle` hook.
 
