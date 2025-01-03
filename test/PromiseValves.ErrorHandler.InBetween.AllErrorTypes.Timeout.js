@@ -33,7 +33,7 @@ async function testInput(method, expected) {
       counters[2]++
     })[method](async (err) => {
       results.push('err_' + err.message)
-      await delayPromise(4)
+      await delayPromise(6)
     }, { timeoutMs: 3 }) // <---------- timeout is HERE
     .queueTap(async (value) => {
       results.push(value)
@@ -46,11 +46,11 @@ async function testInput(method, expected) {
   pipe.pump(2)
   pipe.pump(1)
 
-  await delayPromise(20)
+  await delayPromise(30)
   expect(results).to.eql(expected)
 }
 
-describe('PromiseValves.ErrorHandler.InBetween.AllErrorTypes.Rethrow.js', () => {
+describe('PromiseValves.ErrorHandler.InBetween.AllErrorTypes.Timeout.js', () => {
 
   describe('MoonPipe.queueError', () => {
     it('handles all errors', () => {
