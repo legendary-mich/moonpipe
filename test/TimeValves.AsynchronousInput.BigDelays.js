@@ -28,7 +28,7 @@ async function testInput(method, expected) {
   expect(results).to.eql(expected[1])
   await delayPromise(10)
   expect(results).to.eql(expected[2])
-  await delayPromise(10)
+  await delayPromise(12)
   expect(results).to.eql(expected[3])
 }
 

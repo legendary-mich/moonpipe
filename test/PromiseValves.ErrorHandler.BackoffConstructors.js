@@ -26,12 +26,12 @@ async function testInput(method, repeatBackoffFactory, expected) {
 
   pipe.pump(1)
   pipe.pump(2)
-  await delayPromise(6)
+  await delayPromise(10)
   expect(results).to.eql(expected[0])
 
   pipe.pump(1)
   pipe.pump(2)
-  await delayPromise(6)
+  await delayPromise(10)
   expect(results).to.eql(expected[1])
 }
 

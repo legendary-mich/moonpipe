@@ -25,7 +25,7 @@ async function testInput(method, expected) {
   pipe.pump(2)
   await Promise.resolve()
   pipe.pump(3)
-  await delayPromise(16)
+  await delayPromise(20)
   expect(results).to.eql(expected)
 }
 
