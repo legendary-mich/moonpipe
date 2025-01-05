@@ -869,7 +869,7 @@ mp.pump({ id: 2, n: 'end' })
 // { id: 2, n: 'end' }
 ```
 
-Note that the `splitBy` valves can be nested. The following example creates 2 concurrent pipes, and for each of the 2 created pipes creates another 2, which gives you a fork with 4 teeth.
+Note that the `splitBy` valves can be nested. The following example creates 2 concurrent pipes, and for each of the 2 created pipes creates 2 more, which gives you a fork with 4 teeth.
 ```javascript
 const mp = new MoonPipe()
   .splitBy(2, value => value.color) //   /\
@@ -881,6 +881,8 @@ const mp = new MoonPipe()
 ```
 
 Also note that inner pipes behave a lot like regular valves. This means that errors from inner pipes are propagated to the parent pipe. However, if you decide to handle errors in inner pipes, errors will not be propagated to the parent pipe and the parent pipe will continue operating in the `DATA` mode, while the inner pipes will be handling errors in the `ERROR` mode.
+
+*Cache in splitters (when enabled) is nondeterministic. If you want a deterministic cache, set the concurrency parameter to 1, e.g. `.splitBy(1, value => value.id)`*
 
 ## Presets explained
 ### Base Preset Params (These params are common to both the TimeValves and PromiseValves):
