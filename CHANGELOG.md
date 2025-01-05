@@ -1,5 +1,8 @@
 # Changelog
 
+### 2.8.1
+- Remove assignedPipes from the Splitter
+
 ### 2.8.0
 - Add `onBusyBy`/`onIdleBy` methods
 - Use Maps for activePipes and dataBuckets in the Splitter
