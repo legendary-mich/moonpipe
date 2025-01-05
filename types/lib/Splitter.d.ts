@@ -10,7 +10,6 @@ export class Splitter {
     idlePipes: MoonPipe<any, any>[];
     allPipes: MoonPipe<any, any>[];
     activePipes: Map<any, any>;
-    assignedPipes: Map<any, any>;
     dataBuckets: Map<any, any>;
     hooks: {
         onBusyBy: any;

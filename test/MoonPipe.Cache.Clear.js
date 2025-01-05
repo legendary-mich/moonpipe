@@ -270,11 +270,15 @@ describe('MoonPipe.Cache with Splitter', () => {
   }
 
   describe('Sibling PromiseValves', () => {
-    it('are assigned to the results of the classify function in order to REUSE the CACHE', async () => {
+    // Long time ago, the cache in splitters was deterministic, and this test
+    // used to verify that. Now, after removing the determinism, it is perhaps
+    // useless, but I leave it setting the concurrency param to 1, so that I
+    // don't have to remove it.
+    it('the CACHE is NONDETERMINISTIC unless the concurrency is set to 1', async () => {
       const side = []
       const results = []
       const mp = new MoonPipe()
-        .splitBy(2, (val) => val%2)
+        .splitBy(1, (val) => val%2) // <--- concurrency set to 1
         .queueTap((value) => {
           side.push(value)
         }, { cache:  true })
@@ -293,7 +297,7 @@ describe('MoonPipe.Cache with Splitter', () => {
       }
       await delayPromise(20)
       expect(results).to.have.lengthOf(40)
-      expect(side).to.eql([0, 1, 2, 3])
+      expect(side).to.eql([0, 2, 1, 3])
     })
   })
 
