@@ -22,6 +22,7 @@ Throttle streams of data while passing them through promises and timers. Use var
   - [filter](#filter)
   - [map](#map)
   - [flatten](#flatten)
+- [Cycles in data streams](#cycles-in-data-streams)
 - [Error handling](#error-handling)
 - [Hooks](#hooks)
   - [onBusyTap (DEPRECATED)](#onbusytap-deprecated)
@@ -688,6 +689,39 @@ mp.pump([1, 2])
 // out:  2
 ```
 
+## Cycles in data streams
+
+If there is a **cycle** in the data stream, and the data between the beginning and the end of the **cycle** is irrelevant, it can be pruned off with the `squashDownTo` function.
+
+`squashDownTo` is an optional function which, if set, trims the internal buffer from the first value returned by the function to the end of the buffer. If the buffer looks like `[1, 2, 3, 4, 5]`, the function is an identity function `val => val`, and the value being pumped is `3`, values from 3 to the end of the buffer will be removed, and the pumped value will be added at the end. The buffer will look like `[1, 2, 3]`.
+
+For example, it can be useful when there is a `post`, `put`, `delete` cycle in the stream.
+```javascript
+const { MoonPipe } = require('moonpipe')
+const mp = new MoonPipe()
+  .queueMap(async (val) => {
+    return `mapped ${val.op} ${val.i}`
+  }, {
+    squashDownTo: (val) => val.op, // <------- HERE
+  })
+  .queueTap(async (val) => {
+    console.log('output:', val)
+  })
+
+mp.pump({op: 'post', i: 0}) // processed right away
+mp.pump({op: 'put ', i: 1}) // removed by i:2
+mp.pump({op: 'put ', i: 2}) // removed by i:5
+mp.pump({op: 'del ', i: 3}) // removed by i:5
+mp.pump({op: 'post', i: 4}) // removed by i:5
+mp.pump({op: 'put ', i: 5}) // removed by i:6
+mp.pump({op: 'put ', i: 6})
+mp.pump({op: 'del ', i: 7})
+
+// output: mapped post 0
+// output: mapped put  6
+// output: mapped del  7
+```
+
 ## Error handling
 When an error is thrown by one of the normal valves, the pipe switches its active channel to the `CHANNEL_TYPE.ERROR`. Now it operates in an `error mode` which means that no new promises will be created until the active channel switches back to the `CHANNEL_TYPE.DATA`. Existing promises will be able to finish though, which can result in either a valid response or a new error. Valid responses will be put off for later, and errors will be pumped to the `ErrorValves`. The active channel will be switched back to the `CHANNEL_TYPE.DATA` when there are no more errors to handle.
 
@@ -895,6 +929,7 @@ Also note that inner pipes behave a lot like regular valves. This means that err
   - `SHIFT` - the first value from the buffer is removed
   - `SKIP` - new values are skipped (not added to the buffer and so never processed)
   - `SLICE` - In the SLICE mode values are packed into an array which is later processed as a whole. When the array is full, a new array is created.
+- `squashDownTo` - A function that, if set, makes the valve trim the buffer from the first value returned by the function to the end of the buffer.
 - `outputChannel` (**DEPRECATED**) - the channel that regular data will be emitted to. Unexpected errors are always emitted to the `ERROR` channel. Data can be emitted to either `DATA` or `ERROR`
   - `DATA` - data is emitted to the `DATA` channel, unexpected errors are emitted to the `ERROR` channel
   - `ERROR` - both data and errors are emitted to the `ERROR` channel

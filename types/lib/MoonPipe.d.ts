@@ -41,6 +41,7 @@ export class MoonPipe<D_IN, D_OUT> {
             maxBufferSize: any;
             numberOfReservedSlots: number;
             overflowAction: any;
+            squashDownTo: any;
             outputChannel: any;
             preset: any;
             onData: (data: any) => void;
@@ -109,6 +110,7 @@ export class MoonPipe<D_IN, D_OUT> {
                 maxBufferSize: any;
                 numberOfReservedSlots: number;
                 overflowAction: any;
+                squashDownTo: any;
                 outputChannel: any;
                 preset: any;
                 onData: (data: any) => void;
@@ -143,6 +145,7 @@ export class MoonPipe<D_IN, D_OUT> {
             maxBufferSize: any;
             numberOfReservedSlots: number;
             overflowAction: any;
+            squashDownTo: any;
             outputChannel: any;
             preset: any;
             onData: (data: any) => void;
@@ -267,6 +270,7 @@ export class MoonPipe<D_IN, D_OUT> {
      * @property {number} [maxBufferSize]
      * @property {string} [bufferType]
      * @property {string} [overflowAction]
+     * @property {function(D_OUT): *} [squashDownTo]
      * @property {string} [resolveType]
      * @property {boolean} [cancelOnPump]
      * @property {number} [timeoutMs]
@@ -282,6 +286,7 @@ export class MoonPipe<D_IN, D_OUT> {
      * @property {number} [maxBufferSize]
      * @property {string} [bufferType]
      * @property {string} [overflowAction]
+     * @property {function(D_OUT): *} [squashDownTo]
      * @property {string} [resolveType]
      * @property {boolean} [cancelOnPump]
      */
@@ -291,6 +296,7 @@ export class MoonPipe<D_IN, D_OUT> {
      * @property {number} [maxBufferSize]
      * @property {string} [bufferType]
      * @property {string} [overflowAction]
+     * @property {function(D_OUT): *} [squashDownTo]
      */
     /**
      * @typedef {Object} SplitterPreset
@@ -308,6 +314,7 @@ export class MoonPipe<D_IN, D_OUT> {
         maxBufferSize?: number;
         bufferType?: string;
         overflowAction?: string;
+        squashDownTo?: (arg0: D_OUT) => any;
         resolveType?: string;
         cancelOnPump?: boolean;
         timeoutMs?: number;
@@ -330,6 +337,7 @@ export class MoonPipe<D_IN, D_OUT> {
         maxBufferSize?: number;
         bufferType?: string;
         overflowAction?: string;
+        squashDownTo?: (arg0: D_OUT) => any;
         resolveType?: string;
         cancelOnPump?: boolean;
         timeoutMs?: number;
@@ -352,6 +360,7 @@ export class MoonPipe<D_IN, D_OUT> {
         maxBufferSize?: number;
         bufferType?: string;
         overflowAction?: string;
+        squashDownTo?: (arg0: D_OUT) => any;
         resolveType?: string;
         cancelOnPump?: boolean;
         timeoutMs?: number;
@@ -373,6 +382,7 @@ export class MoonPipe<D_IN, D_OUT> {
         maxBufferSize?: number;
         bufferType?: string;
         overflowAction?: string;
+        squashDownTo?: (arg0: D_OUT) => any;
         resolveType?: string;
         cancelOnPump?: boolean;
     }): MoonPipe<D_IN, D_OUT>;
@@ -386,6 +396,7 @@ export class MoonPipe<D_IN, D_OUT> {
         maxBufferSize?: number;
         bufferType?: string;
         overflowAction?: string;
+        squashDownTo?: (arg0: D_OUT) => any;
         resolveType?: string;
         cancelOnPump?: boolean;
     }): MoonPipe<D_IN, D_OUT>;
@@ -400,6 +411,7 @@ export class MoonPipe<D_IN, D_OUT> {
         maxBufferSize?: number;
         bufferType?: string;
         overflowAction?: string;
+        squashDownTo?: (arg0: D_OUT) => any;
         resolveType?: string;
         cancelOnPump?: boolean;
         timeoutMs?: number;
@@ -422,6 +434,7 @@ export class MoonPipe<D_IN, D_OUT> {
         maxBufferSize?: number;
         bufferType?: string;
         overflowAction?: string;
+        squashDownTo?: (arg0: D_OUT) => any;
         resolveType?: string;
         cancelOnPump?: boolean;
         timeoutMs?: number;
@@ -444,6 +457,7 @@ export class MoonPipe<D_IN, D_OUT> {
         maxBufferSize?: number;
         bufferType?: string;
         overflowAction?: string;
+        squashDownTo?: (arg0: D_OUT) => any;
         resolveType?: string;
         cancelOnPump?: boolean;
         timeoutMs?: number;
@@ -465,6 +479,7 @@ export class MoonPipe<D_IN, D_OUT> {
         maxBufferSize?: number;
         bufferType?: string;
         overflowAction?: string;
+        squashDownTo?: (arg0: D_OUT) => any;
         resolveType?: string;
         cancelOnPump?: boolean;
     }): MoonPipe<D_IN, D_OUT>;
@@ -478,6 +493,7 @@ export class MoonPipe<D_IN, D_OUT> {
         maxBufferSize?: number;
         bufferType?: string;
         overflowAction?: string;
+        squashDownTo?: (arg0: D_OUT) => any;
         resolveType?: string;
         cancelOnPump?: boolean;
     }): MoonPipe<D_IN, D_OUT>;
@@ -492,6 +508,7 @@ export class MoonPipe<D_IN, D_OUT> {
         maxBufferSize?: number;
         bufferType?: string;
         overflowAction?: string;
+        squashDownTo?: (arg0: D_OUT) => any;
         resolveType?: string;
         cancelOnPump?: boolean;
         timeoutMs?: number;
@@ -514,6 +531,7 @@ export class MoonPipe<D_IN, D_OUT> {
         maxBufferSize?: number;
         bufferType?: string;
         overflowAction?: string;
+        squashDownTo?: (arg0: D_OUT) => any;
         resolveType?: string;
         cancelOnPump?: boolean;
         timeoutMs?: number;
@@ -536,6 +554,7 @@ export class MoonPipe<D_IN, D_OUT> {
         maxBufferSize?: number;
         bufferType?: string;
         overflowAction?: string;
+        squashDownTo?: (arg0: D_OUT) => any;
         resolveType?: string;
         cancelOnPump?: boolean;
         timeoutMs?: number;
@@ -557,6 +576,7 @@ export class MoonPipe<D_IN, D_OUT> {
         maxBufferSize?: number;
         bufferType?: string;
         overflowAction?: string;
+        squashDownTo?: (arg0: D_OUT) => any;
         resolveType?: string;
         cancelOnPump?: boolean;
     }): MoonPipe<D_IN, D_OUT>;
@@ -570,6 +590,7 @@ export class MoonPipe<D_IN, D_OUT> {
         maxBufferSize?: number;
         bufferType?: string;
         overflowAction?: string;
+        squashDownTo?: (arg0: D_OUT) => any;
         resolveType?: string;
         cancelOnPump?: boolean;
     }): MoonPipe<D_IN, D_OUT>;
@@ -584,6 +605,7 @@ export class MoonPipe<D_IN, D_OUT> {
         maxBufferSize?: number;
         bufferType?: string;
         overflowAction?: string;
+        squashDownTo?: (arg0: D_OUT) => any;
         resolveType?: string;
         cancelOnPump?: boolean;
         timeoutMs?: number;
@@ -606,6 +628,7 @@ export class MoonPipe<D_IN, D_OUT> {
         maxBufferSize?: number;
         bufferType?: string;
         overflowAction?: string;
+        squashDownTo?: (arg0: D_OUT) => any;
         resolveType?: string;
         cancelOnPump?: boolean;
         timeoutMs?: number;
@@ -628,6 +651,7 @@ export class MoonPipe<D_IN, D_OUT> {
         maxBufferSize?: number;
         bufferType?: string;
         overflowAction?: string;
+        squashDownTo?: (arg0: D_OUT) => any;
         resolveType?: string;
         cancelOnPump?: boolean;
         timeoutMs?: number;
@@ -649,6 +673,7 @@ export class MoonPipe<D_IN, D_OUT> {
         maxBufferSize?: number;
         bufferType?: string;
         overflowAction?: string;
+        squashDownTo?: (arg0: D_OUT) => any;
         resolveType?: string;
         cancelOnPump?: boolean;
     }): MoonPipe<D_IN, D_OUT>;
@@ -662,6 +687,7 @@ export class MoonPipe<D_IN, D_OUT> {
         maxBufferSize?: number;
         bufferType?: string;
         overflowAction?: string;
+        squashDownTo?: (arg0: D_OUT) => any;
         resolveType?: string;
         cancelOnPump?: boolean;
     }): MoonPipe<D_IN, D_OUT>;
@@ -677,6 +703,7 @@ export class MoonPipe<D_IN, D_OUT> {
         maxBufferSize?: number;
         bufferType?: string;
         overflowAction?: string;
+        squashDownTo?: (arg0: D_OUT) => any;
         resolveType?: string;
         cancelOnPump?: boolean;
         timeoutMs?: number;
@@ -700,6 +727,7 @@ export class MoonPipe<D_IN, D_OUT> {
         maxBufferSize?: number;
         bufferType?: string;
         overflowAction?: string;
+        squashDownTo?: (arg0: D_OUT) => any;
         resolveType?: string;
         cancelOnPump?: boolean;
         timeoutMs?: number;
@@ -722,6 +750,7 @@ export class MoonPipe<D_IN, D_OUT> {
         maxBufferSize?: number;
         bufferType?: string;
         overflowAction?: string;
+        squashDownTo?: (arg0: D_OUT) => any;
         resolveType?: string;
         cancelOnPump?: boolean;
     }): MoonPipe<D_IN, Array<D_OUT>>;
@@ -736,6 +765,7 @@ export class MoonPipe<D_IN, D_OUT> {
         maxBufferSize?: number;
         bufferType?: string;
         overflowAction?: string;
+        squashDownTo?: (arg0: D_OUT) => any;
         resolveType?: string;
         cancelOnPump?: boolean;
     }): MoonPipe<D_IN, Array<D_OUT>>;
@@ -751,6 +781,7 @@ export class MoonPipe<D_IN, D_OUT> {
         maxBufferSize?: number;
         bufferType?: string;
         overflowAction?: string;
+        squashDownTo?: (arg0: D_OUT) => any;
         resolveType?: string;
         cancelOnPump?: boolean;
         timeoutMs?: number;
@@ -774,6 +805,7 @@ export class MoonPipe<D_IN, D_OUT> {
         maxBufferSize?: number;
         bufferType?: string;
         overflowAction?: string;
+        squashDownTo?: (arg0: D_OUT) => any;
         resolveType?: string;
         cancelOnPump?: boolean;
         timeoutMs?: number;
@@ -794,6 +826,7 @@ export class MoonPipe<D_IN, D_OUT> {
         maxBufferSize?: number;
         bufferType?: string;
         overflowAction?: string;
+        squashDownTo?: (arg0: D_OUT) => any;
     }): MoonPipe<D_IN, any>;
     /**
      * @template T_OUT
@@ -806,6 +839,7 @@ export class MoonPipe<D_IN, D_OUT> {
         maxBufferSize?: number;
         bufferType?: string;
         overflowAction?: string;
+        squashDownTo?: (arg0: D_OUT) => any;
     }): MoonPipe<D_IN, T_OUT>;
     /**
      * @param {function(D_OUT): boolean} predicateFunc
@@ -817,6 +851,7 @@ export class MoonPipe<D_IN, D_OUT> {
         maxBufferSize?: number;
         bufferType?: string;
         overflowAction?: string;
+        squashDownTo?: (arg0: D_OUT) => any;
     }): MoonPipe<D_IN, D_OUT>;
     /**
      * @template {Error} E_IN
@@ -829,6 +864,7 @@ export class MoonPipe<D_IN, D_OUT> {
         maxBufferSize?: number;
         bufferType?: string;
         overflowAction?: string;
+        squashDownTo?: (arg0: D_OUT) => any;
     }): MoonPipe<D_IN, D_OUT | E_IN>;
     /**
      * @param {number} poolSize
