@@ -930,35 +930,40 @@ async function run() {
 ```
 
 ## TypeScript
-TypeScript is supported via declaration files, which are generated from JSDoc comments, and included in the `./types` folder. Proper types are defined only for the public part of the `MoonPipe` class, but they should cover all common use cases. The central point is the `MoonPipe<D_IN, D_OUT>` class. It takes 2 generic parameters `D_IN` and `D_OUT`. The first one is what you pump to the pipe: `mp.pump(value: D_IN)`, the second one is the input type of the next valve. You don't have to worry about the `D_OUT` param. The important thing is that when you declare your pipe, both `D_IN` and `D_OUT` params should be set to the same type.
+TypeScript is supported via declaration files, which are generated from JSDoc comments, and included in the `./types` folder. Proper types are defined only for the public part of the `MoonPipe` class, but they should cover all common use cases. The central point is the `MoonPipe<D_IN, D_OUT>` class. It takes 2 generic parameters `D_IN` and `D_OUT`. The first one is what you pump to the pipe: `mp.pump(value: D_IN)`, the second one (`D_OUT`) is the input type of the next valve. You don't have to worry about the `D_OUT` param. The important thing is that when you declare your pipe, both `D_IN` and `D_OUT` params should be set to the same type.
 ```typescript
-const m1: MoonPipe<number, number> = new MoonPipe()
-const m2: MoonPipe<string, string> = new MoonPipe()
+let m1: MoonPipe<number, number>
+let m2: MoonPipe<string, string>
 ```
-Another important thing is that, if you want to get the types correctly, you must first instantiate the pipe, and start chaining only in the second step. Otherwise you will not be able to fully benefit from the type system.
+Another important thing is that, if you want to get the types correctly, you can either cast and chain, or declare and defer chaining. Declaring the type and chaining right away is not possible because the declared type must match the type returned by the last method in the chain, and the last method in the chain will not now the `D_IN` type if it hasn't been declared beforehand.
 ```typescript
 // correct:
-// instantiate first
+// create an instance, cast it, and start chaining right away
+const m0 = (new MoonPipe() as MoonPipe<number, number>)
+  .queueMap(async val => true)
+  .queueMap(async val => 'a')
+
+// correct:
+// declare the type, and create an instantiate first
 const m1: MoonPipe<number, number> = new MoonPipe()
 // start chaining later
 m1.queueMap(async val => true)
   .queueMap(async val => 'a')
 
 // wrong:
-// instantiate and start chaining right away
+// declare the type, create an instance, and start chaining right away
 const m2: MoonPipe<unknown, string> = new MoonPipe()
   .queueMap(async () => true)
   .queueMap(async () => 'a')
 // The type of the pipe in this example is determined by the last call
 // to the queueMap method. The last queueMap changes the type of the
 // pipe to MoonPipe<D_IN, string>. D_IN was not known at the time when
-// m2 was instantiated, and so it will stay unknown forever.
+// new MoonPipe was instantiated, and so it will stay unknown forever.
 ```
 
 ### Type system limitations
 MoonPipe is a JavaScript library. JavaScript type system is more flexible than TypeScript. Because of that some of the types cannot be represented correctly. Here is a full list of things that are off:
-- The `pipe` method returns `MoonPipe<D_IN, any>`. It swallows the type information carried by the `D_OUT` param.
-- The `flatten` method returns `MoonPipe<D_IN, any>`. It swallows the type information carried by the `D_OUT` param.
+- The return type of the `pipe` method and the `flatten` method is `MoonPipe<D_IN, any>`. The type information carried by the `D_OUT` param is swallowed when these methods are used.
 - The `flatten` method is not type safe. In a perfect world, you shouldn't be able to call it when the `D_OUT` param is not an `Array`. The current implementation always lets you do this, which means that it can emit an error if you are not careful.
 
 ## Versioning
