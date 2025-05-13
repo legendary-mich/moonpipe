@@ -6,6 +6,7 @@ declare const PromiseValve_base: {
         maxBufferSize: any;
         numberOfReservedSlots: number;
         overflowAction: any;
+        squashDownTo: any;
         outputChannel: any;
         preset: any;
         onData: (data: any) => void;
@@ -54,6 +55,7 @@ declare namespace queueMap {
     export { MAX_ARRAY_SIZE as maxBufferSize };
     export let bufferType: string;
     export let overflowAction: string;
+    export let squashDownTo: any;
     import resolveType = PROMISE_RESOLVE_TYPE.MAP;
     export { resolveType };
     export let cancelOnPump: boolean;
@@ -72,6 +74,8 @@ declare namespace cancelMap {
     export { bufferType_1 as bufferType };
     let overflowAction_1: string;
     export { overflowAction_1 as overflowAction };
+    let squashDownTo_1: any;
+    export { squashDownTo_1 as squashDownTo };
     import resolveType_1 = PROMISE_RESOLVE_TYPE.MAP;
     export { resolveType_1 as resolveType };
     let cancelOnPump_1: boolean;
@@ -98,6 +102,8 @@ declare namespace throttleMap {
     export { bufferType_2 as bufferType };
     let overflowAction_2: string;
     export { overflowAction_2 as overflowAction };
+    let squashDownTo_2: any;
+    export { squashDownTo_2 as squashDownTo };
     import resolveType_2 = PROMISE_RESOLVE_TYPE.MAP;
     export { resolveType_2 as resolveType };
     let cancelOnPump_2: boolean;
@@ -124,6 +130,8 @@ declare namespace skipMap {
     export { bufferType_3 as bufferType };
     let overflowAction_3: string;
     export { overflowAction_3 as overflowAction };
+    let squashDownTo_3: any;
+    export { squashDownTo_3 as squashDownTo };
     import resolveType_3 = PROMISE_RESOLVE_TYPE.MAP;
     export { resolveType_3 as resolveType };
     let cancelOnPump_3: boolean;
@@ -148,6 +156,8 @@ declare namespace sliceMap {
     export { bufferType_4 as bufferType };
     let overflowAction_4: string;
     export { overflowAction_4 as overflowAction };
+    let squashDownTo_4: any;
+    export { squashDownTo_4 as squashDownTo };
     import resolveType_4 = PROMISE_RESOLVE_TYPE.MAP;
     export { resolveType_4 as resolveType };
     let cancelOnPump_4: boolean;

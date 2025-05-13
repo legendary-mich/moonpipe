@@ -1,5 +1,8 @@
 # Changelog
 
+### 2.9.0
+- Add a `squashDownTo` function to the BaseValve presets
+
 ### 2.8.1
 - Remove assignedPipes from the Splitter
 

@@ -6,6 +6,7 @@ export class BaseValve {
     maxBufferSize: any;
     numberOfReservedSlots: number;
     overflowAction: any;
+    squashDownTo: any;
     outputChannel: any;
     preset: any;
     onData: (data: any) => void;
@@ -49,6 +50,7 @@ declare namespace queue {
     export { bufferType };
     import overflowAction = OVERFLOW_ACTION.EMIT_ERROR;
     export { overflowAction };
+    export let squashDownTo: any;
 }
 export declare namespace BasePresets {
     export { queue };

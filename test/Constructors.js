@@ -22,6 +22,7 @@ function baseValveAssertions(TargetClass) {
     bufferType: BUFFER_TYPE.QUEUE,
     maxBufferSize: 1000,
     overflowAction: OVERFLOW_ACTION.SHIFT,
+    squashDownTo: null,
   }
 
   it('throws for a preset which is not an object', () => {
@@ -113,6 +114,19 @@ function baseValveAssertions(TargetClass) {
     }
   })
 
+  it('throws for an unknown hashFunction', () => {
+    const preset = Object.assign({}, properBaseValvePreset, {
+      squashDownTo: 'downtofunc',
+    })
+    try {
+      new TargetClass(preset)
+      throw new Error('should have thrown')
+    }
+    catch (err) {
+      expect(err).to.have.property('message', "Unexpected 'squashDownTo': downtofunc")
+    }
+  })
+
 }
 
 function timeValveAssertions(TargetClass) {
@@ -122,6 +136,7 @@ function timeValveAssertions(TargetClass) {
     maxBufferSize: 1000,
     bufferType: BUFFER_TYPE.QUEUE,
     overflowAction: OVERFLOW_ACTION.EMIT_ERROR,
+    squashDownTo: null,
     resolveType: TIME_RESOLVE_TYPE.LAZY,
     cancelOnPump: false,
   }
@@ -183,6 +198,7 @@ function promiseValveAssertions(TargetClass) {
     maxBufferSize: 1000,
     bufferType: BUFFER_TYPE.QUEUE,
     overflowAction: OVERFLOW_ACTION.EMIT_ERROR,
+    squashDownTo: null,
     resolveType: PROMISE_RESOLVE_TYPE.MAP,
     cancelOnPump: false,
     timeoutMs: 0,
@@ -329,6 +345,7 @@ function synchronousValveAssertions(TargetClass, functionType) {
     maxBufferSize: 1000,
     bufferType: BUFFER_TYPE.QUEUE,
     overflowAction: OVERFLOW_ACTION.EMIT_ERROR,
+    squashDownTo: null,
   }
 
   it(`throws for an unknown ${ functionType }`, () => {
@@ -374,6 +391,7 @@ describe('FilterValve constructor', () => {
     maxBufferSize: 1000,
     bufferType: BUFFER_TYPE.QUEUE,
     overflowAction: OVERFLOW_ACTION.EMIT_ERROR,
+    squashDownTo: null,
   }
 
   it(`throws for an unknown ouput channel`, () => {

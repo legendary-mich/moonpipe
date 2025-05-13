@@ -22,6 +22,7 @@ Throttle streams of data while passing them through promises and timers. Use var
   - [filter](#filter)
   - [map](#map)
   - [flatten](#flatten)
+- [Cycles in data streams](#cycles-in-data-streams)
 - [Error handling](#error-handling)
 - [Hooks](#hooks)
   - [onBusyTap (DEPRECATED)](#onbusytap-deprecated)
@@ -688,6 +689,39 @@ mp.pump([1, 2])
 // out:  2
 ```
 
+## Cycles in data streams
+
+If there is a **cycle** in the data stream, and the data between the beginning and the end of the **cycle** is irrelevant, it can be pruned off with the `squashDownTo` function.
+
+`squashDownTo` is an optional function which, if set, trims the internal buffer from the first value returned by the function to the end of the buffer. If the buffer looks like `[1, 2, 3, 4, 5]`, the function is an identity function `val => val`, and the value being pumped is `3`, values from 3 to the end of the buffer will be removed, and the pumped value will be added at the end. The buffer will look like `[1, 2, 3]`.
+
+For example, it can be useful when there is a `post`, `put`, `delete` cycle in the stream.
+```javascript
+const { MoonPipe } = require('moonpipe')
+const mp = new MoonPipe()
+  .queueMap(async (val) => {
+    return `mapped ${val.op} ${val.i}`
+  }, {
+    squashDownTo: (val) => val.op, // <------- HERE
+  })
+  .queueTap(async (val) => {
+    console.log('output:', val)
+  })
+
+mp.pump({op: 'post', i: 0}) // processed right away
+mp.pump({op: 'put ', i: 1}) // removed by i:2
+mp.pump({op: 'put ', i: 2}) // removed by i:5
+mp.pump({op: 'del ', i: 3}) // removed by i:5
+mp.pump({op: 'post', i: 4}) // removed by i:5
+mp.pump({op: 'put ', i: 5}) // removed by i:6
+mp.pump({op: 'put ', i: 6})
+mp.pump({op: 'del ', i: 7})
+
+// output: mapped post 0
+// output: mapped put  6
+// output: mapped del  7
+```
+
 ## Error handling
 When an error is thrown by one of the normal valves, the pipe switches its active channel to the `CHANNEL_TYPE.ERROR`. Now it operates in an `error mode` which means that no new promises will be created until the active channel switches back to the `CHANNEL_TYPE.DATA`. Existing promises will be able to finish though, which can result in either a valid response or a new error. Valid responses will be put off for later, and errors will be pumped to the `ErrorValves`. The active channel will be switched back to the `CHANNEL_TYPE.DATA` when there are no more errors to handle.
 
@@ -895,6 +929,7 @@ Also note that inner pipes behave a lot like regular valves. This means that err
   - `SHIFT` - the first value from the buffer is removed
   - `SKIP` - new values are skipped (not added to the buffer and so never processed)
   - `SLICE` - In the SLICE mode values are packed into an array which is later processed as a whole. When the array is full, a new array is created.
+- `squashDownTo` - A function that, if set, makes the valve trim the buffer from the first value returned by the function to the end of the buffer.
 - `outputChannel` (**DEPRECATED**) - the channel that regular data will be emitted to. Unexpected errors are always emitted to the `ERROR` channel. Data can be emitted to either `DATA` or `ERROR`
   - `DATA` - data is emitted to the `DATA` channel, unexpected errors are emitted to the `ERROR` channel
   - `ERROR` - both data and errors are emitted to the `ERROR` channel
@@ -930,35 +965,40 @@ async function run() {
 ```
 
 ## TypeScript
-TypeScript is supported via declaration files, which are generated from JSDoc comments, and included in the `./types` folder. Proper types are defined only for the public part of the `MoonPipe` class, but they should cover all common use cases. The central point is the `MoonPipe<D_IN, D_OUT>` class. It takes 2 generic parameters `D_IN` and `D_OUT`. The first one is what you pump to the pipe: `mp.pump(value: D_IN)`, the second one is the input type of the next valve. You don't have to worry about the `D_OUT` param. The important thing is that when you declare your pipe, both `D_IN` and `D_OUT` params should be set to the same type.
+TypeScript is supported via declaration files, which are generated from JSDoc comments, and included in the `./types` folder. Proper types are defined only for the public part of the `MoonPipe` class, but they should cover all common use cases. The central point is the `MoonPipe<D_IN, D_OUT>` class. It takes 2 generic parameters `D_IN` and `D_OUT`. The first one is what you pump to the pipe: `mp.pump(value: D_IN)`, the second one (`D_OUT`) is the input type of the next valve. You don't have to worry about the `D_OUT` param. The important thing is that when you declare your pipe, both `D_IN` and `D_OUT` params should be set to the same type.
 ```typescript
-const m1: MoonPipe<number, number> = new MoonPipe()
-const m2: MoonPipe<string, string> = new MoonPipe()
+let m1: MoonPipe<number, number>
+let m2: MoonPipe<string, string>
 ```
-Another important thing is that, if you want to get the types correctly, you must first instantiate the pipe, and start chaining only in the second step. Otherwise you will not be able to fully benefit from the type system.
+Another important thing is that, if you want to get the types correctly, you can either cast and chain, or declare and defer chaining. Declaring the type and chaining right away is not possible because the declared type must match the type returned by the last method in the chain, and the last method in the chain will not now the `D_IN` type if it hasn't been declared beforehand.
 ```typescript
 // correct:
-// instantiate first
+// create an instance, cast it, and start chaining right away
+const m0 = (new MoonPipe() as MoonPipe<number, number>)
+  .queueMap(async val => true)
+  .queueMap(async val => 'a')
+
+// correct:
+// declare the type, and create an instantiate first
 const m1: MoonPipe<number, number> = new MoonPipe()
 // start chaining later
 m1.queueMap(async val => true)
   .queueMap(async val => 'a')
 
 // wrong:
-// instantiate and start chaining right away
+// declare the type, create an instance, and start chaining right away
 const m2: MoonPipe<unknown, string> = new MoonPipe()
   .queueMap(async () => true)
   .queueMap(async () => 'a')
 // The type of the pipe in this example is determined by the last call
 // to the queueMap method. The last queueMap changes the type of the
 // pipe to MoonPipe<D_IN, string>. D_IN was not known at the time when
-// m2 was instantiated, and so it will stay unknown forever.
+// new MoonPipe was instantiated, and so it will stay unknown forever.
 ```
 
 ### Type system limitations
 MoonPipe is a JavaScript library. JavaScript type system is more flexible than TypeScript. Because of that some of the types cannot be represented correctly. Here is a full list of things that are off:
-- The `pipe` method returns `MoonPipe<D_IN, any>`. It swallows the type information carried by the `D_OUT` param.
-- The `flatten` method returns `MoonPipe<D_IN, any>`. It swallows the type information carried by the `D_OUT` param.
+- The return type of the `pipe` method and the `flatten` method is `MoonPipe<D_IN, any>`. The type information carried by the `D_OUT` param is swallowed when these methods are used.
 - The `flatten` method is not type safe. In a perfect world, you shouldn't be able to call it when the `D_OUT` param is not an `Array`. The current implementation always lets you do this, which means that it can emit an error if you are not careful.
 
 ## Versioning

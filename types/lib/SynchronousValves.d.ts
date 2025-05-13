@@ -6,6 +6,7 @@ declare const FlattenValve_base: {
         maxBufferSize: any;
         numberOfReservedSlots: number;
         overflowAction: any;
+        squashDownTo: any;
         outputChannel: any;
         preset: any;
         onData: (data: any) => void;
@@ -36,6 +37,7 @@ declare const MapValve_base: {
         maxBufferSize: any;
         numberOfReservedSlots: number;
         overflowAction: any;
+        squashDownTo: any;
         outputChannel: any;
         preset: any;
         onData: (data: any) => void;
@@ -69,6 +71,7 @@ declare const FilterValve_base: {
         maxBufferSize: any;
         numberOfReservedSlots: number;
         overflowAction: any;
+        squashDownTo: any;
         outputChannel: any;
         preset: any;
         onData: (data: any) => void;
@@ -99,6 +102,7 @@ declare namespace dataOut {
     export { MAX_ARRAY_SIZE as maxBufferSize };
     export let bufferType: string;
     export let overflowAction: string;
+    export let squashDownTo: any;
     export let outputChannel: string;
 }
 declare const errorOut: {
@@ -106,6 +110,7 @@ declare const errorOut: {
     maxBufferSize: number;
     bufferType: string;
     overflowAction: string;
+    squashDownTo: any;
     outputChannel: string;
 } & {
     outputChannel: string;
