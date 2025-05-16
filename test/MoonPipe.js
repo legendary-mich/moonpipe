@@ -915,15 +915,16 @@ describe('MoonPipe', () => {
   })
 
   describe('rePumpLast', () => {
-    it('throws when the history is empty', () => {
+    it('does nothing when the history is empty', async () => {
+      const results = []
       const mp = new MoonPipe()
-      try {
-        mp.rePumpLast()
-        throw new Error('should have thrown')
-      }
-      catch (err) {
-        expect(err).to.have.property('message', "The history buffer is empty")
-      }
+        .onBusy(() => results.push('busy'))
+        .onIdle(() => results.push('idle'))
+        .queueTap(val => results.push(val))
+
+      mp.rePumpLast()
+      await delayPromise(2)
+      expect(results).to.eql([])
     })
 
     it('re-pumps the 1st value', async () => {

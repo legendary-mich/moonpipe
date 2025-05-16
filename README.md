@@ -829,7 +829,7 @@ mp.pump(2)
 // is NOT loading anymore
 ```
 ## History
-The most recently pumped value is kept in the history buffer. It can be pumped again with the `rePumpLast` method. The method is useful when you, for example, manually [update the cache](#cache-invalidation) and want to push the new value through afterwards.
+The most recently pumped value is kept in the history buffer. It can be pumped again with the `rePumpLast` method. The method is useful when you, for example, manually [update the cache](#cache-invalidation) and want to push the new value through afterwards. It does nothing when the history buffer is empty.
 ```javascript
 const mp = new MoonPipe()
   .queueTap(val => console.log('// out: ', val))
