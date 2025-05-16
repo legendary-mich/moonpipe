@@ -722,6 +722,8 @@ mp.pump({op: 'del ', i: 7})
 // output: mapped del  7
 ```
 
+ Errors thrown in a `squashDownTo` function are passed to the next error valve in line.
+
 ## Error handling
 When an error is thrown by one of the normal valves, the pipe switches its active channel to the `CHANNEL_TYPE.ERROR`. Now it operates in an `error mode` which means that no new promises will be created until the active channel switches back to the `CHANNEL_TYPE.DATA`. Existing promises will be able to finish though, which can result in either a valid response or a new error. Valid responses will be put off for later, and errors will be pumped to the `ErrorValves`. The active channel will be switched back to the `CHANNEL_TYPE.DATA` when there are no more errors to handle.
 
