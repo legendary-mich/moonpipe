@@ -833,7 +833,7 @@ mp.pump(2)
 ```
 
 ## isBusy
-In addition to the `onBusy`/`onIdle` hooks, the state of the pipe can be tested with an `isBusy()` function. The `isBusy()` function is a simple accessor that does not do any computations. It returns a `boolean` value.
+In addition to the `onBusy`/`onIdle` hooks, the state of the pipe can be tested with an `isBusy()` method. The `isBusy()` method is a simple accessor that does not do any computations. It returns a `boolean` value.
 ```javascript
 const mp = new MoonPipe()
 mp.isBusy() // <--- HERE
