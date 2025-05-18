@@ -84,20 +84,20 @@ function baseValveAssertions(TargetClass) {
       throw new Error('should have thrown')
     }
     catch (err) {
-      expect(err).to.have.property('message', "Expected maxBufferSize to be a 'number' greater than -1 and lower than 4294967296; found: one")
+      expect(err).to.have.property('message', "Expected maxBufferSize to be a 'number' greater than 0 and lower than 4294967296; found: one")
     }
   })
 
-  it('throws for a maxBufferSize lower than 0', () => {
+  it('throws for a maxBufferSize lower than 1', () => {
     const preset = Object.assign({}, properBaseValvePreset, {
-      maxBufferSize: -1,
+      maxBufferSize: 0,
     })
     try {
       new TargetClass(preset)
       throw new Error('should have thrown')
     }
     catch (err) {
-      expect(err).to.have.property('message', "Expected maxBufferSize to be a 'number' greater than -1 and lower than 4294967296; found: -1")
+      expect(err).to.have.property('message', "Expected maxBufferSize to be a 'number' greater than 0 and lower than 4294967296; found: 0")
     }
   })
 
@@ -110,7 +110,7 @@ function baseValveAssertions(TargetClass) {
       throw new Error('should have thrown')
     }
     catch (err) {
-      expect(err).to.have.property('message', "Expected maxBufferSize to be a 'number' greater than -1 and lower than 4294967296; found: 4294967296")
+      expect(err).to.have.property('message', "Expected maxBufferSize to be a 'number' greater than 0 and lower than 4294967296; found: 4294967296")
     }
   })
 
