@@ -23,6 +23,10 @@ export class MoonPipe<D_IN, D_OUT> {
      */
     private get gatewaySplitter();
     /**
+     * @returns {boolean}
+     */
+    isBusy(): boolean;
+    /**
      * @param {string} [channelType]
      * @returns {boolean}
      */

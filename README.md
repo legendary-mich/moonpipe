@@ -30,6 +30,7 @@ Throttle streams of data while passing them through promises and timers. Use var
   - [onIdle](#onidle)
   - [onBusyBy](#onbusyby)
   - [onIdleBy](#onidleby)
+- [isBusy](#isbusy)
 - [History](#history)
 - [As Promise](#as-promise)
 - [Clearing out buffers](#clearing-out-buffers)
@@ -830,6 +831,14 @@ mp.pump(2)
 // output: 2
 // is NOT loading anymore
 ```
+
+## isBusy
+In addition to the `onBusy`/`onIdle` hooks, the state of the pipe can be tested with an `isBusy()` method. The `isBusy()` method is a simple accessor that does not do any computation. It returns a `boolean` value.
+```javascript
+const mp = new MoonPipe()
+mp.isBusy() // <--- HERE
+```
+
 ## History
 The most recently pumped value is kept in the history buffer. It can be pumped again with the `rePumpLast` method. The method is useful when you, for example, manually [update the cache](#cache-invalidation) and want to push the new value through afterwards. It does nothing when the history buffer is empty.
 ```javascript

@@ -914,6 +914,23 @@ describe('MoonPipe', () => {
     })
   })
 
+  describe('isBusy', () => {
+    it('returns true or false', async () => {
+      const results = []
+      const mp = new MoonPipe()
+        .onBusy(() => results.push('busy_' + mp.isBusy()))
+        .onIdle(() => results.push('idle_' + mp.isBusy()))
+        .queueTap(val => results.push(`${val}_${mp.isBusy()}`))
+
+      expect(mp.isBusy()).to.eql(false)
+      mp.pump(1)
+      expect(mp.isBusy()).to.eql(true)
+      await delayPromise(2)
+      expect(mp.isBusy()).to.eql(false)
+      expect(results).to.eql(['busy_true', '1_true', 'idle_false'])
+    })
+  })
+
   describe('rePumpLast', () => {
     it('does nothing when the history is empty', async () => {
       const results = []
