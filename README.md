@@ -762,7 +762,7 @@ There is also 1 synchronous error handler, namely `filterError`. It operates in 
 ## Hooks
 
 ### onBusyTap (DEPRECATED)
-The `onBusyTap` hook is called every time the pipe goes from an `idle` state to a `busy` state. The callback provided by you is supposed to be `synchronous`. It takes the pumped value as the first argument. **If it throws** an error, the error will be pumped to the **nearest error valve**. There can be **only one** onBusyTap hook.
+The `onBusyTap` hook is called every time the pipe goes from an `idle` state to a `busy` state. The callback provided by you is supposed to be `synchronous`. It takes the pumped value as the first argument. **If it throws** an error, the error will be pumped to the **first error valve**. There can be **only one** onBusyTap hook.
 ```javascript
 const mp = new MoonPipe()
   .onBusyTap((value) => {
@@ -771,7 +771,7 @@ const mp = new MoonPipe()
 ```
 
 ### onBusy
-The `onBusy` hook is called every time the pipe goes from an `idle` state to a `busy` state. The callback provided by you is supposed to be `synchronous`. It does NOT take any arguments. **If it throws** an error, the error will be **silently ignored**. There can be **only one** onBusy hook.
+The `onBusy` hook is called every time the pipe goes from an `idle` state to a `busy` state. The callback provided by you is supposed to be `synchronous`. It does NOT take any arguments. **If it throws** an error, the error will be pumped to the **first error valve**. There can be **only one** onBusy hook.
 ```javascript
 const mp = new MoonPipe()
   .onBusy(() => {
@@ -780,7 +780,7 @@ const mp = new MoonPipe()
 ```
 
 ### onIdle
-The `onIdle` hook is called every time the pipe goes from a `busy` state to an `idle` state. The callback provided by you is supposed to be `synchronous`. It does NOT take any arguments. **If it throws** an error, the error will be **silently ignored**. There can be **only one** onIdle hook.
+The `onIdle` hook is called every time the pipe goes from a `busy` state to an `idle` state. The callback provided by you is supposed to be `synchronous`. It does NOT take any arguments. **If it throws** an error, the error will be pumped to the **first error valve**. There can be **only one** onIdle hook.
 
 ```javascript
 const mp = new MoonPipe()

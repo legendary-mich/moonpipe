@@ -35,7 +35,7 @@ async function testInput(method, expected) {
 }
 
 // When there's no error handler all errors should be silently ignored
-describe('PromiseValves.No.ErrorHandler with Synchronous input.', () => {
+describe('PromiseValves.No.ErrorHandler.1', () => {
 
   describe('MoonPipe.queueTap', () => {
     it('ignores all errors', () => {

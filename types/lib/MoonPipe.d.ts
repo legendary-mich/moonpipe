@@ -93,7 +93,7 @@ export class MoonPipe<D_IN, D_OUT> {
      * For INTERNAL use only.
      * @private
      */
-    private nextOrEnd;
+    private channelCleanUp;
     /**
      * For INTERNAL use only.
      * @private
