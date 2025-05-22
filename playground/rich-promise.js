@@ -1,10 +1,9 @@
 'use strict'
 
-const { MoonPipe, delayPromise } = require('../index.js')
+const { MoonPipe, delayPromise, PROMISE_RESOLVE_TYPE } = require('../index.js')
 
 const {
   RichPromise,
-  PROMISE_RESOLVE_TYPE,
   TimeoutError,
 } = require('../lib/RichPromise.js')
 

@@ -7,8 +7,13 @@ export class RichPromise {
     isCanceled: boolean;
     activeTimeout: number;
     publicContext: PromiseContext;
+    attemptsMade: number;
     cancel(): void;
-    run(value: any, attemptsMade?: number): Promise<any>;
+    getTimeoutPromise(): Promise<any>;
+    runOnce(value: any): Promise<any>;
+    shouldRepeat(err: any): any;
+    repeatDelay(): Promise<void>;
+    run(value: any): Promise<any>;
 }
 export class TimeoutError extends Error {
     constructor();

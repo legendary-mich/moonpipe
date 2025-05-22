@@ -21,9 +21,7 @@ async function testInput(method, expected) {
     })
 
   pipe.pump(1)
-  await Promise.resolve()
   pipe.pump(2)
-  await Promise.resolve()
   pipe.pump(3)
   await delayPromise(16)
   expect(results).to.eql(expected)
@@ -64,8 +62,6 @@ describe('PromiseValves.OnCancel.Callback.Validate', () => {
         "side_2",
         "side_3",
         "err_Expected 'onCancel' to be a 'function'",
-        "err_Expected 'onCancel' to be a 'function'",
-        "err_Expected 'onCancel' to be a 'function'",
       ])
     })
   })
@@ -76,8 +72,6 @@ describe('PromiseValves.OnCancel.Callback.Validate', () => {
         "side_1",
         "side_2",
         "side_3",
-        "err_Expected 'onCancel' to be a 'function'",
-        "err_Expected 'onCancel' to be a 'function'",
         "err_Expected 'onCancel' to be a 'function'",
       ])
     })
