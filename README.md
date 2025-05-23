@@ -475,7 +475,7 @@ mp.pump('a')
 ```
 
 ### Repeating on error in PromiseValves
-A rejected promise can be retried before the error is reported to the pipe. Every error returned from a rejected promise is passed to the `repeatPredicate` function, that takes an `attemptsMade` counter as the first argument, an `error` as the second one, and returns a `boolean` value which signifies whether the promise should be retried or not. By default promises are retried immediately. If you want to add a delay between retries, use a `repeatBackoffFactory` function.
+A rejected promise can be retried before the error is reported to the pipe. Every error returned from a rejected promise is passed to the `repeatPredicate` function, that takes an `attemptsMade` counter as the first argument, an `error` as the second one, and returns a `boolean` value which signifies whether the promise should be retried or not. By default promises are retried immediately. If you want to add a delay between retries, use a `repeatBackoffFactory` function. If you want intermediate errors to be emitted, use a `repeatVerbose` flag.
 
 If the `repeatPredicate` throws an error, the promise is automatically rejected and will not be retried anymore.
 
@@ -494,6 +494,8 @@ const mp = new MoonPipe()
     // repeatBackoffFactory: () => new ConstantBackoff(1000), // OPTIONAL
     // repeatBackoffFactory: () => new LinearBackoff(1000), // OPTIONAL
     // repeatBackoffFactory: () => new ConstantBackoff(0), // OPTIONAL DEFAULT
+    // repeatVerbose: true, // OPTIONAL
+    // repeatVerbose: false, // OPTIONAL DEFAULT
   })
   .queueError(async (err) => {
     console.log('// error:', err)
@@ -962,6 +964,7 @@ Also note that inner pipes behave a lot like regular valves. This means that err
 - `hashFunction` - a function that takes the pumped `value` and returns the `key` at witch the result will be cached. Defaults to `value => value`
 - `repeatPredicate` - a synchronous function which takes an `attemptsMade` counter as the first argument and an `error` as the second one. It returns `true` or `false`.
 - `repeatBackoffFactory` - a function that returns an instance of a `Backoff` class. Currently `ConstantBackoff` and `LinearBackoff` classes are implemented.
+- `repeatVerbose` - if `true`, intermediate errors are pumped to the next error valve. If `false`, only the result of the last retry is pumped.
 
 Predefined presets can be found in the `TimeValve.js` and `PromiseValve.js` files.
 

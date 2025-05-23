@@ -283,6 +283,7 @@ export class MoonPipe<D_IN, D_OUT> {
      * @property {function(D_OUT): *} [hashFunction]
      * @property {function(number, Error): boolean} [repeatPredicate]
      * @property {function(): {nextDelayMs: function(): number}} [repeatBackoffFactory]
+     * @property {boolean} [repeatVerbose]
      */
     /**
      * @typedef {Object} TimePreset
@@ -329,6 +330,7 @@ export class MoonPipe<D_IN, D_OUT> {
         repeatBackoffFactory?: () => {
             nextDelayMs: () => number;
         };
+        repeatVerbose?: boolean;
     }): MoonPipe<D_IN, D_OUT>;
     /**
      * @template P_OUT
@@ -352,6 +354,7 @@ export class MoonPipe<D_IN, D_OUT> {
         repeatBackoffFactory?: () => {
             nextDelayMs: () => number;
         };
+        repeatVerbose?: boolean;
     }): MoonPipe<D_IN, P_OUT_1>;
     /**
      * @template P_OUT
@@ -375,6 +378,7 @@ export class MoonPipe<D_IN, D_OUT> {
         repeatBackoffFactory?: () => {
             nextDelayMs: () => number;
         };
+        repeatVerbose?: boolean;
     }): MoonPipe<D_IN, D_OUT | P_OUT_2>;
     /**
      * @param {number} intervalMs
@@ -426,6 +430,7 @@ export class MoonPipe<D_IN, D_OUT> {
         repeatBackoffFactory?: () => {
             nextDelayMs: () => number;
         };
+        repeatVerbose?: boolean;
     }): MoonPipe<D_IN, D_OUT>;
     /**
      * @template P_OUT
@@ -449,6 +454,7 @@ export class MoonPipe<D_IN, D_OUT> {
         repeatBackoffFactory?: () => {
             nextDelayMs: () => number;
         };
+        repeatVerbose?: boolean;
     }): MoonPipe<D_IN, P_OUT_4>;
     /**
      * @template P_OUT
@@ -472,6 +478,7 @@ export class MoonPipe<D_IN, D_OUT> {
         repeatBackoffFactory?: () => {
             nextDelayMs: () => number;
         };
+        repeatVerbose?: boolean;
     }): MoonPipe<D_IN, D_OUT | P_OUT_5>;
     /**
      * @param {number} intervalMs
@@ -523,6 +530,7 @@ export class MoonPipe<D_IN, D_OUT> {
         repeatBackoffFactory?: () => {
             nextDelayMs: () => number;
         };
+        repeatVerbose?: boolean;
     }): MoonPipe<D_IN, D_OUT>;
     /**
      * @template P_OUT
@@ -546,6 +554,7 @@ export class MoonPipe<D_IN, D_OUT> {
         repeatBackoffFactory?: () => {
             nextDelayMs: () => number;
         };
+        repeatVerbose?: boolean;
     }): MoonPipe<D_IN, P_OUT_7>;
     /**
      * @template P_OUT
@@ -569,6 +578,7 @@ export class MoonPipe<D_IN, D_OUT> {
         repeatBackoffFactory?: () => {
             nextDelayMs: () => number;
         };
+        repeatVerbose?: boolean;
     }): MoonPipe<D_IN, D_OUT | P_OUT_8>;
     /**
      * @param {number} intervalMs
@@ -620,6 +630,7 @@ export class MoonPipe<D_IN, D_OUT> {
         repeatBackoffFactory?: () => {
             nextDelayMs: () => number;
         };
+        repeatVerbose?: boolean;
     }): MoonPipe<D_IN, D_OUT>;
     /**
      * @template P_OUT
@@ -643,6 +654,7 @@ export class MoonPipe<D_IN, D_OUT> {
         repeatBackoffFactory?: () => {
             nextDelayMs: () => number;
         };
+        repeatVerbose?: boolean;
     }): MoonPipe<D_IN, P_OUT_10>;
     /**
      * @template P_OUT
@@ -666,6 +678,7 @@ export class MoonPipe<D_IN, D_OUT> {
         repeatBackoffFactory?: () => {
             nextDelayMs: () => number;
         };
+        repeatVerbose?: boolean;
     }): MoonPipe<D_IN, D_OUT | P_OUT_11>;
     /**
      * @param {number} intervalMs
@@ -718,6 +731,7 @@ export class MoonPipe<D_IN, D_OUT> {
         repeatBackoffFactory?: () => {
             nextDelayMs: () => number;
         };
+        repeatVerbose?: boolean;
     }): MoonPipe<D_IN, Array<D_OUT>>;
     /**
      * @template P_OUT
@@ -742,6 +756,7 @@ export class MoonPipe<D_IN, D_OUT> {
         repeatBackoffFactory?: () => {
             nextDelayMs: () => number;
         };
+        repeatVerbose?: boolean;
     }): MoonPipe<D_IN, P_OUT_13>;
     /**
      * @param {number} chunkSize
@@ -796,6 +811,7 @@ export class MoonPipe<D_IN, D_OUT> {
         repeatBackoffFactory?: () => {
             nextDelayMs: () => number;
         };
+        repeatVerbose?: boolean;
     }): MoonPipe<D_IN, D_OUT>;
     /**
      * @template P_OUT
@@ -820,6 +836,7 @@ export class MoonPipe<D_IN, D_OUT> {
         repeatBackoffFactory?: () => {
             nextDelayMs: () => number;
         };
+        repeatVerbose?: boolean;
     }): MoonPipe<D_IN, P_OUT_15>;
     /**
      * @param {SynchronousPreset} [options]

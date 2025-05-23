@@ -12,6 +12,7 @@ const m1 = (new MoonPipe() as MoonPipe<number, number>)
   .queueMap(async val => 's', {
     hashFunction: (val: boolean) => val,
     squashDownTo: (val: boolean) => val,
+    repeatVerbose: true,
   })
   .queueTap(async val => 2, {
     hashFunction: (val: string) => val,

@@ -206,6 +206,7 @@ function promiseValveAssertions(TargetClass) {
     cache: false,
     hashFunction: value => value,
     repeatPredicate: () => false,
+    repeatVerbose: false,
   }
 
   it('throws for an unknown cancelOnPump', () => {
@@ -322,6 +323,19 @@ function promiseValveAssertions(TargetClass) {
     }
     catch (err) {
       expect(err).to.have.property('message', "Unexpected 'repeatBackoffFactory': ribbon")
+    }
+  })
+
+  it('throws for an unknown repeatVerbose', () => {
+    const preset = Object.assign({}, properPromiseValvePreset, {
+      repeatVerbose: 'yoyoyo',
+    })
+    try {
+      new TargetClass(preset)
+      throw new Error('should have thrown')
+    }
+    catch (err) {
+      expect(err).to.have.property('message', "Unexpected 'repeatVerbose': yoyoyo")
     }
   })
 

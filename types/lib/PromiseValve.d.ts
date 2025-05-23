@@ -32,6 +32,7 @@ export class PromiseValve extends PromiseValve_base {
     cancelOnPump: any;
     resolveType: any;
     cache: Cache;
+    repeatVerbose: any;
     promiseFactory: any;
     promisePool: any[];
     poolSize: any;
@@ -65,6 +66,7 @@ declare namespace queueMap {
     export function hashFunction(value: any): any;
     export function repeatPredicate(): boolean;
     export function repeatBackoffFactory(): ConstantBackoff;
+    export let repeatVerbose: boolean;
 }
 declare namespace cancelMap {
     let name_1: any;
@@ -92,6 +94,8 @@ declare namespace cancelMap {
     export { repeatPredicate_1 as repeatPredicate };
     export function repeatBackoffFactory_1(): ConstantBackoff;
     export { repeatBackoffFactory_1 as repeatBackoffFactory };
+    let repeatVerbose_1: boolean;
+    export { repeatVerbose_1 as repeatVerbose };
 }
 declare namespace throttleMap {
     let name_2: any;
@@ -120,6 +124,8 @@ declare namespace throttleMap {
     export { repeatPredicate_2 as repeatPredicate };
     export function repeatBackoffFactory_2(): ConstantBackoff;
     export { repeatBackoffFactory_2 as repeatBackoffFactory };
+    let repeatVerbose_2: boolean;
+    export { repeatVerbose_2 as repeatVerbose };
 }
 declare namespace skipMap {
     let name_3: any;
@@ -148,6 +154,8 @@ declare namespace skipMap {
     export { repeatPredicate_3 as repeatPredicate };
     export function repeatBackoffFactory_3(): ConstantBackoff;
     export { repeatBackoffFactory_3 as repeatBackoffFactory };
+    let repeatVerbose_3: boolean;
+    export { repeatVerbose_3 as repeatVerbose };
 }
 declare namespace sliceMap {
     let name_4: any;
@@ -174,6 +182,8 @@ declare namespace sliceMap {
     export { repeatPredicate_4 as repeatPredicate };
     export function repeatBackoffFactory_4(): ConstantBackoff;
     export { repeatBackoffFactory_4 as repeatBackoffFactory };
+    let repeatVerbose_4: boolean;
+    export { repeatVerbose_4 as repeatVerbose };
 }
 import { Cache } from "./Cache.js";
 import { MAX_ARRAY_SIZE } from "./BaseValve.js";
