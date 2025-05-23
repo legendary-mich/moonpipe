@@ -1,5 +1,14 @@
 # Changelog
 
+### 2.10.0
+- Errors thrown in an `onCancel` callback are passed to the next error valve in line
+- Errors thrown in a `squashDownTo` function are passed to the next error valve in line
+- Errors thrown in `onBusy`, and `onIdle` callbacks are passed to the first error valve
+- Do not throw an error in the `rePumpLast` when the history buffer is empty
+- Forbid the `maxBufferSize` to be lower than 1
+- Add an `isBusy` method
+- Add a `repeatVerbose` flag to the `PromisePreset`
+
 ### 2.9.0
 - Add a `squashDownTo` function to the BaseValve presets
 
