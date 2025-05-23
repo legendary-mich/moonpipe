@@ -12,6 +12,8 @@ const mp = new MoonPipe()
     // repeatBackoffFactory: () => new ConstantBackoff(1000), // OPTIONAL
     // repeatBackoffFactory: () => new LinearBackoff(1000), // OPTIONAL
     // repeatBackoffFactory: () => new ConstantBackoff(0), // OPTIONAL DEFAULT
+    // repeatVerbose: true, // OPTIONAL
+    // repeatVerbose: false, // OPTIONAL DEFAULT
   })
   .queueError(async (err) => {
     console.log('// error:', err)

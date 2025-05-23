@@ -6,19 +6,30 @@ const { delayPromise } = require('./utils.js')
 
 async function testInput(method, expected) {
   const results = []
+  let counter = 0
   const pipe = new MoonPipe()[method](async (value) => {
     results.push('side_' + value)
-    await delayPromise(1)
-    throw new Error(value + 100)
+    await delayPromise(3)
+    if (counter++ < 2) {
+      throw new Error(value + 100)
+    }
+    else {
+      return value + 100
+    }
+  }, {
+    repeatVerbose: true,
+    repeatPredicate: (attemptsMade, err) => {
+      return err && attemptsMade <= 2
+    },
   })
     .queueTap(async (value) => {
+      counter = 0
       results.push('res_' + value)
     })
-    // When there's no error handler all errors should be silently ignored
-    // .queueError(async (err) => {
-    //   await delayPromise(2)
-    //   results.push('err_' + err.message)
-    // })
+    .queueError(async (err) => {
+      results.push('err_' + err.message)
+      await delayPromise(2)
+    })
     .onBusy(() => {
       results.push('on_busy')
     })
@@ -27,101 +38,151 @@ async function testInput(method, expected) {
     })
 
   pipe.pump(1)
+  await delayPromise(1)
   pipe.pump(2)
-  pipe.pump(3)
-
-  await delayPromise(16)
+  await delayPromise(30)
   expect(results).to.eql(expected)
 }
 
-// When there's no error handler all errors should be silently ignored
-describe('PromiseValves.No.ErrorHandler with Synchronous input.', () => {
+describe('PromiseValves.Repeat.Success.Verbose', () => {
 
   describe('MoonPipe.queueTap', () => {
-    it('ignores all errors', () => {
+    it('eventually succeeds', () => {
       return testInput('queueTap', [
         'on_busy',
         'side_1',
+        'err_101',
+        'side_1',
+        'err_101',
+        'side_1',
+        'res_1',
         'side_2',
-        'side_3',
+        'err_102',
+        'side_2',
+        'err_102',
+        'side_2',
+        'res_2',
         'on_idle',
       ])
     })
   })
 
   describe('MoonPipe.queueMap', () => {
-    it('ignores all errors', () => {
+    it('eventually succeeds', () => {
       return testInput('queueMap', [
         'on_busy',
         'side_1',
+        'err_101',
+        'side_1',
+        'err_101',
+        'side_1',
+        'res_101',
         'side_2',
-        'side_3',
+        'err_102',
+        'side_2',
+        'err_102',
+        'side_2',
+        'res_102',
         'on_idle',
       ])
     })
   })
 
   describe('MoonPipe.cancelTap', () => {
-    it('ignores all errors', () => {
+    it('eventually succeeds', () => {
       return testInput('cancelTap', [
         'on_busy',
         'side_1',
         'side_2',
-        'side_3',
+        'err_102',
+        'side_2',
+        'res_2',
         'on_idle',
       ])
     })
   })
 
   describe('MoonPipe.cancelMap', () => {
-    it('ignores all errors', () => {
+    it('eventually succeeds', () => {
       return testInput('cancelMap', [
         'on_busy',
         'side_1',
         'side_2',
-        'side_3',
+        'err_102',
+        'side_2',
+        'res_102',
         'on_idle',
       ])
     })
   })
 
   describe('MoonPipe.throttleTap', () => {
-    it('ignores all errors', () => {
+    it('eventually succeeds', () => {
       return testInput('throttleTap', [
         'on_busy',
         'side_1',
-        'side_3',
+        'err_101',
+        'side_1',
+        'err_101',
+        'side_1',
+        'res_1',
+        'side_2',
+        'err_102',
+        'side_2',
+        'err_102',
+        'side_2',
+        'res_2',
         'on_idle',
       ])
     })
   })
 
   describe('MoonPipe.throttleMap', () => {
-    it('ignores all errors', () => {
+    it('eventually succeeds', () => {
       return testInput('throttleMap', [
         'on_busy',
         'side_1',
-        'side_3',
+        'err_101',
+        'side_1',
+        'err_101',
+        'side_1',
+        'res_101',
+        'side_2',
+        'err_102',
+        'side_2',
+        'err_102',
+        'side_2',
+        'res_102',
         'on_idle',
       ])
     })
   })
 
   describe('MoonPipe.skipTap', () => {
-    it('ignores all errors', () => {
+    it('whatever', () => {
       return testInput('skipTap', [
         'on_busy',
         'side_1',
+        'err_101',
+        'side_1',
+        'err_101',
+        'side_1',
+        'res_1',
         'on_idle',
       ])
     })
   })
 
   describe('MoonPipe.skipMap', () => {
-    it('ignores all errors', () => {
+    it('whatever', () => {
       return testInput('skipMap', [
         'on_busy',
         'side_1',
+        'err_101',
+        'side_1',
+        'err_101',
+        'side_1',
+        'res_101',
         'on_idle',
       ])
     })

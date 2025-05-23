@@ -254,7 +254,7 @@ describe('PromiseValves.Buffers.Clear.One.js', () => {
       const results = []
       const pipe = new MoonPipe()[method](async (value, ctx) => {
         ctx.onCancel = () => {
-          throw new Error('hoho') // <---- should be silently ignored
+          throw new Error('hoho')
         }
         results.push('a_' + value)
         await delayPromise(3)
@@ -262,6 +262,10 @@ describe('PromiseValves.Buffers.Clear.One.js', () => {
       }, { name: '0th' })
         .queueTap(async (value) => {
           results.push('b_' + value)
+          await delayPromise(2)
+        })
+        .queueError(async (error) => {
+          results.push('err_' + error.message)
           await delayPromise(2)
         })
         .onBusy(() => {
@@ -283,10 +287,11 @@ describe('PromiseValves.Buffers.Clear.One.js', () => {
     }
 
     describe('Tap', () => {
-      it('silently swallows the error', () => {
+      it('pumps the error to the nearest error valve', () => {
         return testInput('cancelTap', [
           'on_busy',
           'a_1',
+          'err_hoho',
           'on_idle',
           'on_busy',
           'a_4000',
@@ -297,10 +302,11 @@ describe('PromiseValves.Buffers.Clear.One.js', () => {
     })
 
     describe('Map', () => {
-      it('silently swallows the error', () => {
+      it('pumps the error to the nearest error valve', () => {
         return testInput('cancelMap', [
           'on_busy',
           'a_1',
+          'err_hoho',
           'on_idle',
           'on_busy',
           'a_4000',

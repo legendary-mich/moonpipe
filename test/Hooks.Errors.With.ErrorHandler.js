@@ -6,16 +6,25 @@ const { delayPromise } = require('./utils.js')
 
 async function testInput(method, expected) {
   const results = []
-  const pipe = new MoonPipe()[method]((value) => {
-    results.push('on_hook_' + value)
-    throw new Error('on_hook_err')
-  })
+  const pipe = new MoonPipe()
+    .onBusyTap((value) => {
+      results.push('busyTap_' + value)
+      if (method === 'onBusyTap') throw new Error(method)
+    })
+    .onBusy(() => {
+      results.push('busy')
+      if (method === 'onBusy') throw new Error(method)
+    })
     .queueTap(async (value) => {
       results.push('res_' + value)
     })
     .queueError(async (err) => {
       await delayPromise(2)
       results.push('err_' + err.message)
+    })
+    .onIdle(() => {
+      results.push('idle')
+      if (method === 'onIdle') throw new Error(method)
     })
 
   pipe.pump(1)
@@ -24,39 +33,48 @@ async function testInput(method, expected) {
 
   await delayPromise(16)
   expect(results).to.eql(expected)
+  expect(pipe.isBusy()).to.eql(false)
 }
 
-describe('Hooks.ErrorHandler with Synchronous input.', () => {
+describe('Hooks.Errors.With.ErrorHandler', () => {
 
   describe('MoonPipe.onBusyTap', () => {
     it('handles all errors', () => {
       return testInput('onBusyTap', [
-        'on_hook_1',
-        'err_on_hook_err',
+        'busyTap_1',
+        'busy',
+        'err_onBusyTap',
         'res_2',
         'res_3',
+        'idle',
       ])
     })
   })
 
   describe('MoonPipe.onBusy', () => {
-    it('handles all errors', () => {
+    it('pumps the error to the first error valve', () => {
       return testInput('onBusy', [
-        'on_hook_undefined',
+        'busyTap_1',
+        'busy',
+        'err_onBusy',
         'res_1',
         'res_2',
         'res_3',
+        'idle',
       ])
     })
   })
 
   describe('MoonPipe.onIdle', () => {
-    it('silently swallows the error', () => {
+    it('pumps the error to the first error valve', () => {
       return testInput('onIdle', [
+        'busyTap_1',
+        'busy',
         'res_1',
         'res_2',
         'res_3',
-        'on_hook_undefined',
+        'idle',
+        'err_onIdle',
       ])
     })
   })

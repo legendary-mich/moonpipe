@@ -30,6 +30,7 @@ Throttle streams of data while passing them through promises and timers. Use var
   - [onIdle](#onidle)
   - [onBusyBy](#onbusyby)
   - [onIdleBy](#onidleby)
+- [isBusy](#isbusy)
 - [History](#history)
 - [As Promise](#as-promise)
 - [Clearing out buffers](#clearing-out-buffers)
@@ -450,7 +451,7 @@ mp.pump('a')
 ```
 
 ### Timeout in PromiseValves
-Use the `timeoutMs` param for PromiseValves that are not supposed to live too long. If the promise is not settled within the provided number of milliseconds, it will be rejected with a `TimeoutError` and the [onCancel callback](#oncancel-callback-in-promisevalves) will be called.
+Use the `timeoutMs` param for PromiseValves that are not supposed to live too long. If the promise is not settled within the provided number of milliseconds, it will be rejected with a `TimeoutError` and the [onCancel callback](#oncancel-callback-in-promisevalves) will be called. `timeoutMs: 0` means disabled.
 ```javascript
 const { MoonPipe } = require('moonpipe')
 const { delayPromise } = require('../test/utils.js')
@@ -474,7 +475,7 @@ mp.pump('a')
 ```
 
 ### Repeating on error in PromiseValves
-A rejected promise can be retried before the error is reported to the pipe. Every error returned from a rejected promise is passed to the `repeatPredicate` function, that takes an `attemptsMade` counter as the first argument, an `error` as the second one, and returns a `boolean` value which signifies whether the promise should be retried or not. By default promises are retried immediately. If you want to add a delay between retries, use a `repeatBackoffFactory` function.
+A rejected promise can be retried before the error is reported to the pipe. Every error returned from a rejected promise is passed to the `repeatPredicate` function, that takes an `attemptsMade` counter as the first argument, an `error` as the second one, and returns a `boolean` value which signifies whether the promise should be retried or not. By default promises are retried immediately. If you want to add a delay between retries, use a `repeatBackoffFactory` function. If you want intermediate errors to be emitted, use a `repeatVerbose` flag.
 
 If the `repeatPredicate` throws an error, the promise is automatically rejected and will not be retried anymore.
 
@@ -493,6 +494,8 @@ const mp = new MoonPipe()
     // repeatBackoffFactory: () => new ConstantBackoff(1000), // OPTIONAL
     // repeatBackoffFactory: () => new LinearBackoff(1000), // OPTIONAL
     // repeatBackoffFactory: () => new ConstantBackoff(0), // OPTIONAL DEFAULT
+    // repeatVerbose: true, // OPTIONAL
+    // repeatVerbose: false, // OPTIONAL DEFAULT
   })
   .queueError(async (err) => {
     console.log('// error:', err)
@@ -514,7 +517,7 @@ mp.pump('c')
 ```
 
 ### onCancel callback in PromiseValves
-Sometimes you may want to do some cleanup when a promise is being **canceled**, or when it [times out](#timeout-in-promisevalves). To facilitate custom logic on promise cancellation a `promiseContext` is provided to the promise factory function as the second argument. The `onCancel` callback can be attached to the `promiseContext`; it will be called when the promise is being **canceled**, or when it [times out](#timeout-in-promisevalves). If the **callback throws** an error, the error will be **silently ignored**. What follows is an example of how to clear a timeout from within one of the `cancel` PromiseValves. *(Note that the sole purpose of this example is to show how to use the `onCancel` callback. Normally, for anything related to timeouts, you are better off using TimeValves like e.g. cancelLazy)*
+Sometimes you may want to do some cleanup when a promise is being **canceled**, or when it [times out](#timeout-in-promisevalves). To facilitate custom logic on promise cancellation a `promiseContext` is provided to the promise factory function as the second argument. An `onCancel` callback can be attached to the `promiseContext`; it will be called when the promise is being **canceled**, or when it [times out](#timeout-in-promisevalves). If the **callback throws** an error, the error will be pumped to the next **error valve** in line. What follows is an example of how to clear a timeout from within one of the `cancel` PromiseValves. *(Note that the sole purpose of this example is to show how to use the `onCancel` callback. Normally, for anything related to timeouts, you are better off using TimeValves like e.g. cancelLazy)*
 
 ```javascript
 const { MoonPipe } = require('moonpipe')
@@ -722,6 +725,8 @@ mp.pump({op: 'del ', i: 7})
 // output: mapped del  7
 ```
 
+ Errors thrown in a `squashDownTo` function are passed to the next error valve in line.
+
 ## Error handling
 When an error is thrown by one of the normal valves, the pipe switches its active channel to the `CHANNEL_TYPE.ERROR`. Now it operates in an `error mode` which means that no new promises will be created until the active channel switches back to the `CHANNEL_TYPE.DATA`. Existing promises will be able to finish though, which can result in either a valid response or a new error. Valid responses will be put off for later, and errors will be pumped to the `ErrorValves`. The active channel will be switched back to the `CHANNEL_TYPE.DATA` when there are no more errors to handle.
 
@@ -759,7 +764,7 @@ There is also 1 synchronous error handler, namely `filterError`. It operates in 
 ## Hooks
 
 ### onBusyTap (DEPRECATED)
-The `onBusyTap` hook is called every time the pipe goes from an `idle` state to a `busy` state. The callback provided by you is supposed to be `synchronous`. It takes the pumped value as the first argument. **If it throws** an error, the error will be pumped to the **nearest error valve**. There can be **only one** onBusyTap hook.
+The `onBusyTap` hook is called every time the pipe goes from an `idle` state to a `busy` state. The callback provided by you is supposed to be `synchronous`. It takes the pumped value as the first argument. **If it throws** an error, the error will be pumped to the **first error valve**. There can be **only one** onBusyTap hook.
 ```javascript
 const mp = new MoonPipe()
   .onBusyTap((value) => {
@@ -768,7 +773,7 @@ const mp = new MoonPipe()
 ```
 
 ### onBusy
-The `onBusy` hook is called every time the pipe goes from an `idle` state to a `busy` state. The callback provided by you is supposed to be `synchronous`. It does NOT take any arguments. **If it throws** an error, the error will be **silently ignored**. There can be **only one** onBusy hook.
+The `onBusy` hook is called every time the pipe goes from an `idle` state to a `busy` state. The callback provided by you is supposed to be `synchronous`. It does NOT take any arguments. **If it throws** an error, the error will be pumped to the **first error valve**. There can be **only one** onBusy hook.
 ```javascript
 const mp = new MoonPipe()
   .onBusy(() => {
@@ -777,7 +782,7 @@ const mp = new MoonPipe()
 ```
 
 ### onIdle
-The `onIdle` hook is called every time the pipe goes from a `busy` state to an `idle` state. The callback provided by you is supposed to be `synchronous`. It does NOT take any arguments. **If it throws** an error, the error will be **silently ignored**. There can be **only one** onIdle hook.
+The `onIdle` hook is called every time the pipe goes from a `busy` state to an `idle` state. The callback provided by you is supposed to be `synchronous`. It does NOT take any arguments. **If it throws** an error, the error will be pumped to the **first error valve**. There can be **only one** onIdle hook.
 
 ```javascript
 const mp = new MoonPipe()
@@ -828,8 +833,16 @@ mp.pump(2)
 // output: 2
 // is NOT loading anymore
 ```
+
+## isBusy
+In addition to the `onBusy`/`onIdle` hooks, the state of the pipe can be tested with an `isBusy()` method. The `isBusy()` method is a simple accessor that does not do any computation. It returns a `boolean` value.
+```javascript
+const mp = new MoonPipe()
+mp.isBusy() // <--- HERE
+```
+
 ## History
-The most recently pumped value is kept in the history buffer. It can be pumped again with the `rePumpLast` method. The method is useful when you, for example, manually [update the cache](#cache-invalidation) and want to push the new value through afterwards.
+The most recently pumped value is kept in the history buffer. It can be pumped again with the `rePumpLast` method. The method is useful when you, for example, manually [update the cache](#cache-invalidation) and want to push the new value through afterwards. It does nothing when the history buffer is empty.
 ```javascript
 const mp = new MoonPipe()
   .queueTap(val => console.log('// out: ', val))
@@ -945,12 +958,13 @@ Also note that inner pipes behave a lot like regular valves. This means that err
   - `MAP` - the result of the promise is emitted
   - `TAP` - the value that is fed into the promise is emitted
 - `cancelOnPump` - if `true`, the active promise is canceled on every new value
-- `timeoutMs` - time after which the promise is canceled and a `TimeoutError` is emitted
+- `timeoutMs` - time after which the promise is canceled and a `TimeoutError` is emitted. `timeoutMs: 0` means disabled.
 - `poolSize` - number of promises running concurrently
 - `cache` - if `true`, the result of the promise will be cached
 - `hashFunction` - a function that takes the pumped `value` and returns the `key` at witch the result will be cached. Defaults to `value => value`
 - `repeatPredicate` - a synchronous function which takes an `attemptsMade` counter as the first argument and an `error` as the second one. It returns `true` or `false`.
 - `repeatBackoffFactory` - a function that returns an instance of a `Backoff` class. Currently `ConstantBackoff` and `LinearBackoff` classes are implemented.
+- `repeatVerbose` - if `true`, intermediate errors are pumped to the next error valve. If `false`, only the result of the last retry is pumped.
 
 Predefined presets can be found in the `TimeValve.js` and `PromiseValve.js` files.
 

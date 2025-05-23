@@ -9,17 +9,16 @@ async function testInput(method, expected) {
   const pipe = new MoonPipe()[method](async (value) => {
     results.push('side_' + value)
     await delayPromise(1)
-    return value + 100
-  }, {
-    maxBufferSize: 0,
+    throw new Error(value + 100)
   })
     .queueTap(async (value) => {
       results.push('res_' + value)
     })
-    .queueError(async (err) => {
-      await delayPromise(2)
-      results.push('err_' + err.message)
-    })
+    // When there's no error handler all errors should be silently ignored
+    // .queueError(async (err) => {
+    //   await delayPromise(2)
+    //   results.push('err_' + err.message)
+    // })
     .onBusy(() => {
       results.push('on_busy')
     })
@@ -35,105 +34,94 @@ async function testInput(method, expected) {
   expect(results).to.eql(expected)
 }
 
-describe('PromiseValves with maxBufferSize set to 0', () => {
+// When there's no error handler all errors should be silently ignored
+describe('PromiseValves.No.ErrorHandler.1', () => {
 
   describe('MoonPipe.queueTap', () => {
-    it('pumps ORIGINAL values', () => {
+    it('ignores all errors', () => {
       return testInput('queueTap', [
         'on_busy',
-        'err_Buffer overflow',
-        'err_Buffer overflow',
-        'err_Buffer overflow',
+        'side_1',
+        'side_2',
+        'side_3',
         'on_idle',
       ])
     })
   })
 
   describe('MoonPipe.queueMap', () => {
-    it('pumps MODIFIED values', () => {
+    it('ignores all errors', () => {
       return testInput('queueMap', [
         'on_busy',
-        'err_Buffer overflow',
-        'err_Buffer overflow',
-        'err_Buffer overflow',
+        'side_1',
+        'side_2',
+        'side_3',
         'on_idle',
       ])
     })
   })
 
   describe('MoonPipe.cancelTap', () => {
-    it('cancels initial promises, and resolves the last one with the ORIGINAL value', () => {
+    it('ignores all errors', () => {
       return testInput('cancelTap', [
         'on_busy',
-        'on_idle',
-        'on_busy',
-        'on_idle',
-        'on_busy',
+        'side_1',
+        'side_2',
+        'side_3',
         'on_idle',
       ])
     })
   })
 
   describe('MoonPipe.cancelMap', () => {
-    it('cancels initial promises, and resolves the last one with a MODIFIED value', () => {
+    it('ignores all errors', () => {
       return testInput('cancelMap', [
         'on_busy',
-        'on_idle',
-        'on_busy',
-        'on_idle',
-        'on_busy',
+        'side_1',
+        'side_2',
+        'side_3',
         'on_idle',
       ])
     })
   })
 
   describe('MoonPipe.throttleTap', () => {
-    it('removes values which are waiting in the queue, and pumps ORIGINAL ones', () => {
+    it('ignores all errors', () => {
       return testInput('throttleTap', [
         'on_busy',
-        'on_idle',
-        'on_busy',
-        'on_idle',
-        'on_busy',
+        'side_1',
+        'side_3',
         'on_idle',
       ])
     })
   })
 
   describe('MoonPipe.throttleMap', () => {
-    it('removes values which are waiting in the queue, and pumps MODIFIED ones', () => {
+    it('ignores all errors', () => {
       return testInput('throttleMap', [
         'on_busy',
-        'on_idle',
-        'on_busy',
-        'on_idle',
-        'on_busy',
+        'side_1',
+        'side_3',
         'on_idle',
       ])
     })
   })
 
   describe('MoonPipe.skipTap', () => {
-    it('whatever', () => {
+    it('ignores all errors', () => {
       return testInput('skipTap', [
         'on_busy',
-        'on_idle',
-        'on_busy',
-        'on_idle',
-        'on_busy',
+        'side_1',
         'on_idle',
       ])
     })
   })
 
   describe('MoonPipe.skipMap', () => {
-    it('whatever', () => {
+    it('ignores all errors', () => {
       return testInput('skipMap', [
         'on_busy',
-        'on_idle',
-        'on_busy',
-        'on_idle',
-        'on_busy',
+        'side_1',
         'on_idle',
       ])
     })

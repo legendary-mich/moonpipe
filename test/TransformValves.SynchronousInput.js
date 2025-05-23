@@ -155,6 +155,9 @@ describe('TransformValves with Synchronous input.', () => {
     it('emits a SINGLE on_idle event', async () => {
       const results = []
       const pipe = new MoonPipe()
+        .onBusy(() => {
+          results.push('on_busy')
+        })
         .map((value) => {
           results.push('res_' + value)
         })
@@ -163,10 +166,15 @@ describe('TransformValves with Synchronous input.', () => {
         })
 
       pipe.pump(1)
+      pipe.pump(2)
 
       await delayPromise(5)
       const expected = [
+        'on_busy',
         'res_1',
+        'on_idle',
+        'on_busy',
+        'res_2',
         'on_idle',
       ]
       expect(results).to.eql(expected)

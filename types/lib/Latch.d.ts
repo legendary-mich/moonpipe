@@ -1,5 +1,5 @@
 export class Latch {
-    state: number;
+    isUp: boolean;
     tryUp(): boolean;
     tryDown(): boolean;
 }
